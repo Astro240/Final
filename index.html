@@ -1,0 +1,127 @@
+<head>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+        }
+    </style>
+    <script type="importmap">
+        { "imports": 
+            {
+            "three": "https://esm.sh/three",
+            "three/": "https://esm.sh/three/"
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="./script.js"></script>
+</head>
+
+<body>
+    <div id="globeViz" style="position: relative; width: 600px; height: 600px;margin:auto;margin-top: 7%;">
+        <img id="globeBg" src="./globe.jpg" style="
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 2; 
+            object-fit: 
+            cover;opacity: 0.5;" draggable="false">
+        <center>
+            <!-- <button style="margin-top: 42.5%;">
+                <span>Initiate</span>
+            </button> -->
+            <center>
+    </div>
+
+    <script type="module">
+        import ThreeGlobe from 'https://esm.sh/three-globe?external=three';
+        import * as THREE from 'https://esm.sh/three';
+        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js?external=three';
+
+        fetch('./ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countries => {
+            const Globe = new ThreeGlobe()
+                .hexPolygonsData(countries.features)
+                .hexPolygonResolution(3)
+                .hexPolygonMargin(0.3)
+                .hexPolygonUseDots(true)
+                .hexPolygonColor(feature => feature.isUserLocation ? '#2196f3' : '#ffffff')
+                .showAtmosphere(false);
+
+            // Get user location and update the globe
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+
+                    // Find the closest hex tile (feature)
+                    let minDist = Infinity;
+                    let closestFeature = null;
+                    countries.features.forEach(f => {
+                        let coords = f.geometry.coordinates[0][0];
+                        let lng = coords[0];
+                        let lat = coords[1];
+                        if (f.geometry.type === "MultiPolygon") {
+                            coords = f.geometry.coordinates[0][0][0];
+                            lng = coords[0];
+                            lat = coords[1];
+                        }
+                        const dist = Math.sqrt(
+                            Math.pow(lat - userLat, 2) + Math.pow(lng - userLng, 2)
+                        );
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestFeature = f;
+                        }
+                    });
+
+                    if (closestFeature) {
+                        closestFeature.isUserLocation = true;
+                        Globe.hexPolygonsData(countries.features); // Refresh data to update color
+                    }
+                });
+            }
+            const GLOBE_SIZE = 600;
+            const GLOBE_RADIUS = 112;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(GLOBE_SIZE, GLOBE_SIZE);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.domElement.style.position = 'absolute';
+            renderer.domElement.style.left = 0;
+            renderer.domElement.style.top = 0;
+            renderer.domElement.style.zIndex = 1;
+            document.getElementById('globeViz').appendChild(renderer.domElement);
+
+            // Setup scene
+            const scene = new THREE.Scene();
+            scene.add(Globe);
+            scene.add(new THREE.AmbientLight(0xcccccc, Math.PI));
+            scene.add(new THREE.DirectionalLight(0xffffff, 0.6 * Math.PI));
+
+            // Setup camera
+            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
+            camera.position.z = GLOBE_RADIUS * 3;
+            const controls = new OrbitControls(camera, renderer.domElement);
+
+            controls.minDistance = 100;
+            controls.maxDistance = 2000;
+            controls.enableZoom = false;
+            controls.enablePan = false;
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            controls.minPolarAngle = Math.PI / 2;
+            controls.maxPolarAngle = Math.PI / 2;
+
+            (function animate() {
+                Globe.rotation.y += 0.002;
+                Globe.rotation.x = 0;
+                controls.update();
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            })();
+        });
+    </script>
+</body>
