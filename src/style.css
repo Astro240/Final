@@ -54,7 +54,7 @@ button::before, .glowDiv::before {
 button span, .glowDiv span {
 	background: var(--glow), black;
 	background-clip: text;
-	color: #fff; /* Set font to white */
+	color: #fff; 
 	height: 100%;
 	width: 100%;
 	z-index: 2;
@@ -62,7 +62,7 @@ button span, .glowDiv span {
 	inset: 0;
 }
 button:hover span {
-	color: transparent; /* Revert to normal color on hover */
+	color: transparent; 
 }
 :root:has(button:active) {
 	--size: 300px;
