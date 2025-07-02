@@ -23,7 +23,7 @@
 	right: 2rem;
 }
 
-button {
+button, .glowDiv {
 	border-radius: 1rem;
 	text-transform: uppercase;
 	font-weight: bold;
@@ -42,7 +42,7 @@ button {
 	padding: 1rem 2rem;
     z-index: 3;
 }
-button::before {
+button::before, .glowDiv::before {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -51,20 +51,23 @@ button::before {
 	z-index: 2;
 	border-radius: 1rem;
 }
-button span {
+button span, .glowDiv span {
 	background: var(--glow), black;
 	background-clip: text;
-	color: transparent;
+	color: #fff; /* Set font to white */
 	height: 100%;
 	width: 100%;
 	z-index: 2;
 	position: relative;
 	inset: 0;
 }
+button:hover span {
+	color: transparent; /* Revert to normal color on hover */
+}
 :root:has(button:active) {
 	--size: 300px;
 }
-button::after {
+button::after, .glowDiv::after {
 	content: "";
 	position: absolute;
 	inset: -4px;
