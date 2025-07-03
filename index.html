@@ -36,7 +36,7 @@
             height: 100%; 
             z-index: 2; 
             object-fit: 
-            cover;opacity: 0.5;" draggable="false">
+            cover;opacity: 0.5;pointer-events: none;" draggable="false">
         <center>
             <!-- <button style="margin-top: 42.5%;">
                 <span>Initiate</span>
@@ -126,8 +126,8 @@
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
 
-            controls.minPolarAngle = 0;
-            controls.maxPolarAngle = Math.PI;
+            controls.minPolarAngle = Math.PI/2;
+            controls.maxPolarAngle = Math.PI/2;
 
             (function animate() {
                 Globe.rotation.y += 0.002;
