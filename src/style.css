@@ -13,8 +13,10 @@
 	--bg: hsl(0 0% 10%);
 	--size: 100px;
 	--glow: radial-gradient(50% 50% at center,
-			hsl(var(--hue) 80% 85%),
-			hsl(var(--hue) 80% 70%),
+			/* hsl(var(--hue) 80% 85%),
+			hsl(var(--hue) 80% 70%), */
+			#faf4c2,
+			#FFE066,
 			transparent) calc((var(--x) * 1px) - (var(--size) * 0.5)) calc((var(--y) * 1px) - (var(--size) * 0.5)) / var(--size) var(--size) no-repeat fixed;
 	--primary: #9d00ff;
 	--secondary: #00e5ff;
