@@ -14,8 +14,27 @@
         }
     </script>
     <link rel="stylesheet" href="src/style.css" />
+    <style>
+      spline-viewer::part(logo),
+      spline-viewer [id="logo"],
+      spline-viewer [class*="logo"],
+      spline-viewer [href*="spline.design"],
+      spline-viewer a[target="_blank"],
+      spline-viewer img[alt*="Spline"],
+      spline-viewer [style*="position: absolute"][style*="right"],
+      spline-viewer [style*="bottom: 0px"],
+      spline-viewer [style*="bottom:0px"],
+      spline-viewer [style*="right: 0px"],
+      spline-viewer [style*="right:0px"] {
+        display: none !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
+      }
+    </style>
     <script defer src="src/script.js"></script>
     <script src="src/carousel.js"></script>
+    <script src="src/remove-spline-logo.js"></script>
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.35/build/spline-viewer.js"></script>
 
 <body>

@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js?exte
 
 async function loadMap() {
     // Fetch the GeoJSON data asynchronously
-    const res = await fetch('./ne_110m_admin_0_countries.geojson');
+    const res = await fetch('./data/ne_110m_admin_0_countries.geojson');
     const countries = await res.json();
 
     const Globe = new ThreeGlobe()
