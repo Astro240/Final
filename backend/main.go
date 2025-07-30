@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"finalProj/api"
 )
 
 func main() {
@@ -13,6 +14,8 @@ func main() {
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("../frontend/data"))))
 
+	http.HandleFunc("/api/login", api.LoginHandler)
+	http.HandleFunc("/api/register", api.RegisterHandler)
 	if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
 		panic(err)
 	}
