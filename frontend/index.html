@@ -47,8 +47,16 @@
             <span>Login</span>
         </button>
     </div>
-
-    <spline-viewer url="https://prod.spline.design/w-iGtO95apO4x17K/scene.splinecode"></spline-viewer>
+    <div id="spline-container"></div>
+    <script>
+        // Only add the Spline viewer if not on mobile
+        if (!/Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            const container = document.getElementById('spline-container');
+            const viewer = document.createElement('spline-viewer');
+            viewer.setAttribute('url', 'https://prod.spline.design/w-iGtO95apO4x17K/scene.splinecode');
+            container.appendChild(viewer);
+        }
+    </script>
     <Center>
         <!-- <h1 font-family="Impact">
             Experience The World!
