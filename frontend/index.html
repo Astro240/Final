@@ -16,22 +16,22 @@
     </script>
     <link rel="stylesheet" href="src/style.css" />
     <style>
-      spline-viewer::part(logo),
-      spline-viewer [id="logo"],
-      spline-viewer [class*="logo"],
-      spline-viewer [href*="spline.design"],
-      spline-viewer a[target="_blank"],
-      spline-viewer img[alt*="Spline"],
-      spline-viewer [style*="position: absolute"][style*="right"],
-      spline-viewer [style*="bottom: 0px"],
-      spline-viewer [style*="bottom:0px"],
-      spline-viewer [style*="right: 0px"],
-      spline-viewer [style*="right:0px"] {
-        display: none !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        visibility: hidden !important;
-      }
+        spline-viewer::part(logo),
+        spline-viewer [id="logo"],
+        spline-viewer [class*="logo"],
+        spline-viewer [href*="spline.design"],
+        spline-viewer a[target="_blank"],
+        spline-viewer img[alt*="Spline"],
+        spline-viewer [style*="position: absolute"][style*="right"],
+        spline-viewer [style*="bottom: 0px"],
+        spline-viewer [style*="bottom:0px"],
+        spline-viewer [style*="right: 0px"],
+        spline-viewer [style*="right:0px"] {
+            display: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
     </style>
     <script defer src="src/script.js"></script>
     <script src="src/carousel.js"></script>
@@ -47,14 +47,16 @@
             <span>Login</span>
         </button>
     </div>
+
     <spline-viewer url="https://prod.spline.design/w-iGtO95apO4x17K/scene.splinecode"></spline-viewer>
     <Center>
         <!-- <h1 font-family="Impact">
             Experience The World!
         </h1> -->
     </Center>
-    <div id="globeViz" style="position: relative; width: 600px; height: 600px;margin:auto;margin-top: 5%;">
-        <img id="globeBg" src="./img/globe.jpg" style="
+    <div class="block">
+        <div id="globeViz" style="position: relative; width: 600px; height: 600px;margin:auto;margin-top: 5%;">
+            <img id="globeBg" src="./img/globe.jpg" style="
             position: absolute; 
             left: 0; 
             top: 0; 
@@ -63,12 +65,12 @@
             z-index: 2; 
             object-fit: 
             cover;opacity: 0.5;pointer-events: none;" draggable="false">
-        <center>
-            <!-- <button style="margin-top: 42.5%;">
+            <center>
+                <!-- <button style="margin-top: 42.5%;">
                 <span>Initiate</span>
             </button> -->
-            <center>
-
+                <center>
+        </div>
     </div>
     <br><br><br><br><br><br><br><br>
     <!-- <div class="container-fluid h-100 d-flex flex-column">
