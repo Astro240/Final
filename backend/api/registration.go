@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -46,17 +45,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID, err := uuid.NewV4()
-	if err != nil {
-		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
-		return
-	}
-	SetCookie(w, "session_token", sessionID.String())
+	SetCookie(w, "session_token")
 
 	// Return success message
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Login successful"}`))
-	http.Redirect(w, r, "/home", http.StatusOK)
+	http.Redirect(w, r, "/", http.StatusOK)
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,10 +68,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 	
-	sessionID, err := uuid.NewV4()
-	if err != nil {
-		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
-		return
-	}
-	SetCookie(w, "session_token", sessionID.String())
+	SetCookie(w, "session_token")
+	http.Redirect(w, r, "/", http.StatusOK)
 }
