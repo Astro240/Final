@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	api.CreateDatabase()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/index.html")
 	})

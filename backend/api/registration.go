@@ -67,7 +67,42 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
-	
+
+	email := strings.ToLower(r.FormValue("email"))
+	password := r.FormValue("password")
+	firstName := r.FormValue("first_name")
+	lastName := r.FormValue("last_name")
+	age := r.FormValue("age")
+	profilePicture := r.FormValue("profile_picture")
+
+	// Validate email and password
+	if msg, valid := validateEmail(email); !valid {
+		http.Error(w, `{"error": "`+msg+`"}`, http.StatusBadRequest)
+		return
+	}
+	if msg, valid := validatePassword(password); !valid {
+		http.Error(w, `{"error": "`+msg+`"}`, http.StatusBadRequest)
+		return
+	}
+	avatarPath := "./avatars/"
+	valid, errorMsg := ValidateImage(avatarPath, profilePicture)
+	if !valid {
+		http.Error(w, `{"error": "`+errorMsg+`"}`, http.StatusInternalServerError)
+		return
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, `{"error": "Error processing password"}`, http.StatusInternalServerError)
+		return
+	}
+	query := "INSERT INTO users (email, password, first_name, last_name, age, profile_picture) VALUES (?, ?, ?, ?, ?, ?)"
+	_, err = db.Exec(query, email, string(hashedPassword), firstName, lastName, age, errorMsg)
+	if err != nil {
+		http.Error(w, `{"error": "Error creating user"}`, http.StatusInternalServerError)
+		return
+	}
 	SetCookie(w, "session_token")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "Registration successful"}`))
 	http.Redirect(w, r, "/", http.StatusOK)
 }

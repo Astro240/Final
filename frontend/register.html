@@ -1,0 +1,41 @@
+<div id="errorMessage" style="color:red;"></div>
+<form id="registerForm" method="post" enctype="multipart/form-data">
+    <input type="email" name="email" required>
+    <input type="password" name="password" required>
+    <input type="text" name="first_name" required>
+    <input type="text" name="last_name" required>
+    <input type="number" name="age" required>
+    <input type="file" name="profile_picture" accept="image/jpeg, image/png, image/jpg" required>
+    <button type="submit">Register</button>
+</form>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        var formData = new FormData(this);
+        //change the profile_picture to base64
+        var fileInput = document.querySelector('input[name="profile_picture"]');
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            var base64data = reader.result;
+            formData.set('profile_picture', base64data);
+            fetch('/api/register', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        // Display error message
+                        document.getElementById("errorMessage").innerText = data.error;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        };
+        reader.readAsDataURL(file);
+    });
+</script>

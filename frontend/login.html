@@ -1,10 +1,17 @@
+<div id="errorMessage" style="color:red;"></div>
+<form id="loginForm">
+    <input type="email" name="email" required>
+    <input type="password" name="password" required>
+    <button type="submit">Login</button>
+</form>
+
 <script>
 document.getElementById("loginForm").addEventListener("submit", function(event) {
     event.preventDefault(); // Prevent the default form submission
 
     var formData = new FormData(this);
 
-    fetch('/login', {
+    fetch('/api/login', {
         method: 'POST',
         body: formData
     })
@@ -20,10 +27,3 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
     });
 });
 </script>
-
-<div id="errorMessage" style="color:red;"></div>
-<form id="loginForm">
-    <input type="email" name="email" required>
-    <input type="password" name="password" required>
-    <button type="submit">Login</button>
-</form>

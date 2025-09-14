@@ -38,13 +38,17 @@
     <script src="src/remove-spline-logo.js"></script>
 
 <body>
+    <div class="background">
+        <img src="./img/Sky.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2" draggable="false">
+        <spline-viewer url="https://prod.spline.design/2mJ2UnyqBrMZ9OL8/scene.splinecode" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></spline-viewer>
+    </div>
     <div class="glowDiv">
         <button style="float:left">
             <span>Home</span>
         </button>
 
         <button style="float:right">
-            <span>Login</span>
+            <a href="/login" style="color: white; text-decoration: none;"><span>Login</span></a>
         </button>
     </div>
     <div id="spline-container"></div>
@@ -57,11 +61,6 @@
             container.appendChild(viewer);
         }
     </script>
-    <Center>
-        <!-- <h1 font-family="Impact">
-            Experience The World!
-        </h1> -->
-    </Center>
     <div class="block">
         <div id="globeViz" style="position: relative; width: 600px; height: 600px;margin:auto;margin-top: 5%;">
             <img id="globeBg" src="./img/globe.jpg" style="
@@ -72,7 +71,7 @@
             height: 100%; 
             z-index: 2; 
             object-fit: 
-            cover;opacity: 0.5;pointer-events: none;" draggable="false">
+            cover;opacity: 0.5;pointer-events: none;border-radius: 100%;" draggable="false">
             <center>
                 <!-- <button style="margin-top: 42.5%;">
                 <span>Initiate</span>

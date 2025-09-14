@@ -1,8 +1,8 @@
 package api
 
 import (
-	"net/http"
 	"github.com/gofrs/uuid"
+	"net/http"
 )
 
 func SetCookie(w http.ResponseWriter, name string) {
@@ -16,7 +16,7 @@ func SetCookie(w http.ResponseWriter, name string) {
 		Name:     name,
 		Value:    sessionID.String(),
 		HttpOnly: true,
-		Secure:   false, 
+		Secure:   false,
 	})
 }
 
