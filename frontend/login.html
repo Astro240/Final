@@ -20,6 +20,9 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
         if (data.error) {
             // Display error message
             document.getElementById("errorMessage").innerText = data.error;
+        }else {
+            // Redirect to home on successful login
+            window.location.href = '/';
         }
     })
     .catch(error => {

@@ -50,7 +50,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Return success message
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Login successful"}`))
-	http.Redirect(w, r, "/", http.StatusOK)
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,8 +72,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	firstName := r.FormValue("first_name")
 	lastName := r.FormValue("last_name")
 	age := r.FormValue("age")
+	//picture can be empty
 	profilePicture := r.FormValue("profile_picture")
-
+	//check if email already exists
+	var exists int
+	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", email).Scan(&exists)
+	if err != nil {
+		http.Error(w, `{"error": "Database query error"}`, http.StatusInternalServerError)
+		return
+	}
+	if exists > 0 {
+		http.Error(w, `{"error": "Email already exists"}`, http.StatusConflict)
+		return
+	}
 	// Validate email and password
 	if msg, valid := validateEmail(email); !valid {
 		http.Error(w, `{"error": "`+msg+`"}`, http.StatusBadRequest)
@@ -85,10 +95,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	avatarPath := "./avatars/"
-	valid, errorMsg := ValidateImage(avatarPath, profilePicture)
-	if !valid {
-		http.Error(w, `{"error": "`+errorMsg+`"}`, http.StatusInternalServerError)
-		return
+	picture := "default.png"
+	//check if profilePicture is not empty, then validate and save
+	if profilePicture != "" {
+		valid, picture := ValidateImage(avatarPath, profilePicture)
+		if !valid {
+			http.Error(w, `{"error": "`+picture+`"}`, http.StatusInternalServerError)
+			return
+		}
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -96,7 +110,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	query := "INSERT INTO users (email, password, first_name, last_name, age, profile_picture) VALUES (?, ?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, email, string(hashedPassword), firstName, lastName, age, errorMsg)
+	_, err = db.Exec(query, email, string(hashedPassword), firstName, lastName, age, picture)
 	if err != nil {
 		http.Error(w, `{"error": "Error creating user"}`, http.StatusInternalServerError)
 		return
@@ -104,5 +118,4 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	SetCookie(w, "session_token")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Registration successful"}`))
-	http.Redirect(w, r, "/", http.StatusOK)
 }

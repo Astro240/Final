@@ -32,17 +32,14 @@
             pointer-events: none !important;
             visibility: hidden !important;
         }
+
     </style>
     <script defer src="src/script.js"></script>
     <script src="src/carousel.js"></script>
     <script src="src/remove-spline-logo.js"></script>
 
 <body>
-    <div class="background">
-        <img src="./img/Sky.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2" draggable="false">
-        <spline-viewer url="https://prod.spline.design/2mJ2UnyqBrMZ9OL8/scene.splinecode" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></spline-viewer>
-    </div>
-    <div class="glowDiv">
+    <div style="top: 0; left: 0; width: 100%; padding: 30px; position: fixed; z-index: 1;">
         <button style="float:left">
             <span>Home</span>
         </button>
@@ -51,32 +48,28 @@
             <a href="/login" style="color: white; text-decoration: none;"><span>Login</span></a>
         </button>
     </div>
-    <div id="spline-container"></div>
-    <script>
-        // Only add the Spline viewer if not on mobile
-        if (!/Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            const container = document.getElementById('spline-container');
-            const viewer = document.createElement('spline-viewer');
-            viewer.setAttribute('url', 'https://prod.spline.design/w-iGtO95apO4x17K/scene.splinecode');
-            container.appendChild(viewer);
-        }
-    </script>
-    <div class="block">
-        <div id="globeViz" style="position: relative; width: 600px; height: 600px;margin:auto;margin-top: 5%;">
-            <img id="globeBg" src="./img/globe.jpg" style="
-            position: absolute; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            z-index: 2; 
-            object-fit: 
-            cover;opacity: 0.5;pointer-events: none;border-radius: 100%;" draggable="false">
+    
+    <div class="background">
+        <img src="./img/Sky.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2" draggable="false">
+        <spline-viewer url="https://prod.spline.design/2mJ2UnyqBrMZ9OL8/scene.splinecode" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></spline-viewer>
+    </div>
+    
+    <div class="content" style="margin-top: 100px;"> 
+
+    </div>
+    
+    <div id="spline-container" style="width: 100%; height: 100%; z-index: 0;margin-top: -100px;">
+        <spline-viewer url="https://prod.spline.design/w-iGtO95apO4x17K/scene.splinecode"></spline-viewer>
+    </div>
+
+    <div class="block" style="margin-top: 20px;">
+        <div id="globeViz" style="position: relative; width: 600px; height: 600px; margin: auto;">
+            <img id="globeBg" src="./img/globe.jpg" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 2; object-fit: cover; opacity: 0.5; pointer-events: none; border-radius: 100%;" draggable="false">
             <center>
                 <!-- <button style="margin-top: 42.5%;">
                 <span>Initiate</span>
             </button> -->
-                <center>
+            </center>
         </div>
     </div>
     <br><br><br><br><br><br><br><br>
