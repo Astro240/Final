@@ -26,16 +26,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	email := strings.ToLower(r.FormValue("email"))
 	password := r.FormValue("password")
 
-	query := "SELECT password FROM users WHERE email = ?"
+	query := "SELECT id,password FROM users WHERE email = ?"
 	row := db.QueryRow(query, email)
 
 	if row.Err() == sql.ErrNoRows {
 		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
 		return
 	}
-
+	var userID int
 	var storedPassword string
-	if err := row.Scan(&storedPassword); err != nil {
+	if err := row.Scan(&userID, &storedPassword); err != nil {
 		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
 		return
 	}
@@ -45,7 +45,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetCookie(w, "session_token")
+	SetCookie(w, userID, "session_token")
 
 	// Return success message
 	w.WriteHeader(http.StatusOK)
@@ -110,12 +110,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	query := "INSERT INTO users (email, password, first_name, last_name, age, profile_picture) VALUES (?, ?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, email, string(hashedPassword), firstName, lastName, age, picture)
+	result, err := db.Exec(query, email, string(hashedPassword), firstName, lastName, age, picture)
 	if err != nil {
 		http.Error(w, `{"error": "Error creating user"}`, http.StatusInternalServerError)
 		return
 	}
-	SetCookie(w, "session_token")
+
+	// Get the last inserted ID
+	userID, err := result.LastInsertId()
+	if err != nil {
+		http.Error(w, `{"error": "Error retrieving user ID"}`, http.StatusInternalServerError)
+		return
+	}
+	SetCookie(w, int(userID), "session_token")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Registration successful"}`))
 }

@@ -399,9 +399,27 @@ footer {
 	right: 2rem;
 }
 
-button,
+.navbarElements {
+	border-radius: 2rem;
+	text-transform: uppercase;
+	font-weight: bold;
+	background: transparent;
+	border: 4px solid transparent;
+	margin-top: 5px;
+	padding: 0.75rem 2rem;
+}
+
+.navbarElements:hover {
+	border-color: white;
+	cursor: pointer;
+}
+
+.navbarElements:hover span {
+	color:white
+}
+
 .glowDiv {
-	border-radius: 1rem;
+	border-radius: 2rem;
 	text-transform: uppercase;
 	font-weight: bold;
 	letter-spacing: 0.1ch;
@@ -420,7 +438,6 @@ button,
 	z-index: 3;
 }
 
-button::before,
 .glowDiv::before {
 	content: "";
 	position: absolute;
@@ -428,10 +445,9 @@ button::before,
 	box-shadow: 0 1px hsl(0 0% 100% / 0.15) inset;
 	background: var(--bg);
 	z-index: 2;
-	border-radius: 1rem;
+	border-radius: 2rem;
 }
 
-button span,
 .glowDiv span {
 	background: var(--glow), black;
 	background-clip: text;
@@ -443,7 +459,7 @@ button span,
 	inset: 0;
 }
 
-button:hover span {
+.glowDiv:hover span {
 	color: transparent;
 }
 
@@ -451,7 +467,6 @@ button:hover span {
 	--size: 300px;
 }
 
-button::after,
 .glowDiv::after {
 	content: "";
 	position: absolute;

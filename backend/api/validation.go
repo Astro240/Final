@@ -3,11 +3,32 @@ package api
 import (
 	"regexp"
 	"strings"
-
+	"net/http"
 	"encoding/base64"
+
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/gofrs/uuid"
 	"os"
 )
+
+func ValidateUser(w http.ResponseWriter,r *http.Request) (bool) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return false
+	}
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+	query := "SELECT user_id FROM sessions WHERE session_token = ?"
+	row := db.QueryRow(query, cookie.Value)
+	if row.Err() == sql.ErrNoRows {
+		return false
+	}
+	return true
+}
 
 func validateEmail(email string) (string, bool) {
 	if len(email) < 5 || len(email) > 50 {

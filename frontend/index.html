@@ -39,14 +39,23 @@
     <script src="src/remove-spline-logo.js"></script>
 
 <body>
-    <div style="top: 0; left: 0; width: 100%; padding: 30px; position: fixed; z-index: 1;">
-        <button style="float:left">
-            <span>Home</span>
-        </button>
+    <div style="top: 0; left: 0; width: 100%;padding:30px; padding-right: 70px; padding-left: 70px; position: fixed; z-index: 1;">
+        <a href="/" style="color: white; text-decoration: none;">
+            <img src="./img/logo.png" style="height: 75px; width: 75x;margin-top: -10px;" draggable="false" />
+        </a>
+        <a href="/login" style="color: white; text-decoration: none;"><button style="float:right" class="glowDiv">
+            <span>Login</span>
+        </button></a>
 
-        <button style="float:right">
-            <a href="/login" style="color: white; text-decoration: none;"><span>Login</span></a>
-        </button>
+        <a href="/about" style="color: black; text-decoration: none;"><button style="float:right; margin-right: 100px;" class="navbarElements">
+            <span>About us</span>
+        </button></a>
+        <a href="/login" style="color: black; text-decoration: none;"><button style="float:right;margin-right: 17.5px;" class="navbarElements">
+            <span>Services</span>
+        </button></a>
+        <a href="/login" style="color: black; text-decoration: none;"><button style="float:right;margin-right:17.5px;" class="navbarElements">
+            <span>Products</span>
+        </button></a>
     </div>
     
     <div class="background">
@@ -55,7 +64,7 @@
     </div>
     
     <div class="content" style="margin-top: 100px;"> 
-
+        
     </div>
     
     <div id="spline-container" style="width: 100%; height: 100%; z-index: 0;margin-top: -100px;">

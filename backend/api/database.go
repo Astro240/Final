@@ -27,6 +27,13 @@ func CreateDatabase() {
 		profile_picture TEXT,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+	CREATE TABLE IF NOT EXISTS sessions (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER,
+		session_token TEXT NOT NULL UNIQUE,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (user_id) REFERENCES users(id)
+	);
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
