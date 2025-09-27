@@ -109,8 +109,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Error processing password"}`, http.StatusInternalServerError)
 		return
 	}
-	query := "INSERT INTO users (email, password, first_name, last_name, age, profile_picture) VALUES (?, ?, ?, ?, ?, ?)"
-	result, err := db.Exec(query, email, string(hashedPassword), firstName, lastName, age, picture)
+	query := "INSERT INTO users (email, password, first_name, last_name, age,user_type, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	result, err := db.Exec(query, email, string(hashedPassword), firstName, lastName, age, 2, picture)
 	if err != nil {
 		http.Error(w, `{"error": "Error creating user"}`, http.StatusInternalServerError)
 		return

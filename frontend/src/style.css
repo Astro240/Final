@@ -17,6 +17,18 @@ html {
 		scale: 1;
 	}
 }
+
+@keyframes appearFromGround {
+    from {
+        transform: translateY(100%); /* Start from below */
+        opacity: 0; /* Start invisible */
+    }
+    to {
+        transform: translateY(0); /* Move to original position */
+        opacity: 1; /* End visible */
+    }
+}
+
 .block {
 	animation: appear linear;
 	animation-timeline: view();
@@ -407,6 +419,18 @@ footer {
 	border: 4px solid transparent;
 	margin-top: 5px;
 	padding: 0.75rem 2rem;
+	animation: appearFromSide 0.5s ease-out forwards;
+}
+
+@keyframes appearFromSide {
+    from {
+        transform: translateX(120%); /* Start from the right */
+        opacity: 0; /* Start invisible */
+    }
+    to {
+        transform: translateX(0); /* Move to original position */
+        opacity: 1; /* End visible */
+    }
 }
 
 .navbarElements:hover {
@@ -423,14 +447,14 @@ footer {
 	text-transform: uppercase;
 	font-weight: bold;
 	letter-spacing: 0.1ch;
-	background: var(--bg);
+	background: white;
 	border: 4px solid transparent;
 	box-shadow: 0 1px hsl(0 0% 100% / 0.15) inset;
 	cursor: pointer;
 	background:
 		linear-gradient(var(--bg), var(--bg)) padding-box,
 		var(--glow),
-		linear-gradient(black, black) border-box;
+		linear-gradient(rgb(102, 102, 102), black) border-box;
 	transition: background-size 0.24s;
 	touch-action: none;
 	position: relative;
@@ -449,7 +473,7 @@ footer {
 }
 
 .glowDiv span {
-	background: var(--glow), black;
+	background: var(--glow), white;
 	background-clip: text;
 	color: #fff;
 	height: 100%;
@@ -475,4 +499,62 @@ footer {
 	border: 4px solid transparent;
 	background: var(--glow);
 	border-radius: 1rem;
+}
+
+.glass-card {
+  width: 90%;
+  height: 360px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 8px 4px rgba(255, 255, 255, 0.4);
+  position: relative;
+  animation: expand 1s ease-out forwards;
+  overflow: hidden;
+}
+
+@keyframes expand {
+	from {
+		width: 0;
+	}
+
+	to {
+		width: 90%;
+	}
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+}
+
+.glass-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8),
+    transparent,
+    rgba(255, 255, 255, 0.3)
+  );
 }

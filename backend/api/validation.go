@@ -1,18 +1,18 @@
 package api
 
 import (
+	"encoding/base64"
+	"net/http"
 	"regexp"
 	"strings"
-	"net/http"
-	"encoding/base64"
 
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/gofrs/uuid"
+	_ "github.com/mattn/go-sqlite3"
 	"os"
 )
 
-func ValidateUser(w http.ResponseWriter,r *http.Request) (bool) {
+func ValidateUser(w http.ResponseWriter, r *http.Request) bool {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		return false

@@ -24,8 +24,10 @@ func CreateDatabase() {
 		first_name TEXT,
 		last_name TEXT,
 		age INTEGER,
+		user_type INTEGER,
 		profile_picture TEXT,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (user_type) REFERENCES user_type(id)
 	);
 	CREATE TABLE IF NOT EXISTS sessions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +36,31 @@ func CreateDatabase() {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (user_id) REFERENCES users(id)
 	);
+	CREATE TABLE IF NOT EXISTS user_type (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL UNIQUE
+	);
+	CREATE TABLE IF NOT EXISTS stores (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		description TEXT,
+		owner_id INTEGER,
+		FOREIGN KEY (owner_id) REFERENCES users(id)
+	);
+	CREATE TABLE IF NOT EXISTS items (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		store_id INTEGER,
+		name TEXT NOT NULL,
+		description TEXT,
+		price REAL NOT NULL,
+		image TEXT,
+		quantity INTEGER DEFAULT 0,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (store_id) REFERENCES stores(id)
+	);
+	INSERT OR IGNORE INTO user_type (id, name) VALUES
+	(1, 'admin'),
+	(2, 'user');
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
