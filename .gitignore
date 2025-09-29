@@ -1,1 +1,2 @@
-backend/database/*.db
+backend/database/*
+backend/avatars/*
