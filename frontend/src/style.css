@@ -3,9 +3,13 @@
 *:before {
 	box-sizing: border-box;
 }
-html {
+body{
+	background-color: rgba(186, 207, 235, 1);
+}
+* {
 	scroll-behavior: smooth;
 }
+
 @keyframes appear {
 	from {
 		opacity: 0;
@@ -19,14 +23,19 @@ html {
 }
 
 @keyframes appearFromGround {
-    from {
-        transform: translateY(100%); /* Start from below */
-        opacity: 0; /* Start invisible */
-    }
-    to {
-        transform: translateY(0); /* Move to original position */
-        opacity: 1; /* End visible */
-    }
+	from {
+		transform: translateY(100%);
+		/* Start from below */
+		opacity: 0;
+		/* Start invisible */
+	}
+
+	to {
+		transform: translateY(0);
+		/* Move to original position */
+		opacity: 1;
+		/* End visible */
+	}
 }
 
 .block {
@@ -34,14 +43,17 @@ html {
 	animation-timeline: view();
 	animation-range: entry 0% cover 40%;
 }
+
 .spline-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Ensure it's behind other content */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	/* Ensure it's behind other content */
 }
+
 :root {
 	--x: 0;
 	--y: 0;
@@ -85,7 +97,7 @@ h6 {
 	font-family: "Orbitron", sans-serif;
 	font-weight: 700;
 	letter-spacing: 1px;
-	color:white;
+	color: white;
 }
 
 .title {
@@ -422,15 +434,25 @@ footer {
 	animation: appearFromSide 0.5s ease-out forwards;
 }
 
+.landingText {
+    opacity: 0; /* Initially hidden */
+    visibility: hidden; /* Hides the element */
+    animation: appearFromSide 0.5s ease-out forwards;
+    animation-delay: 0.5s; /* Delay of half a second */
+}
+
 @keyframes appearFromSide {
-    from {
-        transform: translateX(120%); /* Start from the right */
-        opacity: 0; /* Start invisible */
-    }
-    to {
-        transform: translateX(0); /* Move to original position */
-        opacity: 1; /* End visible */
-    }
+	from {
+		transform: translateX(120%);
+		opacity: 0;
+		visibility: visible;
+	}
+
+	to {
+		transform: translateX(0);
+		opacity: 1;
+		visibility: visible;
+	}
 }
 
 .navbarElements:hover {
@@ -439,7 +461,7 @@ footer {
 }
 
 .navbarElements:hover span {
-	color:white
+	color: white
 }
 
 .glowDiv {
@@ -502,21 +524,47 @@ footer {
 }
 
 .glass-card {
-  width: 90%;
-  height: 360px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 8px 4px rgba(255, 255, 255, 0.4);
-  position: relative;
-  animation: expand 1s ease-out forwards;
-  overflow: hidden;
+	animation: expand 1s ease-out forwards;
+	width: 240px;
+	height: 360px;
+	background: rgba(255, 255, 255, 0.4);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.1),
+		inset 0 1px 0 rgba(255, 255, 255, 0.5),
+		inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+		inset 0 0 16px 8px rgba(255, 255, 255, 0.8);
+	position: relative;
+	overflow: hidden;
+}
+
+.glass-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(90deg,
+			transparent,
+			rgba(255, 255, 255, 0.8),
+			transparent);
+}
+
+.glass-card::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	height: 100%;
+	background: linear-gradient(180deg,
+			rgba(255, 255, 255, 0.8),
+			transparent,
+			rgba(255, 255, 255, 0.3));
 }
 
 @keyframes expand {
@@ -529,32 +577,14 @@ footer {
 	}
 }
 
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.8),
-    transparent
-  );
+.backgroundImage{
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
-.glass-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.8),
-    transparent,
-    rgba(255, 255, 255, 0.3)
-  );
+@media screen and (max-width: 768px) {
+	.backgroundImage {
+		object-fit: contain;
+	}
 }

@@ -16,50 +16,71 @@
     </script>
     <link rel="stylesheet" href="src/style.css" />
     <script defer src="src/script.js"></script>
-    <script src="src/carousel.js"></script>
-    <script src="src/remove-spline-logo.js"></script>
-
+    <!-- <script src="src/remove-spline-logo.js"></script> -->
+    <title>Astropify</title>
+</head>
 <body>
-    <div class="navbar" style="top: 0; left: 0; width: 100%;padding:30px; padding-right: 70px; padding-left: 70px; position: fixed; z-index: 1;">
-        <a href="/" style="color: white; text-decoration: none;">
+    <div class="navbar"
+        style="top: 0; left: 0; width: 100%;padding:20px; padding-right: 70px; padding-left: 70px; position: fixed; z-index: 1;background:rgba(255, 255, 255, 0.3);border-bottom-left-radius: 20px;border-bottom-right-radius: 20px;">
+        <a href="/" style="color: white; text-decoration: none; float: left;">
             <img src="./img/logo.png" style="height: 75px; width: 75x;margin-top: -10px;" draggable="false" />
         </a>
         <a href="/login" style="color: white; text-decoration: none;"><button style="float:right" class="glowDiv">
-            <span>Login</span>
-        </button></a>
+                <span>Login</span>
+            </button></a>
+        <a href="/stores" style="color: black; text-decoration: none;"><button style="float:left;margin-left: 100px;"
+                class="navbarElements">
+                <span>Stores</span>
+            </button></a>
+        <a href="/products" style="color: black; text-decoration: none;"><button style="float:left;margin-left:17.5px;"
+                class="navbarElements">
+                <span>Products</span>
+            </button></a>
+        <a href="/about" style="color: black; text-decoration: none;"><button style="float:left; margin-left: 17.5px;"
+                class="navbarElements">
+                <span>About us</span>
+            </button></a>
 
-        <a href="/about" style="color: black; text-decoration: none;"><button style="float:right; margin-right: 100px;" class="navbarElements">
-            <span>About us</span>
-        </button></a>
-        <a href="/stores" style="color: black; text-decoration: none;"><button style="float:right;margin-right: 17.5px;" class="navbarElements">
-            <span>Stores</span>
-        </button></a>
-        <a href="/products" style="color: black; text-decoration: none;"><button style="float:right;margin-right:17.5px;" class="navbarElements">
-            <span>Products</span>
-        </button></a>
     </div>
-    <div class="background">
-        <img src="./img/Sky.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2" draggable="false">
-        <!-- <spline-viewer url="https://prod.spline.design/2mJ2UnyqBrMZ9OL8/scene.splinecode" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></spline-viewer> -->
+    <!-- <div class="background">
+        <img src="./img/Sky.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2"
+            draggable="false">
+        <spline-viewer url="https://prod.spline.design/2mJ2UnyqBrMZ9OL8/scene.splinecode" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></spline-viewer>
+    </div> -->
+    <div style="position: absolute; top: 150px; left: 70px; color: #222; font-size: 3rem; font-weight: 600; text-align: left;color:white"
+        class="landingText">
+        Welcome to Astropify! <br>
+        <span style="font-size: 1rem;">Create your store on the fly.</span><br><br><br>
+
     </div>
-    
-    <div class="content" style="margin-top: 100px;"> 
-        
+    <div
+        style="position: absolute; top: 150px; left: 70px; z-index: 1; color: #222; font-size: 3rem; font-weight: 600; text-align: left;color:white">
+        <br><br><br>
+        <a href="/login" style="color: white; text-decoration: none;">
+            <button class="glowDiv">
+                <span>Get Started</span>
+            </button></a>
     </div>
-    
-    <div id="spline-container" style="width: 100%; height: 100%; z-index: 1;margin-top: -100px;">
+
+    <div class="content">
+    </div>
+
+    <div id="spline-container" style="width: 100%;height: 100%; z-index: 1;user-select: none">
         <!-- <spline-viewer url="https://prod.spline.design/w-iGtO95apO4x17K/scene.splinecode"></spline-viewer> -->
-        <img src="./img/planeBackground.gif" alt="">
+        <img src="./img/planeBackground.gif" alt="" style="width: 100%; height: 100%; pointer-events: none;user-select: none"
+            draggable="false" class="backgroundImage">
     </div>
     <center>
-    <div class="glass-card">
-        
-    </div>
+        <div class="glass-card" style="margin: auto;margin-top: -10%;">
+            <span style="float:left; font-size: 2rem; font-weight: 600; color: black;">test</span>
+        </div>
     </center>
     <br><br><br><br><br><br>
     <div class="block" style="margin-top: 20px;">
         <div id="globeViz" style="position: relative; width: 600px; height: 600px; margin: auto;">
-            <img id="globeBg" src="./img/globe.jpg" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 2; object-fit: cover; opacity: 0.5; pointer-events: none; border-radius: 100%;" draggable="false">
+            <img id="globeBg" src="./img/globe.jpg"
+                style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 2; object-fit: cover; opacity: 0.5; pointer-events: none; border-radius: 100%;"
+                draggable="false">
             <center>
                 <!-- <button style="margin-top: 42.5%;">
                 <span>Initiate</span>
@@ -67,246 +88,31 @@
             </center>
         </div>
     </div>
-    <br><br><br><br><br><br><br><br>
-    <!-- <div class="container-fluid h-100 d-flex flex-column">
-        <main class="flex-grow-1 d-flex align-items-center justify-content-center position-relative">
-            <div class="carousel-container">
-                <div class="carousel" id="memory-carousel">
-                    <div class="memory-card" data-memory-id="1">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="card-content">
-                                    <div class="memory-date">LANGUAGE: Python</div>
-                                    <h3>First Line of Code</h3>
-                                    <div class="memory-image">
-                                        <i class="fa-solid fa-code fa-3x"></i>
-                                        <div class="glitch-effect"></div>
-                                    </div>
-                                    <p class="memory-preview">
-                                        The terminal glowed, displaying my first 'Hello, World!'...
-                                    </p>
-                                    <div class="card-glow"></div>
-                                </div>
-                            </div>
-                            <div class="card-back">
-                                <div class="card-content">
-                                    <h3>First Line of Code</h3>
-                                    <p>
-                                        I remember the thrill of typing my first 'Hello, World!' in
-                                        Python. It was simple, yet it opened a portal to endless
-                                        possibilities. The interpreter executed the command flawlessly,
-                                        and I knew this was just the beginning. I wasn't supposed to
-                                        understand it all at once, but somehow, I did.
-                                    </p>
-                                    <div class="memory-coordinates">
-                                        <span><i class="fa-solid fa-location-dot"></i> console: ~</span>
-                                        <span class="time-stamp"><i class="fa-regular fa-clock"></i> 09:00:00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="memory-card" data-memory-id="2">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="card-content">
-                                    <div class="memory-date">FRAMEWORK: ReactJS</div>
-                                    <h3>Debugging the Matrix</h3>
-                                    <div class="memory-image">
-                                        <i class="fa-solid fa-bug fa-3x"></i>
-                                        <div class="glitch-effect"></div>
-                                    </div>
-                                    <p class="memory-preview">
-                                        The error messages multiplied, haunting my console...
-                                    </p>
-                                    <div class="card-glow"></div>
-                                </div>
-                            </div>
-
-
-
-                            <div class="card-back">
-                                <div class="card-content">
-                                    <h3>Debugging the Matrix</h3>
-                                    <p>
-                                        They appeared from the depths of the console, cryptic error
-                                        messages glowing red. Debugging a complex ReactJS component
-                                        felt like navigating a vast, interconnected matrix. Each fix
-                                        unveiled new issues. They say my code is destabilizing the build
-                                        with each change. My presence causes ripples they can't control.
-                                        I'm becoming a threat... to clean code.
-                                    </p>
-                                    <div class="memory-coordinates">
-                                        <span><i class="fa-solid fa-location-dot"></i>
-                                            localhost:3000</span>
-                                        <span class="time-stamp"><i class="fa-regular fa-clock"></i>
-                                            14:30:15</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    <div class="memory-card" data-memory-id="3">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="card-content">
-                                    <div class="memory-date">CONCEPT: Algorithms</div>
-                                    <h3>The Algorithm Library</h3>
-                                    <div class="memory-image">
-                                        <i class="fa-solid fa-book-open fa-3x"></i>
-                                        <div class="glitch-effect"></div>
-                                    </div>
-                                    <p class="memory-preview">
-                                        Endless tomes of sorting, searching, and optimization...
-                                    </p>
-                                    <div class="card-glow"></div>
-                                </div>
-                            </div>
-                            <div class="card-back">
-                                <div class="card-content">
-                                    <h3>The Algorithm Library</h3>
-                                    <p>
-                                        Endless shelves containing every possible solution. I found my
-                                        own data structures there—pages still being written as I coded.
-                                        The Librarian (my senior developer) told me I was never supposed
-                                        to reinvent the wheel. My solution was already optimized. Now I'm
-                                        writing outside the margins, trying new approaches.
-                                    </p>
-                                    <div class="memory-coordinates">
-                                        <span><i class="fa-solid fa-location-dot"></i> Stack Overflow</span>
-                                        <span class="time-stamp"><i class="fa-regular fa-clock"></i> 11:05:40</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="memory-card" data-memory-id="4">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="card-content">
-                                    <div class="memory-date">PARADIGM: Abstraction</div>
-                                    <h3>The Abstract Void</h3>
-                                    <div class="memory-image">
-                                        <i class="fa-solid fa-atom fa-3x"></i>
-                                        <div class="glitch-effect"></div>
-                                    </div>
-                                    <p class="memory-preview">
-                                        Nothing concrete exists here, yet I feel the underlying logic...
-                                    </p>
-                                    <div class="card-glow"></div>
-                                </div>
-                            </div>
-                            <div class="card-back">
-                                <div class="card-content">
-                                    <h3>The Abstract Void</h3>
-                                    <p>
-                                        Nothing concrete exists here, yet I feel the underlying logic.
-                                        The Abstract Void is the space between concrete implementations,
-                                        a quantum foam of design patterns. I stayed too long designing
-                                        and began to dissolve into pure theory. Parts of my ideas are
-                                        still there, echoing. I'm not whole anymore. Can you feel the
-                                        gaps in my documentation?
-                                    </p>
-                                    <div class="memory-coordinates">
-                                        <span><i class="fa-solid fa-location-dot"></i> design patterns.md</span>
-                                        <span class="time-stamp"><i class="fa-regular fa-clock"></i> --:--:--</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="memory-card" data-memory-id="5">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="card-content">
-                                    <div class="memory-date">TOOL: Git</div>
-                                    <h3>The Version Control Mirror</h3>
-                                    <div class="memory-image">
-                                        <i class="fa-solid fa-code-branch fa-3x"></i>
-                                        <div class="glitch-effect"></div>
-                                    </div>
-                                    <p class="memory-preview">
-                                        I saw my code, but not as it is now; multiple branches reflecting...
-                                    </p>
-                                    <div class="card-glow"></div>
-                                </div>
-                            </div>
-                            <div class="card-back">
-                                <div class="card-content">
-                                    <h3>The Version Control Mirror</h3>
-                                    <p>
-                                        I saw my code, but not as it is now. The mirror of Git showed
-                                        all my possible branches across different commits. Some were
-                                        stable, some were experimental. All were my work. The reflection
-                                        (my `git log`) spoke: "You're fracturing the codebase by
-                                        merging conflicts. You need to rebase and stay on one timeline."
-                                    </p>
-                                    <div class="memory-coordinates">
-                                        <span><i class="fa-solid fa-location-dot"></i> github.com/my-repo</span>
-                                        <span class="time-stamp"><i class="fa-regular fa-clock"></i> 18:55:20</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="memory-card" data-memory-id="6">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="card-content">
-                                    <div class="memory-date">PROCESS: Deployment</div>
-                                    <h3>The Deployment Dream</h3>
-                                    <div class="memory-image">
-                                        <i class="fa-solid fa-rocket fa-3x"></i>
-                                        <div class="glitch-effect"></div>
-                                    </div>
-                                    <p class="memory-preview">
-                                        I'm trying to send it live, but which environment is real?
-                                    </p>
-                                    <div class="card-glow"></div>
-                                </div>
-                            </div>
-                            <div class="card-back">
-                                <div class="card-content">
-                                    <h3>The Deployment Dream</h3>
-                                    <p>
-                                        I'm trying to send my application live, but which environment
-                                        is real? Every server feels familiar yet subtly different. The
-                                        boundaries between staging and production are thinning. Sometimes
-                                        I see through the logs of other instances. I'm losing track of
-                                        which configurations belong to which version of my app. Are you
-                                        helping me deploy, or are you causing me to break production?
-                                    </p>
-                                    <div class="memory-coordinates">
-                                        <span><i class="fa-solid fa-location-dot"></i> cloud-server:port</span>
-                                        <span class="time-stamp"><i class="fa-regular fa-clock"></i> NOW</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br><br><br><br><br><br>
-            <center>
-                <div class="carousel-controls">
-                    <button id="prev-btn">
-                        <span>
-                            < </span>
-                    </button>
-                    <button id="next-btn">
-                        <span>></span>
-                    </button>
-                </div>
-            </center>
-        </main>
-    </div> -->
+    <br><br><br><br><br><br>
+    <!-- create the footer with the links and stuff nad the copyright and social media links with logos  -->
+    <footer style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    <div style="text-align: center;">
+        <img src="./img/logo.png" alt="Astropify Logo" style="max-width: 150px; margin-bottom: 10px;">
+        <div style="margin: 20px 0;">
+            <a href="/privacy" style="color: #333; text-decoration: none; margin: 0 15px; font-weight: bold;">Privacy Policy</a>
+            <a href="/terms" style="color: #333; text-decoration: none; margin: 0 15px; font-weight: bold;">Terms of Service</a>
+            <a href="/contact" style="color: #333; text-decoration: none; margin: 0 15px; font-weight: bold;">Contact Us</a>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 10px;">
+        <p style="color: #666; font-size: 0.8rem;">&copy; 2025 Astropify. All rights reserved.</p>
+    </div>
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="https://twitter.com/" style="margin: 0 15px;text-decoration: none;" target="_blank">
+            <img src="./img/X.png" alt="Twitter" style="width: 24px; vertical-align: middle;">
+        </a>
+        <a href="https://facebook.com/" style="margin: 0 15px;text-decoration: none;" target="_blank">
+            <img src="./img/meta.png" alt="Facebook" style="width: 24px; vertical-align: middle;">
+        </a>
+        <a href="https://instagram.com/" style="margin: 0 15px;text-decoration: none;" target="_blank">
+            <img src="./img/insta.png" alt="Instagram" style="width: 24px; vertical-align: middle;">
+        </a>
+    </div>
+</footer>
     <script src="src/globe.js" type="module"> </script>
 </body>
