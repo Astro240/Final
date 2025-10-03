@@ -460,6 +460,11 @@ footer {
 	cursor: pointer;
 }
 
+#storeButton{
+	border-color: white;
+	cursor: pointer;
+}
+
 .navbarElements:hover span {
 	color: white
 }
@@ -588,3 +593,4 @@ footer {
 		object-fit: contain;
 	}
 }
+
