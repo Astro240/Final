@@ -14,15 +14,31 @@
         }
     </script>
     <link rel="stylesheet" href="src/style.css" />
+    <script defer src="src/script.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34; /* Example background color */
+        }
+        .container {
+            text-align: center;
+            z-index: 1;
+            color: white;
+        }
+    </style>
     <title>Astropify</title>
 </head>
 
 <body>
-    <div style="position: relative; z-index: 1; margin-top: 120px;">
-        <h2 style="font-size: 1.5rem; font-weight: 600; color: black; text-align: center;">{{.ErrorNbr}}</h2>
-        <h2 style="font-size: 1rem; font-weight: 600; color: black; text-align: center;">{{.ErrorMsg}}</h2>
+    <div style="position: relative; z-index: 1;margin-top: -5%;">
+        <h2 style="font-size: 4rem; font-weight: 600; color: white; text-align: center;">{{.ErrorNbr}}</h2>
+        <h2 style="font-size: 3rem; font-weight: 600; color: white; text-align: center;">{{.ErrorMsg}}</h2>
         <center>
-            <button onclick="refreshAndGoBack()" class="glowDiv">Go Back</button>
+            <a href="/login" style="color: white; text-decoration: none;"><button onclick="refreshAndGoBack()" class="glowDiv"><span>Go Back</span></button></a>
         </center>
         <script>
             function refreshAndGoBack() {

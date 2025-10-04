@@ -16,18 +16,18 @@ type Store struct {
 func StorePage(w http.ResponseWriter, r *http.Request) {
 	store, err := GetStores()
 	if err != nil {
-		HandleError(w, r, http.StatusInternalServerError, err)
+		HandleError(w, r, http.StatusInternalServerError, "Unable to retrieve stores")
 		return
 	}
 
 	tmpl, err := template.ParseFiles("../frontend/store.html")
 	if err != nil {
-		HandleError(w, r, http.StatusInternalServerError, err)
+		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return
 	}
 
 	if err := tmpl.Execute(w, store); err != nil {
-		HandleError(w, r, http.StatusInternalServerError, err)
+		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 		return
 	}
 }
