@@ -1,8 +1,8 @@
 package main
 
 import (
-	"finalProj/api"
 	"net/http"
+	"finalProj/api"
 )
 
 func main() {

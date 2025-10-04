@@ -7,6 +7,11 @@ import (
 	"net/http"
 )
 
+type StoreDisplay struct {
+	MyStores []Store
+	AllStores []Store
+}
+
 type Store struct {
 	ID          uint
 	Name        string
@@ -25,8 +30,10 @@ func StorePage(w http.ResponseWriter, r *http.Request) {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return
 	}
-
-	if err := tmpl.Execute(w, store); err != nil {
+	Stores := StoreDisplay{
+		AllStores: store,
+	}
+	if err := tmpl.Execute(w, Stores); err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 		return
 	}
