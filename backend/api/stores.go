@@ -3,11 +3,33 @@ package api
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"html/template"
+	"net/http"
 )
 
 type Store struct {
-	ID   uint
-	Name string
+	ID          uint
+	Name        string
+	Description string
+}
+
+func StorePage(w http.ResponseWriter, r *http.Request) {
+	store, err := GetStores()
+	if err != nil {
+		HandleError(w, r, http.StatusInternalServerError, err)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("../frontend/store.html")
+	if err != nil {
+		HandleError(w, r, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := tmpl.Execute(w, store); err != nil {
+		HandleError(w, r, http.StatusInternalServerError, err)
+		return
+	}
 }
 
 func GetStores() ([]Store, error) {
@@ -17,7 +39,7 @@ func GetStores() ([]Store, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, name FROM stores")
+	rows, err := db.Query("SELECT id, name,description FROM stores")
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +48,7 @@ func GetStores() ([]Store, error) {
 	var stores []Store
 	for rows.Next() {
 		var store Store
-		if err := rows.Scan(&store.ID, &store.Name); err != nil {
+		if err := rows.Scan(&store.ID, &store.Name, &store.Description); err != nil {
 			return nil, err
 		}
 		stores = append(stores, store)

@@ -16,6 +16,7 @@ func main() {
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/register.html")
 	})
+	http.HandleFunc("/store", api.StorePage)
 	//handle the src, img, and data directories
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("../frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
