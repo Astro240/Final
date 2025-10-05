@@ -7,17 +7,6 @@ import (
 	"net/http"
 )
 
-type StoreDisplay struct {
-	MyStores []Store
-	AllStores []Store
-}
-
-type Store struct {
-	ID          uint
-	Name        string
-	Description string
-}
-
 func StorePage(w http.ResponseWriter, r *http.Request) {
 	store, err := GetStores()
 	if err != nil {

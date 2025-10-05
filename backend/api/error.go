@@ -5,11 +5,6 @@ import (
 	"net/http"
 )
 
-type ErrorResponse struct {
-	ErrorNbr int    `json:"error_number"`
-	ErrorMsg string `json:"error_message"`
-}
-
 func HandleError(w http.ResponseWriter, r *http.Request, errNbr int, err string) {
 	tmpl, tmplErr := template.ParseFiles("../frontend/templates/Error.html")
 	if tmplErr != nil {
