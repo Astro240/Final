@@ -600,3 +600,52 @@ footer {
 		object-fit: contain;
 	}
 }
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin: 60px auto 40px auto;
+    max-width: 1200px;
+    position: relative;
+    z-index: 1;
+}
+
+.store-card {
+    padding: 32px 24px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.4);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.store-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+	border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.store-card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+.store-card p {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .store-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .store-grid {
+        grid-template-columns: 1fr;
+    }
+}
