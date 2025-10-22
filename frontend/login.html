@@ -1,33 +1,231 @@
-<div id="errorMessage" style="color:red;"></div>
-<form id="loginForm">
-    <input type="email" name="email" required>
-    <input type="password" name="password" required>
-    <button type="submit">Login</button>
-</form>
-
-<script>
-document.getElementById("loginForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    var formData = new FormData(this);
-
-    fetch('/api/login', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            // Display error message
-            document.getElementById("errorMessage").innerText = data.error;
-        }else {
-            // Redirect to home on successful login
-            window.location.href = '/';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-});
-</script>
+
+        body {
+            background: linear-gradient(135deg, #bccfeb 0%, #7a9ac4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 248, 255, 0.9));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            box-shadow: 0 30px 80px rgba(0, 102, 204, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h1 {
+            color: #001a4d;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #5a7a8a;
+            font-size: 0.95rem;
+        }
+
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: #001a4d;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            padding: 14px 16px;
+            border: 2px solid rgba(0, 102, 204, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #001a4d;
+            background: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #0066cc;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #a0b0c0;
+        }
+
+        #errorMessage {
+            color: #d9534f;
+            background: rgba(217, 83, 79, 0.1);
+            border: 1px solid rgba(217, 83, 79, 0.3);
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            text-align: center;
+        }
+
+        #errorMessage:not(:empty) {
+            display: block;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #5a7a8a;
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: #0052a3;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 35px 25px;
+            }
+
+            .login-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account</p>
+            </div>
+
+            <div id="errorMessage"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                Don't have an account? <a href="/register">Create one now</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("errorMessage").innerText = '';
+
+            var formData = new FormData(this);
+
+            fetch('/api/login', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("errorMessage").innerText = data.error;
+                } else {
+                    window.location.href = '/';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("errorMessage").innerText = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
