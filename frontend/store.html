@@ -60,12 +60,12 @@
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px;">
                     <!-- Add Store Card -->
-                    <div style="background: linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1)); border: 2px dashed rgba(0, 102, 204, 0.4); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; min-height: 280px;"
+                    <a href="/templates" style="text-decoration: none;"><div style="background: linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1)); border: 2px dashed rgba(0, 102, 204, 0.4); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; min-height: 280px;"
                         onmouseover="this.style.background='linear-gradient(135deg, rgba(100, 180, 255, 0.3), rgba(80, 160, 240, 0.2))'; this.style.borderColor='rgba(0, 102, 204, 0.6)'; this.style.transform='translateY(-4px)';"
                         onmouseout="this.style.background='linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1))'; this.style.borderColor='rgba(0, 102, 204, 0.4)'; this.style.transform='translateY(0)';">
                         <div style="font-size: 3.5rem; color: #0066cc; margin-bottom: 15px; font-weight: 300;">+</div>
                         <p style="color: #001a4d; font-size: 1rem; margin: 0; text-align: center; font-weight: 600;">Create New Store</p>
-                    </div>
+                    </div></a>
                     
                     <!-- My Stores List -->
                     {{ range .MyStores }}
