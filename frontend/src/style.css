@@ -534,8 +534,7 @@ footer {
 }
 
 .glass-card {
-	animation: expand 1s ease-out forwards;
-	width: 240px;
+	width: 70%;
 	height: 360px;
 	background: rgba(255, 255, 255, 0.4);
 	backdrop-filter: blur(20px);
@@ -575,18 +574,6 @@ footer {
 			rgba(255, 255, 255, 0.8),
 			transparent,
 			rgba(255, 255, 255, 0.3));
-}
-
-@keyframes expand {
-	from {
-		width: 0;
-		height: 0%;
-	}
-
-	to {
-		width: 50%;
-		height: 70%;
-	}
 }
 
 .backgroundImage {
