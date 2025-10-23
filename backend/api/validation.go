@@ -12,22 +12,26 @@ import (
 	"os"
 )
 
-func ValidateUser(w http.ResponseWriter, r *http.Request) bool {
+func ValidateUser(w http.ResponseWriter, r *http.Request) (int,bool) {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		return false
+		return 0, false
 	}
 	db, err := sql.Open("sqlite3", DATABASEPATH)
 	if err != nil {
-		return false
+		return 0, false
 	}
 	defer db.Close()
+	var userID int
 	query := "SELECT user_id FROM sessions WHERE session_token = ?"
 	row := db.QueryRow(query, cookie.Value)
 	if row.Err() == sql.ErrNoRows {
-		return false
+		return 0, false
 	}
-	return true
+	if err := row.Scan(&userID); err != nil {
+		return 0, false
+	}
+	return userID, true
 }
 
 func validateEmail(email string) (string, bool) {

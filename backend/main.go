@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"finalProj/api"
+	"net/http"
 )
 
 func main() {
@@ -20,7 +20,9 @@ func main() {
 	http.HandleFunc("/templates", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/template.html")
 	})
+	http.HandleFunc("/create_store", api.CreateStoreHandler)
 	//handle the src, img, and data directories
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./backend/avatars"))))
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("../frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("../frontend/data"))))

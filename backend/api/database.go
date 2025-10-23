@@ -44,7 +44,10 @@ func CreateDatabase() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
 		description TEXT,
+		color_scheme TEXT,
+		logo TEXT,
 		owner_id INTEGER,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (owner_id) REFERENCES users(id)
 	);
 	CREATE TABLE IF NOT EXISTS items (
