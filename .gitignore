@@ -3,3 +3,5 @@ backend/avatars/*
 
 !backend/database/README.md
 !backend/avatars/README.md
+
+.env
