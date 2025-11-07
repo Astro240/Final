@@ -2,7 +2,11 @@ package api
 
 import (
 	"database/sql"
+	"math/rand"
 	"net/http"
+	"net/smtp"
+	"os"
+	"strconv"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -44,7 +48,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
 		return
 	}
-
+	token := GenerateEmailCode()
+	err = SendEmail(email, "New Login Alert", "A login to your account was just made. If this wasn't you, please reset your password immediately. Your verification code is: "+token)
+	if  err != nil {
+		http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
+		return
+	}
+	
+	// Set session cookie
 	SetCookie(w, userID, "session_token")
 
 	// Return success message
@@ -125,4 +136,20 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	SetCookie(w, int(userID), "session_token")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Registration successful"}`))
+}
+
+func GenerateEmailCode() string {
+	code := ""
+	for i := 0; i < 6; i++ {
+		code += strconv.Itoa(rand.Intn(10))
+	}
+	return code
+}
+
+func SendEmail(to string, subject string, body string) error {
+	gmailKey := os.Getenv("GMAIL_KEY")
+	auth := smtp.PlainAuth("", "astropify@gmail.com", gmailKey, "smtp.gmail.com")
+	
+	err := smtp.SendMail("smtp.gmail.com:587", auth, "astropify@gmail.com", []string{to}, []byte("Subject: "+subject+"\n\n"+body))
+	return err
 }
