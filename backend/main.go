@@ -22,14 +22,18 @@ func main() {
 		http.ServeFile(w, r, "../frontend/template.html")
 	})
 	http.HandleFunc("/create_store", api.CreateStoreHandler)
+
 	//handle the src, img, and data directories
 	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./backend/avatars"))))
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("../frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("../frontend/data"))))
 
+	//APIs for the project
 	http.HandleFunc("/api/login", api.LoginHandler)
 	http.HandleFunc("/api/register", api.RegisterHandler)
+	http.HandleFunc("/api/2fa", api.TwoFactorAuth)
+
 	if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
 		panic(err)
 	}

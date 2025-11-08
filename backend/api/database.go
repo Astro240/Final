@@ -2,8 +2,9 @@ package api
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const DATABASEPATH = "./database/database.db"
@@ -28,6 +29,14 @@ func CreateDatabase() {
 		profile_picture TEXT,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (user_type) REFERENCES user_type(id)
+	);
+	CREATE TABLE IF NOT EXISTS verification_codes (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER,
+		code TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		expires_at DATETIME,
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	);
 	CREATE TABLE IF NOT EXISTS sessions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,

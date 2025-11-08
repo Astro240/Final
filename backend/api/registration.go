@@ -2,11 +2,8 @@ package api
 
 import (
 	"database/sql"
-	"math/rand"
+	"fmt"
 	"net/http"
-	"net/smtp"
-	"os"
-	"strconv"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -29,7 +26,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	email := strings.ToLower(r.FormValue("email"))
 	password := r.FormValue("password")
-
+	honeypot := r.FormValue("honeypot")
+	if honeypot != "" {
+		http.Error(w, `{"error": "Bot detected"}`, http.StatusBadRequest)
+		return
+	}
 	query := "SELECT id,password FROM users WHERE email = ?"
 	row := db.QueryRow(query, email)
 
@@ -49,18 +50,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	token := GenerateEmailCode()
-	err = SendEmail(email, "New Login Alert", "A login to your account was just made. If this wasn't you, please reset your password immediately. Your verification code is: "+token)
-	if  err != nil {
+
+	query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+15 minutes'))"
+	_, err = db.Exec(query, userID, token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to store verification code"}`, http.StatusInternalServerError)
+		return
+	}
+	err = SendEmail(email, "Verification Code To Astropify: "+token, "A login to your account was just made. If this wasn't you, please reset your password immediately.")
+	if err != nil {
 		http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
 		return
 	}
-	
 	// Set session cookie
 	SetCookie(w, userID, "session_token")
 
 	// Return success message
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message": "Login successful"}`))
+	w.Write([]byte(`{"message": "Login successful","user_id": "` + fmt.Sprint(userID) + `"}`))
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -83,6 +90,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	firstName := r.FormValue("first_name")
 	lastName := r.FormValue("last_name")
 	age := r.FormValue("age")
+	honeypot := r.FormValue("honeypot")
+	if honeypot != "" {
+		http.Error(w, `{"error": "Bot detected"}`, http.StatusBadRequest)
+		return
+	}
 	//picture can be empty
 	profilePicture := r.FormValue("profile_picture")
 	//check if email already exists
@@ -120,36 +132,35 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Error processing password"}`, http.StatusInternalServerError)
 		return
 	}
+	
 	query := "INSERT INTO users (email, password, first_name, last_name, age,user_type, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?)"
 	result, err := db.Exec(query, email, string(hashedPassword), firstName, lastName, age, 2, picture)
 	if err != nil {
 		http.Error(w, `{"error": "Error creating user"}`, http.StatusInternalServerError)
 		return
 	}
-
+	
 	// Get the last inserted ID
 	userID, err := result.LastInsertId()
 	if err != nil {
 		http.Error(w, `{"error": "Error retrieving user ID"}`, http.StatusInternalServerError)
 		return
 	}
+	token := GenerateEmailCode()
+
+	query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+15 minutes'))"
+	_, err = db.Exec(query, userID, token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to store verification code"}`, http.StatusInternalServerError)
+		return
+	}
+	err = SendEmail(email, "Verification Code To Astropify: "+token, "Welcome to Astropify, Where you can create your store on the fly! Your verification code is: "+token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
+		return
+	}
+
 	SetCookie(w, int(userID), "session_token")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message": "Registration successful"}`))
-}
-
-func GenerateEmailCode() string {
-	code := ""
-	for i := 0; i < 6; i++ {
-		code += strconv.Itoa(rand.Intn(10))
-	}
-	return code
-}
-
-func SendEmail(to string, subject string, body string) error {
-	gmailKey := os.Getenv("GMAIL_KEY")
-	auth := smtp.PlainAuth("", "astropify@gmail.com", gmailKey, "smtp.gmail.com")
-	
-	err := smtp.SendMail("smtp.gmail.com:587", auth, "astropify@gmail.com", []string{to}, []byte("Subject: "+subject+"\n\n"+body))
-	return err
+	w.Write([]byte(`{"message": "Registration successful", "user_id": "` + fmt.Sprint(userID) + `"}`))
 }
