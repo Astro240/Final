@@ -13,8 +13,8 @@
 
         body {
             font-family: 'Playfair Display', 'Georgia', serif;
-            background: #0a0a0a;
-            color: #f8f8f8;
+            background: #f5f5f0;
+            color: #2c3e50;
             line-height: 1.7;
             overflow-x: hidden;
         }
@@ -25,7 +25,7 @@
             padding: 0 40px;
         }
 
-        /* Luxury Background Elements */
+        /* Elegant Background Elements */
         body::before {
             content: '';
             position: fixed;
@@ -34,21 +34,22 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 20%, rgba(156, 163, 175, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(219, 234, 254, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(191, 219, 254, 0.06) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
         }
 
         /* Header */
         header {
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid rgba(156, 163, 175, 0.2);
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         nav {
@@ -61,7 +62,7 @@
         .logo {
             font-size: 2.5rem;
             font-weight: 400;
-            color: #d4af37;
+            color: rgba(54, 164, 184, 0.95);
             letter-spacing: 0.1em;
             position: relative;
         }
@@ -73,7 +74,7 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
+            background: linear-gradient(90deg, #1e3a5f, rgba(54, 164, 184, 0.95), #1e3a5f);
         }
 
         .nav-links {
@@ -84,7 +85,7 @@
 
         .nav-links a {
             text-decoration: none;
-            color: #f8f8f8;
+            color: #4b5563;
             font-weight: 300;
             font-size: 1.1rem;
             letter-spacing: 0.05em;
@@ -100,7 +101,7 @@
             left: 0;
             width: 0;
             height: 1px;
-            background: #d4af37;
+            background: #1e3a5f;
             transition: width 0.3s ease;
         }
 
@@ -109,12 +110,12 @@
         }
 
         .nav-links a:hover {
-            color: #d4af37;
+            color: #1e3a5f;
         }
 
         .cart-icon {
-            background: linear-gradient(135deg, #d4af37, #ffd700);
-            color: #0a0a0a;
+            background: linear-gradient(135deg, rgba(54, 164, 184, 0.95), #2563eb);
+            color: #ffffff;
             padding: 1rem 2rem;
             border: none;
             font-weight: 600;
@@ -124,6 +125,7 @@
             text-decoration: none;
             position: relative;
             overflow: hidden;
+            border-radius: 4px;
         }
 
         .cart-icon::before {
@@ -133,7 +135,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.5s ease;
         }
 
@@ -143,14 +145,14 @@
 
         .cart-icon:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px rgba(30, 58, 95, 0.3);
         }
 
         /* Hero Section */
         .hero {
             background: 
-                linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)),
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect fill="%23111" width="1000" height="600"/><g fill-opacity="0.1"><polygon fill="%23d4af37" points="957.5,500.4 963.1,478.9 959.5,456.5 963.1,434.1 957.5,411.7 968.9,389.3 959.5,366.9 968.9,344.5 963.1,322.1 959.5,299.7 963.1,277.3 957.5,254.9 968.9,232.5 959.5,210.1 968.9,187.7 963.1,165.3 959.5,142.9 963.1,120.5 957.5,98.1"/></g></svg>');
+                linear-gradient(135deg, rgba(54, 164, 184, 0.95), rgba(37, 99, 235, 0.9)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect fill="%23f0f4f8" width="1000" height="600"/><g fill-opacity="0.05"><circle fill="%231e3a5f" cx="200" cy="150" r="100"/><circle fill="%232563eb" cx="800" cy="400" r="150"/></g></svg>');
             background-size: cover;
             background-position: center;
             padding: 8rem 0;
@@ -165,7 +167,7 @@
             left: 0;
             width: 100%;
             height: 100px;
-            background: linear-gradient(transparent, #0a0a0a);
+            background: linear-gradient(transparent, #f5f5f0);
         }
 
         .hero-content {
@@ -177,16 +179,16 @@
             font-size: 5rem;
             font-weight: 300;
             margin-bottom: 2rem;
-            color: #d4af37;
+            color: #ffffff;
             letter-spacing: 0.1em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
             line-height: 1.2;
         }
 
         .hero p {
             font-size: 1.5rem;
             margin-bottom: 3rem;
-            color: #f8f8f8;
+            color: #e5e7eb;
             font-weight: 300;
             letter-spacing: 0.05em;
             max-width: 600px;
@@ -196,9 +198,9 @@
 
         .cta-button {
             background: transparent;
-            color: #d4af37;
+            color: #ffffff;
             padding: 1.5rem 3rem;
-            border: 2px solid #d4af37;
+            border: 2px solid #ffffff;
             font-size: 1.2rem;
             font-weight: 400;
             letter-spacing: 0.1em;
@@ -208,6 +210,7 @@
             display: inline-block;
             position: relative;
             overflow: hidden;
+            border-radius: 4px;
         }
 
         .cta-button::before {
@@ -217,7 +220,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: #d4af37;
+            background: #ffffff;
             transition: left 0.3s ease;
             z-index: -1;
         }
@@ -227,9 +230,9 @@
         }
 
         .cta-button:hover {
-            color: #0a0a0a;
+            color: #1e3a5f;
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
         }
 
         /* Products Section */
@@ -247,13 +250,13 @@
             font-size: 3.5rem;
             font-weight: 300;
             margin-bottom: 2rem;
-            color: #d4af37;
+            color: #1e3a5f;
             letter-spacing: 0.1em;
         }
 
         .section-title p {
             font-size: 1.3rem;
-            color: #cccccc;
+            color: #6b7280;
             font-weight: 300;
             letter-spacing: 0.05em;
         }
@@ -266,12 +269,13 @@
         }
 
         .product-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 0;
+            background: #ffffff;
+            border: 1px solid rgba(156, 163, 175, 0.2);
+            border-radius: 8px;
             overflow: hidden;
             transition: all 0.5s ease;
             position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         .product-card::before {
@@ -281,7 +285,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(37, 99, 235, 0.05), transparent);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -292,19 +296,19 @@
 
         .product-card:hover {
             transform: translateY(-10px);
-            border-color: rgba(212, 175, 55, 0.6);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(212, 175, 55, 0.2);
+            border-color: rgba(30, 58, 95, 0.3);
+            box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
         }
 
         .product-image {
             width: 100%;
             height: 300px;
-            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            background: linear-gradient(135deg, #e0e7ff, #dbeafe);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 4rem;
-            color: #d4af37;
+            color: #1e3a5f;
             position: relative;
             overflow: hidden;
         }
@@ -316,7 +320,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
             transition: left 0.5s ease;
         }
 
@@ -332,12 +336,12 @@
             font-size: 1.6rem;
             font-weight: 400;
             margin-bottom: 1rem;
-            color: #d4af37;
+            color: #1e3a5f;
             letter-spacing: 0.05em;
         }
 
         .product-description {
-            color: #cccccc;
+            color: #6b7280;
             margin-bottom: 2rem;
             font-weight: 300;
             line-height: 1.6;
@@ -347,7 +351,7 @@
         .product-price {
             font-size: 2rem;
             font-weight: 300;
-            color: #d4af37;
+            color: rgba(54, 164, 184, 0.95);
             margin-bottom: 2rem;
             letter-spacing: 0.05em;
         }
@@ -355,9 +359,9 @@
         .add-to-cart {
             width: 100%;
             background: transparent;
-            color: #d4af37;
+            color: #1e3a5f;
             padding: 1.2rem;
-            border: 1px solid #d4af37;
+            border: 1px solid #1e3a5f;
             font-weight: 400;
             font-size: 1.1rem;
             letter-spacing: 0.05em;
@@ -365,6 +369,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border-radius: 4px;
         }
 
         .add-to-cart::before {
@@ -374,7 +379,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: #d4af37;
+            background: #1e3a5f;
             transition: left 0.3s ease;
             z-index: -1;
         }
@@ -384,13 +389,13 @@
         }
 
         .add-to-cart:hover {
-            color: #0a0a0a;
+            color: #ffffff;
         }
 
         /* Footer */
         footer {
-            background: rgba(5, 5, 5, 0.95);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            background: #2c568d;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 5rem 0 2rem;
             margin-top: 5rem;
         }
@@ -406,12 +411,12 @@
             margin-bottom: 2rem;
             font-size: 1.5rem;
             font-weight: 400;
-            color: #d4af37;
+            color: #ffffff;
             letter-spacing: 0.05em;
         }
 
         .footer-section p, .footer-section a {
-            color: #cccccc;
+            color: #d1d5db;
             text-decoration: none;
             margin-bottom: 1rem;
             display: block;
@@ -420,14 +425,14 @@
         }
 
         .footer-section a:hover {
-            color: #d4af37;
+            color: #60a5fa;
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding-top: 2rem;
             text-align: center;
-            color: #999;
+            color: #9ca3af;
             font-weight: 300;
             letter-spacing: 0.05em;
         }
