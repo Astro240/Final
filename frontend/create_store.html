@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #bccfeb 0%, #7a9ac4 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.95);
+            font-size: 1.1rem;
+        }
+
+        /* Progress Steps */
+        .progress-container {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240, 248, 255, 0.9));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e7ff;
+            z-index: 1;
+        }
+
+        .progress-line-filled {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #0066cc, #0052a3);
+            transition: width 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step.completed .step-circle {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240, 248, 255, 0.9));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            color: #001a4d;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: #334455;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #001a4d;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e7ff;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 40px 20px;
+            border: 2px dashed #0066cc;
+            border-radius: 8px;
+            background: rgba(0, 102, 204, 0.05);
+            color: #0066cc;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload:hover .file-upload-label {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: #0052a3;
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .file-preview img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .social-links {
+            display: grid;
+            gap: 15px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 8px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .facebook { background: #1877f2; }
+        .twitter { background: #1da1f2; }
+        .instagram { background: #e4405f; }
+        .linkedin { background: #0077b5; }
+        .youtube { background: #ff0000; }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 102, 204, 0.2);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #6b7280;
+            border: 2px solid #e0e7ff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 102, 204, 0.05);
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .template-preview {
+            background: rgba(0, 102, 204, 0.05);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .template-preview h4 {
+            color: #001a4d;
+            margin-bottom: 10px;
+        }
+
+        .template-preview p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .step-label {
+                display: none;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Create Your Store</h1>
+            <p>Follow these simple steps to set up your online store</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-filled" id="progressFill"></div>
+                </div>
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Basic Info</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Branding</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Contact</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Categories</div>
+                </div>
+                <div class="step" data-step="6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">Social</div>
+                </div>
+                <div class="step" data-step="7">
+                    <div class="step-circle">7</div>
+                    <div class="step-label">Review</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form id="storeCreationForm">
+                
+                <!-- Step 1: Basic Information -->
+                <div class="step-content active" id="step1">
+                    <h2 class="step-title">Basic Store Information</h2>
+                    <p class="step-description">Let's start with the basic details about your store. This information will help customers understand what your store is about.</p>
+                    
+                    <div class="form-group">
+                        <label for="storeTitle">Store Title *</label>
+                        <input type="text" id="storeTitle" name="storeTitle" placeholder="Enter your store name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storeDescription">Store Description *</label>
+                        <textarea id="storeDescription" name="storeDescription" placeholder="Describe what your store offers, what makes it unique..." required></textarea>
+                    </div>
+
+                    <div class="template-preview">
+                        <h4>Selected Template: Modern Minimalist</h4>
+                        <p>Clean and professional design perfect for showcasing your products</p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Branding -->
+                <div class="step-content" id="step2">
+                    <h2 class="step-title">Store Branding</h2>
+                    <p class="step-description">Upload your logo and banner to create a professional brand image for your store.</p>
+                    
+                    <div class="form-group">
+                        <label for="storeLogo">Store Logo</label>
+                        <div class="file-upload">
+                            <input type="file" id="storeLogo" name="storeLogo" accept="image/*" onchange="previewFile(this, 'logoPreview')">
+                            <div class="file-upload-label">
+                                <span>📁</span>
+                                <span>Click to upload logo (PNG, JPG recommended)</span>
+                            </div>
+                        </div>
+                        <div class="file-preview" id="logoPreview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storeBanner">Store Banner</label>
+                        <div class="file-upload">
+                            <input type="file" id="storeBanner" name="storeBanner" accept="image/*" onchange="previewFile(this, 'bannerPreview')">
+                            <div class="file-upload-label">
+                                <span>🖼️</span>
+                                <span>Click to upload banner (1200x400px recommended)</span>
+                            </div>
+                        </div>
+                        <div class="file-preview" id="bannerPreview"></div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Contact Information -->
+                <div class="step-content" id="step3">
+                    <h2 class="step-title">Contact Information</h2>
+                    <p class="step-description">Provide contact details so customers can reach you for inquiries and support.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactEmail">Contact Email *</label>
+                            <input type="email" id="contactEmail" name="contactEmail" placeholder="contact@yourstore.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactPhone">Phone Number</label>
+                            <input type="tel" id="contactPhone" name="contactPhone" placeholder="+1 (555) 123-4567">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessAddress">Business Address</label>
+                        <textarea id="businessAddress" name="businessAddress" placeholder="Enter your business address for shipping and contact purposes"></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 4: Payment & Shipping -->
+                <div class="step-content" id="step4">
+                    <h2 class="step-title">Payment & Shipping</h2>
+                    <p class="step-description">Configure your payment methods and shipping policies.</p>
+                    
+                    <div class="form-group">
+                        <label>Payment Methods *</label>
+                        <div class="categories-grid">
+                            <div class="category-item">
+                                <input type="checkbox" id="paypal" name="paymentMethods" value="paypal">
+                                <label for="paypal">💳 PayPal</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="creditCard" name="paymentMethods" value="credit_card">
+                                <label for="creditCard">💳 Credit Cards</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="bankTransfer" name="paymentMethods" value="bank_transfer">
+                                <label for="bankTransfer">🏦 Bank Transfer</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="crypto" name="paymentMethods" value="crypto">
+                                <label for="crypto">₿ Cryptocurrency</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shippingInfo">Shipping Information</label>
+                        <textarea id="shippingInfo" name="shippingInfo" placeholder="Describe your shipping policies, rates, delivery times, etc."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="shippingCost">Standard Shipping Cost</label>
+                            <input type="number" id="shippingCost" name="shippingCost" placeholder="9.99" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="freeShippingThreshold">Free Shipping Above</label>
+                            <input type="number" id="freeShippingThreshold" name="freeShippingThreshold" placeholder="50.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Product Categories -->
+                <div class="step-content" id="step5">
+                    <h2 class="step-title">Product Categories</h2>
+                    <p class="step-description">Select the types of products you'll be selling in your store.</p>
+                    
+                    <div class="form-group">
+                        <label>Product Categories *</label>
+                        <div class="categories-grid">
+                            <div class="category-item">
+                                <input type="checkbox" id="electronics" name="categories" value="electronics">
+                                <label for="electronics">📱 Electronics</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="fashion" name="categories" value="fashion">
+                                <label for="fashion">👕 Fashion & Clothing</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="home" name="categories" value="home">
+                                <label for="home">🏠 Home & Garden</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="beauty" name="categories" value="beauty">
+                                <label for="beauty">💄 Beauty & Health</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="sports" name="categories" value="sports">
+                                <label for="sports">⚽ Sports & Fitness</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="books" name="categories" value="books">
+                                <label for="books">📚 Books & Media</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="toys" name="categories" value="toys">
+                                <label for="toys">🧸 Toys & Games</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="automotive" name="categories" value="automotive">
+                                <label for="automotive">🚗 Automotive</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="jewelry" name="categories" value="jewelry">
+                                <label for="jewelry">💎 Jewelry</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="handmade" name="categories" value="handmade">
+                                <label for="handmade">🎨 Handmade & Crafts</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="food" name="categories" value="food">
+                                <label for="food">🍕 Food & Beverages</label>
+                            </div>
+                            <div class="category-item">
+                                <input type="checkbox" id="other" name="categories" value="other">
+                                <label for="other">📦 Other</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Social Media -->
+                <div class="step-content" id="step6">
+                    <h2 class="step-title">Social Media Links</h2>
+                    <p class="step-description">Connect your social media profiles to increase engagement and build your brand presence.</p>
+                    
+                    <div class="social-links">
+                        <div class="social-link">
+                            <div class="social-icon facebook">f</div>
+                            <div class="form-group" style="margin: 0; flex: 1;">
+                                <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/yourstore">
+                            </div>
+                        </div>
+
+                        <div class="social-link">
+                            <div class="social-icon twitter">𝕏</div>
+                            <div class="form-group" style="margin: 0; flex: 1;">
+                                <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/yourstore">
+                            </div>
+                        </div>
+
+                        <div class="social-link">
+                            <div class="social-icon instagram">📷</div>
+                            <div class="form-group" style="margin: 0; flex: 1;">
+                                <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/yourstore">
+                            </div>
+                        </div>
+
+                        <div class="social-link">
+                            <div class="social-icon linkedin">in</div>
+                            <div class="form-group" style="margin: 0; flex: 1;">
+                                <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/company/yourstore">
+                            </div>
+                        </div>
+
+                        <div class="social-link">
+                            <div class="social-icon youtube">▶️</div>
+                            <div class="form-group" style="margin: 0; flex: 1;">
+                                <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/c/yourstore">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Review & Submit -->
+                <div class="step-content" id="step7">
+                    <h2 class="step-title">Review Your Store</h2>
+                    <p class="step-description">Please review all the information below before creating your store.</p>
+                    
+                    <div id="reviewContent">
+                        <!-- Review content will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                        ← Previous
+                    </button>
+                    <div></div>
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                        Next →
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="src/creation_steps.js"></script>
+</body>
+</html>
