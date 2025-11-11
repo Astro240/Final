@@ -139,3 +139,16 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func SampleStoreView(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/templates/sample/"):]
+	tmpl, err := template.ParseFiles("../frontend/templates/" + path + ".html")
+	if err != nil {
+		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+		return
+	}
+	if err := tmpl.Execute(w, nil); err != nil {
+		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+		return
+	}
+}

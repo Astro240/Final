@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/templates", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/template.html")
 	})
+	http.HandleFunc("/templates/preview/", api.SampleStoreView)
 	http.HandleFunc("/create_store", api.CreateStoreHandler)
 
 	//handle the src, img, and data directories
