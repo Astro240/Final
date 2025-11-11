@@ -68,7 +68,7 @@ func GetMyStores(userID int) ([]Store, error) {
 		return nil, err
 	}
 	defer db.Close()
-	
+
 	rows, err := db.Query("SELECT id, name,description FROM stores WHERE owner_id = ?", userID)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	description := r.FormValue("description")
 	colorScheme := r.FormValue("color_scheme")
-	logo := r.FormValue("logo")
+	logo := r.FormValue("storeLogo")
 	avatarPath := "./avatars/"
 	logoImage := "default.png"
 	//check if logo is not empty, then validate and save
@@ -129,6 +129,9 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, `{"error": "`+logoImage+`"}`, http.StatusInternalServerError)
 			return
 		}
+	} else {
+		http.Error(w, `{"error": "Logo is required"}`, http.StatusInternalServerError)
+		return
 	}
 	query := "INSERT INTO stores (name, description, color_scheme, logo, owner_id) VALUES (?, ?, ?, ?, ?)"
 	_, err = db.Exec(query, name, description, colorScheme, logoImage, userID)
