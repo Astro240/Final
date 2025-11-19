@@ -73,6 +73,41 @@ func CreateDatabase() {
 	INSERT OR IGNORE INTO user_type (id, name) VALUES
 	(1, 'admin'),
 	(2, 'user');
+	CREATE TABLE IF NOT EXISTS payment_methods (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	user_id INTEGER,
+    	method_name TEXT NOT NULL,
+    	account_details TEXT, -- This could be a card number or account ID
+    	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	FOREIGN KEY (user_id) REFERENCES users(id)
+	);
+	CREATE TABLE IF NOT EXISTS transactions (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	user_id INTEGER,
+    	payment_method_id INTEGER,
+    	amount REAL NOT NULL,
+    	transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	status TEXT NOT NULL, -- e.g., 'completed', 'pending', 'failed'
+    	FOREIGN KEY (user_id) REFERENCES users(id),
+    	FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+	);
+	CREATE TABLE IF NOT EXISTS orders (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	user_id INTEGER,
+    	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	total_amount REAL NOT NULL,
+    	status TEXT NOT NULL, -- e.g., 'pending', 'shipped', 'delivered'
+    	FOREIGN KEY (user_id) REFERENCES users(id)
+	);
+	CREATE TABLE IF NOT EXISTS order_items (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	order_id INTEGER,
+    	item_id INTEGER,
+    	quantity INTEGER NOT NULL,
+    	price REAL NOT NULL, -- Price at the time of order
+    	FOREIGN KEY (order_id) REFERENCES orders(id),
+    	FOREIGN KEY (item_id) REFERENCES items(id)
+	);
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {

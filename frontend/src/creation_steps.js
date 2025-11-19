@@ -49,8 +49,6 @@ function showStep(step) {
         nextBtn.innerHTML = 'Next →';
         nextBtn.onclick = () => changeStep(1);
     }
-
-
 }
 
 function changeStep(direction) {
@@ -117,21 +115,90 @@ function previewFile(input, previewId) {
 
 function submitForm() {
     const formData = new FormData(document.getElementById('storeCreationForm'));
-
-    fetch('/api/create_store', {
-        method: 'POST',
-        body: formData
-    }).then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('🎉 Congratulations! Your store has been created successfully!\n\nYou will be redirected to your store dashboard.');
-            window.location.href = `/store/${data.store_id}/dashboard`;
-        } else {
-            alert('Error creating store: ' + data.error);
+    
+    // Handle logo file upload as base64
+    const logoInput = document.querySelector('input[name="storeLogo"]');
+    const bannerInput = document.querySelector('input[name="storeBanner"]');
+    
+    let logoProcessed = false;
+    let bannerProcessed = false;
+    
+    // Process logo file
+    if (logoInput && logoInput.files[0]) {
+        const logoFile = logoInput.files[0];
+        const logoReader = new FileReader();
+        logoReader.onloadend = function () {
+            let base64data = logoReader.result;
+            if (base64data === "data:,") {
+                base64data = "";
+            }
+            formData.set('storeLogo', base64data);
+            logoProcessed = true;
+            checkAndSubmit();
+        };
+        logoReader.readAsDataURL(logoFile);
+    } else {
+        formData.set('storeLogo', '');
+        logoProcessed = true;
+    }
+    
+    // Process banner file
+    if (bannerInput && bannerInput.files[0]) {
+        const bannerFile = bannerInput.files[0];
+        const bannerReader = new FileReader();
+        bannerReader.onloadend = function () {
+            let base64data = bannerReader.result;
+            if (base64data === "data:,") {
+                base64data = "";
+            }
+            formData.set('storeBanner', base64data);
+            bannerProcessed = true;
+            checkAndSubmit();
+        };
+        bannerReader.readAsDataURL(bannerFile);
+    } else {
+        formData.set('storeBanner', '');
+        bannerProcessed = true;
+    }
+    
+    function checkAndSubmit() {
+        if (logoProcessed && bannerProcessed) {
+            
+            fetch('/api/create_store', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                console.log('Raw response:', data);
+                try {
+                    const jsonData = JSON.parse(data);
+                    if (jsonData.success) {
+                        alert('🎉 Congratulations! Your store has been created successfully!\n\nYou will be redirected to your store dashboard.');
+                        window.location.href = `/store/${jsonData.store_id}/dashboard`;
+                    } else {
+                        alert('Error creating store: ' + jsonData.error);
+                    }
+                } catch (e) {
+                    console.error('Failed to parse JSON:', e);
+                    alert('Server response: ' + data);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('An unexpected error occurred: ' + error);
+            });
         }
-    }).catch(error => {
-        alert('An unexpected error occurred: ' + error);
-    });
+    }
+    
+    // If no files to process, submit immediately
+    if (!logoInput?.files[0] && !bannerInput?.files[0]) {
+        checkAndSubmit();
+    }
 }
 
 // Initialize the form

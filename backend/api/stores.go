@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"html/template"
 	"net/http"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -110,15 +111,38 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	db, err := sql.Open("sqlite3", DATABASEPATH)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	defer db.Close()
-	name := r.FormValue("name")
-	description := r.FormValue("description")
-	colorScheme := r.FormValue("color_scheme")
+	name := r.FormValue("storeTitle")
+	description := r.FormValue("storeDescription")
+	selectedTemplate := r.FormValue("selectedTemplate")
+	colors := []string{}
+	if selectedTemplate == "modern" {
+		colors = append(colors,
+			r.FormValue("modern-primary"),
+			r.FormValue("modern-secondary"),
+			r.FormValue("modern-background"),
+			r.FormValue("modern-accent"))
+	} else if selectedTemplate == "vibrant" {
+		colors = append(colors,
+			r.FormValue("vibrant-primary"),
+			r.FormValue("vibrant-secondary"),
+			r.FormValue("vibrant-tertiary"),
+			r.FormValue("vibrant-supporting"),
+			r.FormValue("vibrant-highlight"),
+			r.FormValue("vibrant-accent"))
+	} else if selectedTemplate == "luxury" {
+		colors = append(colors,
+			r.FormValue("luxury-primary"),
+			r.FormValue("luxury-secondary"),
+			r.FormValue("luxury-background"))
+	}
+	
 	logo := r.FormValue("storeLogo")
 	avatarPath := "./avatars/"
 	logoImage := "default.png"
@@ -133,8 +157,9 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Logo is required"}`, http.StatusInternalServerError)
 		return
 	}
+	colorscheme := strings.Join(colors, ",")
 	query := "INSERT INTO stores (name, description, color_scheme, logo, owner_id) VALUES (?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, name, description, colorScheme, logoImage, userID)
+	_, err = db.Exec(query, name, description, colorscheme, logoImage, userID)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
