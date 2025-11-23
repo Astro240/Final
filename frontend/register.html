@@ -384,7 +384,10 @@
                         loadingSpinner.classList.remove('active');
                         submitBtn.disabled = false;
                     } else {
-                        window.location.href = '/';
+                        //redirect to verify 2FA page with data.user_id
+                        sessionStorage.setItem('user_id', data.user_id);
+                        sessionStorage.setItem('email', data.email);
+                        window.location.href = '/verify_2fa';
                     }
                 })
                 .catch(error => {

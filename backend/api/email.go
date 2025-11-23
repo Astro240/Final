@@ -60,3 +60,48 @@ func TwoFactorAuth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Login successful"}`))
 }
+
+func Resend2FAHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	userID := r.FormValue("user_id")
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Database connection error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+	var email string
+	query := "SELECT u.email,v.code from verification_codes v JOIN users u ON v.user_id = u.id WHERE v.user_id = ? AND v.expires_at > datetime('now')"
+	row := db.QueryRow(query, userID)
+
+	var existingCode string
+	if err := row.Scan(&email, &existingCode); err == nil {
+		err = SendEmail(email, "Your 2FA Code", "Your verification code is: "+existingCode)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
+			return
+		}
+		http.Error(w, `{"error": "A valid code has already been sent. Please check your email."}`, http.StatusBadRequest)
+		return
+	}else {
+		token := GenerateEmailCode()
+
+		query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+5 minutes'))"
+		_, err = db.Exec(query, userID, token)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to generate new code"}`, http.StatusInternalServerError)
+			return
+		}
+		err = SendEmail(email, "Your 2FA Code", "Your verification code is: "+token)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"message": "Verification code resent successfully","reset_timer": true}`))
+	}
+}

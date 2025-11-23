@@ -302,7 +302,10 @@
                         loadingSpinner.classList.remove('active');
                         submitBtn.disabled = false;
                     } else {
-                        window.location.href = '/';
+                        // Redirect to home page on successful login
+                        sessionStorage.setItem('user_id', data.user_id);
+                        sessionStorage.setItem('email', data.email);
+                        window.location.href = '/verify_2fa';
                     }
                 })
                 .catch(error => {

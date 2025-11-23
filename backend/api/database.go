@@ -53,8 +53,10 @@ func CreateDatabase() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
 		description TEXT,
+		template TEXT,
 		color_scheme TEXT,
 		logo TEXT,
+		banner TEXT,
 		owner_id INTEGER,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (owner_id) REFERENCES users(id)

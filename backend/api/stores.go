@@ -142,9 +142,9 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 			r.FormValue("luxury-secondary"),
 			r.FormValue("luxury-background"))
 	}
-	
+
 	logo := r.FormValue("storeLogo")
-	avatarPath := "./avatars/"
+	avatarPath := "./store_images/logos/"
 	logoImage := "default.png"
 	//check if logo is not empty, then validate and save
 	if logo != "" {
@@ -157,9 +157,23 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Logo is required"}`, http.StatusInternalServerError)
 		return
 	}
+	banner := r.FormValue("storeBanner")
+	bannerPath := "./store_images/banners/"
+	bannerImage := "default.png"
+	//check if banner is not empty, then validate and save
+	if banner != "" {
+		valid, bannerImage := ValidateImage(bannerPath, banner)
+		if !valid {
+			http.Error(w, `{"error": "`+bannerImage+`"}`, http.StatusInternalServerError)
+			return
+		}
+	}else{
+		http.Error(w, `{"error": "Banner is required"}`, http.StatusInternalServerError)
+		return
+	}
 	colorscheme := strings.Join(colors, ",")
-	query := "INSERT INTO stores (name, description, color_scheme, logo, owner_id) VALUES (?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, name, description, colorscheme, logoImage, userID)
+	query := "INSERT INTO stores (name, description,template, color_scheme, logo, banner, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	_, err = db.Exec(query, name, description, selectedTemplate, colorscheme, logoImage, bannerImage, userID)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
