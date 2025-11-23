@@ -46,7 +46,7 @@ func GetStores() ([]Store, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, name,description FROM stores")
+	rows, err := db.Query("SELECT id, name,description, template, color_scheme, logo, banner, owner_id FROM stores")
 	if err != nil {
 		return nil, err
 	}
@@ -55,9 +55,30 @@ func GetStores() ([]Store, error) {
 	var stores []Store
 	for rows.Next() {
 		var store Store
-		if err := rows.Scan(&store.ID, &store.Name, &store.Description); err != nil {
+		var color Color
+		var colorScheme string
+		if err := rows.Scan(&store.ID, &store.Name, &store.Description, &store.Template, &colorScheme, &store.Logo, &store.Banner, &store.OwnerID); err != nil {
 			return nil, err
 		}
+		colors := strings.Split(colorScheme, ",")
+		for i := 0; i < len(colors); i++ {
+			if i == 0 {
+				color.Primary = colors[i]
+			}else if i == 1 {
+				color.Secondary = colors[i]
+			} else if i == 2 {
+				color.Background = colors[i]
+			} else if i == 3 {
+				color.Accent = colors[i]
+			}else if i == 4 {
+				color.Supporting = colors[i]
+			} else if i == 5 {
+				color.Tertiary = colors[i]
+			} else if i == 6 {
+				color.Highlight = colors[i]
+			}
+		}
+		store.ColorScheme = color
 		stores = append(stores, store)
 	}
 	return stores, nil
@@ -70,7 +91,7 @@ func GetMyStores(userID int) ([]Store, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, name,description FROM stores WHERE owner_id = ?", userID)
+	rows, err := db.Query("SELECT id, name,description, template, color_scheme, logo, banner, owner_id FROM stores WHERE owner_id = ?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +100,30 @@ func GetMyStores(userID int) ([]Store, error) {
 	var stores []Store
 	for rows.Next() {
 		var store Store
-		if err := rows.Scan(&store.ID, &store.Name, &store.Description); err != nil {
+		var color Color
+		var colorScheme string
+		if err := rows.Scan(&store.ID, &store.Name, &store.Description, &store.Template, &colorScheme, &store.Logo, &store.Banner, &store.OwnerID); err != nil {
 			return nil, err
 		}
+		colors := strings.Split(colorScheme, ",")
+		for i := 0; i < len(colors); i++ {
+			if i == 0 {
+				color.Primary = colors[i]
+			}else if i == 1 {
+				color.Secondary = colors[i]
+			} else if i == 2 {
+				color.Background = colors[i]
+			} else if i == 3 {
+				color.Accent = colors[i]
+			}else if i == 4 {
+				color.Supporting = colors[i]
+			} else if i == 5 {
+				color.Tertiary = colors[i]
+			} else if i == 6 {
+				color.Highlight = colors[i]
+			}
+		}
+		store.ColorScheme = color
 		stores = append(stores, store)
 	}
 	return stores, nil
@@ -132,10 +174,11 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		colors = append(colors,
 			r.FormValue("vibrant-primary"),
 			r.FormValue("vibrant-secondary"),
+			r.FormValue("vibrant-background"),
+			r.FormValue("vibrant-accent"),
 			r.FormValue("vibrant-tertiary"),
 			r.FormValue("vibrant-supporting"),
-			r.FormValue("vibrant-highlight"),
-			r.FormValue("vibrant-accent"))
+			r.FormValue("vibrant-highlight"))
 	} else if selectedTemplate == "luxury" {
 		colors = append(colors,
 			r.FormValue("luxury-primary"),

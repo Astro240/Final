@@ -103,7 +103,7 @@
                         <p style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;">{{.Description}}</p>
                         <button style="width: 100%; background: linear-gradient(135deg, #5a7a8a, #3d5a73); color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
                             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 20px rgba(90, 122, 138, 0.3)';"
-                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">Visit Store</button>
+                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';" onclick="VisitStore('{{ .Name }}.com')">Visit Store</button>
                     </div>
                     {{ end }}
                 </div>
@@ -143,4 +143,9 @@
             </a>
         </div>
     </footer>
+    <script>
+        function VisitStore(storeName) {
+            window.location.href = `/store/${encodeURIComponent(storeName)}`;
+        }
+    </script>
 </body>

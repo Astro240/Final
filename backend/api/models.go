@@ -16,4 +16,19 @@ type Store struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Template    string `json:"template"`
+	ColorScheme Color  `json:"color_scheme"`
+	Logo        string `json:"logo"`
+	Banner      string `json:"banner"`
+	OwnerID     uint   `json:"owner_id"`
+}
+
+type Color struct {
+	Primary    string `json:"primary"`
+	Secondary  string `json:"secondary"`
+	Background string `json:"background"`
+	Accent     string `json:"accent"`
+	Supporting string `json:"supporting"`
+	Tertiary   string `json:"tertiary"`
+	Highlight  string `json:"highlight"`
 }

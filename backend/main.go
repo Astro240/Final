@@ -33,9 +33,10 @@ func main() {
 		http.ServeFile(w, r, "../frontend/verify_2fa.html")
 	})
 	//handle the src, img, and data directories
-	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./backend/avatars"))))
-	http.Handle("/logos/", http.StripPrefix("/store_images/logos/", http.FileServer(http.Dir("./backend/store_images/logos"))))
-	http.Handle("/banners/", http.StripPrefix("/store_images/banners/", http.FileServer(http.Dir("./backend/store_images/banners"))))
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
+	http.Handle("/logos/", http.StripPrefix("/logos/", http.FileServer(http.Dir("./store_images/logos"))))
+	http.Handle("/banners/", http.StripPrefix("/banners/", http.FileServer(http.Dir("./store_images/banners"))))
+	http.Handle("/products/", http.StripPrefix("/products/", http.FileServer(http.Dir("./store_images/products"))))
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("../frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("../frontend/data"))))
