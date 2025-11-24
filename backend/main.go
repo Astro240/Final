@@ -2,7 +2,6 @@ package main
 
 import (
 	"finalProj/api"
-	"fmt"
 	"net/http"
 )
 
@@ -10,9 +9,6 @@ func main() {
 	api.LoadEnv()
 	api.CreateDatabase()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Host == "astropify.com" || r.Host == "www.astropify.com" {
-			fmt.Println("testing")
-		}
 		http.ServeFile(w, r, "../frontend/index.html")
 	})
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
