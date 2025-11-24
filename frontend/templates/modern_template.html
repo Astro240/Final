@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Store - Clean & Professional</title>
     <style>
+        :root {
+            --primary-color: #1a202c;
+            --secondary-color: #4a5568;
+            --background-color: #fafafa;
+            --accent-color: #667eea;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +20,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #fafafa;
+            background: var(--background-color);
             color: #2d3748;
             line-height: 1.6;
         }
@@ -27,7 +34,7 @@
         /* Header */
         header {
             background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px #0000001a;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -43,7 +50,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1a202c;
+            color: var(--primary-color);
         }
 
         .nav-links {
@@ -54,17 +61,17 @@
 
         .nav-links a {
             text-decoration: none;
-            color: #4a5568;
+            color: var(--secondary-color);
             font-weight: 500;
             transition: color 0.3s;
         }
 
         .nav-links a:hover {
-            color: #1a202c;
+            color: var(--primary-color);
         }
 
         .cart-icon {
-            background: #1a202c;
+            background: var(--primary-color);
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -88,7 +95,7 @@
         .mobile-menu-toggle span {
             width: 25px;
             height: 3px;
-            background: #1a202c;
+            background: var(--primary-color);
             margin: 3px 0;
             transition: all 0.3s ease;
             border-radius: 3px;
@@ -114,7 +121,7 @@
             max-width: 300px;
             height: 100vh;
             background: white;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: -2px 0 10px #0000001a;
             transition: right 0.3s ease;
             z-index: 999;
             padding: 2rem;
@@ -136,7 +143,7 @@
         .mobile-nav-close {
             font-size: 2rem;
             cursor: pointer;
-            color: #1a202c;
+            color: var(--primary-color);
             background: none;
             border: none;
         }
@@ -151,7 +158,7 @@
 
         .mobile-nav-links a {
             text-decoration: none;
-            color: #4a5568;
+            color: var(--secondary-color);
             font-size: 1.1rem;
             font-weight: 500;
             display: block;
@@ -160,7 +167,7 @@
         }
 
         .mobile-nav-links a:hover {
-            color: #1a202c;
+            color: var(--primary-color);
         }
 
         .mobile-overlay {
@@ -170,7 +177,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: #00000080;
             z-index: 998;
         }
 
@@ -180,7 +187,7 @@
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #764ba2 100%);
             color: white;
             padding: 6rem 0;
             text-align: center;
@@ -201,7 +208,7 @@
 
         .cta-button {
             background: white;
-            color: #667eea;
+            color: var(--accent-color);
             padding: 1rem 2.5rem;
             border: none;
             border-radius: 8px;
@@ -215,7 +222,7 @@
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px #00000033;
         }
 
         /* Products Section */
@@ -250,13 +257,13 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px #0000000d;
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 25px #0000001a;
         }
 
         .product-image {
@@ -288,13 +295,13 @@
         .product-price {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1a202c;
+            color: var(--primary-color);
             margin-bottom: 1rem;
         }
 
         .add-to-cart {
             width: 100%;
-            background: #1a202c;
+            background: var(--primary-color);
             color: white;
             padding: 0.75rem;
             border: none;
@@ -310,7 +317,7 @@
 
         /* Footer */
         footer {
-            background: #1a202c;
+            background: var(--primary-color);
             color: white;
             padding: 3rem 0;
         }
@@ -339,7 +346,7 @@
         }
 
         .footer-bottom {
-            border-top: 1px solid #4a5568;
+            border-top: 1px solid var(--secondary-color);
             padding-top: 2rem;
             color: #a0aec0;
             text-align: center;

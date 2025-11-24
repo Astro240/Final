@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vibrant Creative Store - Bold & Colorful</title>
     <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --tertiary-color: #45b7d1;
+            --supporting-color: #96ceb4;
+            --highlight-color: #ffeaa7;
+            --accent-color: #fd79a8;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +22,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color), var(--supporting-color), var(--highlight-color));
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
             color: #2d3436;
@@ -70,9 +79,9 @@
             width: 70%;
             max-width: 300px;
             height: 100vh;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 240, 245, 0.95));
+            background: linear-gradient(135deg, #fffffff9, #fff0f5f2);
             backdrop-filter: blur(20px);
-            box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+            box-shadow: -5px 0 20px #00000033;
             transition: right 0.4s ease;
             z-index: 999;
             padding: 2rem;
@@ -90,13 +99,13 @@
             margin-bottom: 2rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid;
-            border-image: linear-gradient(45deg, #ff6b6b, #4ecdc4) 1;
+            border-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color)) 1;
         }
 
         .mobile-nav-logo {
             font-size: 1.5rem;
             font-weight: 900;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -131,7 +140,7 @@
         }
 
         .mobile-nav-links a:hover {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             transform: translateX(10px);
         }
@@ -143,7 +152,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: #00000080;
             backdrop-filter: blur(5px);
             z-index: 998;
         }
@@ -154,11 +163,11 @@
 
         /* Header */
         header {
-            background: rgba(255, 255, 255, 0.95);
+            background: #fffffff2;
             backdrop-filter: blur(10px);
             border-radius: 0 0 30px 30px;
             margin: 20px 20px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px #0000001a;
             position: sticky;
             top: 20px;
             z-index: 100;
@@ -174,11 +183,11 @@
         .logo {
             font-size: 2rem;
             font-weight: 900;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            text-shadow: 0 0 30px #ff6b6b80;
         }
 
         .nav-links {
@@ -198,26 +207,26 @@
         }
 
         .nav-links a:hover {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px #00000033;
         }
 
         .cart-icon {
-            background: linear-gradient(45deg, #fd79a8, #fdcb6e);
+            background: linear-gradient(45deg, var(--accent-color), var(--highlight-color));
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 25px;
             text-decoration: none;
             font-weight: 700;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.4);
+            box-shadow: 0 5px 15px #fd79a866;
         }
 
         .cart-icon:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(253, 121, 168, 0.6);
+            box-shadow: 0 10px 25px #fd79a899;
         }
 
         /* Hero Section */
@@ -234,7 +243,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
+            background: #ffffff1a;
             backdrop-filter: blur(5px);
             border-radius: 30px;
             margin: 0 20px;
@@ -249,11 +258,11 @@
             font-size: 4rem;
             font-weight: 900;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 50px rgba(255, 107, 107, 0.3);
+            text-shadow: 0 0 50px #ff6b6b4d;
             animation: pulse 2s ease-in-out infinite alternate;
         }
 
@@ -266,11 +275,11 @@
             font-size: 1.5rem;
             margin-bottom: 2rem;
             color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 4px #0000004d;
         }
 
         .cta-button {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color), var(--supporting-color));
             background-size: 300% 300%;
             color: white;
             padding: 1.2rem 3rem;
@@ -282,19 +291,19 @@
             transition: all 0.3s;
             text-decoration: none;
             display: inline-block;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px #00000033;
             animation: gradientShift 3s ease infinite;
         }
 
         .cta-button:hover {
             transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px #0000004d;
         }
 
         /* Products Section */
         .products {
             padding: 5rem 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: #fffffff2;
             margin: 3rem 20px;
             border-radius: 30px;
             backdrop-filter: blur(10px);
@@ -309,7 +318,7 @@
             font-size: 3rem;
             font-weight: 900;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -332,14 +341,14 @@
             background: white;
             border-radius: 25px;
             overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 30px #0000001a;
             transition: all 0.3s;
             position: relative;
         }
 
         .product-card:hover {
             transform: translateY(-10px) rotate(2deg);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            box-shadow: 0 25px 50px #00000033;
         }
 
         .product-card::before {
@@ -349,7 +358,7 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color), var(--supporting-color));
         }
 
         .product-image {
@@ -371,7 +380,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            background: radial-gradient(circle, #ffffff4d 0%, transparent 70%);
             animation: shimmer 3s ease-in-out infinite;
         }
 
@@ -400,7 +409,7 @@
         .product-price {
             font-size: 1.8rem;
             font-weight: 900;
-            background: linear-gradient(45deg, #fd79a8, #fdcb6e);
+            background: linear-gradient(45deg, var(--accent-color), var(--highlight-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -409,7 +418,7 @@
 
         .add-to-cart {
             width: 100%;
-            background: linear-gradient(45deg, #fd79a8, #fdcb6e);
+            background: linear-gradient(45deg, var(--accent-color), var(--highlight-color));
             color: white;
             padding: 1rem;
             border: none;
@@ -418,17 +427,17 @@
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
+            box-shadow: 0 5px 15px #fd79a84d;
         }
 
         .add-to-cart:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(253, 121, 168, 0.5);
+            box-shadow: 0 10px 25px #fd79a880;
         }
 
         /* Footer */
         footer {
-            background: rgba(45, 52, 54, 0.95);
+            background: #2d3436f2;
             color: white;
             padding: 3rem 0;
             margin: 3rem 20px 20px;
@@ -448,7 +457,7 @@
             margin-bottom: 1rem;
             font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -463,12 +472,12 @@
         }
 
         .footer-section a:hover {
-            color: #4ecdc4;
+            color: var(--secondary-color);
             transform: translateX(10px);
         }
 
         .footer-bottom {
-            border-top: 2px solid #4ecdc4;
+            border-top: 2px solid var(--secondary-color);
             padding-top: 2rem;
             text-align: center;
             color: #ddd;
