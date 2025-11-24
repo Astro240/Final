@@ -48,7 +48,7 @@ func main() {
 	http.HandleFunc("/api/create_store", api.CreateStoreHandler)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)
 
-	if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		panic(err)
 	}
 }
