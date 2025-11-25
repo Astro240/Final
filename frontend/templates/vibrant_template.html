@@ -608,7 +608,7 @@
 
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <div class="mobile-nav-logo">VibrantShop</div>
+            <div class="mobile-nav-logo">{{ .Name }}</div>
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
@@ -623,8 +623,8 @@
     <section class="hero">
         <div class="hero-content">
             <div class="container">
-                <h1>Color Your World!</h1>
-                <p>Bold products for creative souls who dare to stand out</p>
+                <h1>{{ .Name }}</h1>
+                <p>{{ .Description }}</p>
                 <a href="#products" class="cta-button">Explore Magic ✨</a>
             </div>
         </div>

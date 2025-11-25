@@ -768,7 +768,7 @@
 
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <div class="mobile-nav-logo">LUXURIA</div>
+            <div class="mobile-nav-logo">{{ .Name }}</div>
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
@@ -783,8 +783,8 @@
     <section class="hero">
         <div class="hero-content">
             <div class="container">
-                <h1>LUXURY REDEFINED</h1>
-                <p>Exceptional craftsmanship meets timeless elegance in our exclusive collection</p>
+                <h1>{{ .Name }}</h1>
+                <p>{{ .Description }}</p>
                 <a href="#products" class="cta-button">EXPLORE COLLECTION</a>
             </div>
         </div>

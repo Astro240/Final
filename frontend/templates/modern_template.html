@@ -445,7 +445,7 @@
 
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <div class="logo">ModernStore</div>
+            <div class="logo">{{ .Name }}</div>
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
@@ -459,8 +459,8 @@
 
     <section class="hero">
         <div class="container">
-            <h1>Clean. Simple. Perfect.</h1>
-            <p>Discover our curated collection of premium products designed for the modern lifestyle</p>
+            <h1>{{ .Name }}</h1>
+            <p>{{ .Description }}</p>
             <a href="#products" class="cta-button">Shop Now</a>
         </div>
     </section>
