@@ -6,10 +6,10 @@
     <title>Modern Store - Clean & Professional</title>
     <style>
         :root {
-            --primary-color: #1a202c;
-            --secondary-color: #4a5568;
-            --background-color: #fafafa;
-            --accent-color: #667eea;
+            --primary-color: {{ .ColorScheme.Primary }};
+            --secondary-color: {{ .ColorScheme.Secondary }};
+            --background-color: {{ .ColorScheme.Background }};
+            --accent-color: {{ .ColorScheme.Accent }};
         }
 
         * {

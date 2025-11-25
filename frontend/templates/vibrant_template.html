@@ -6,12 +6,12 @@
     <title>Vibrant Creative Store - Bold & Colorful</title>
     <style>
         :root {
-            --primary-color: #ff6b6b;
-            --secondary-color: #4ecdc4;
-            --tertiary-color: #45b7d1;
-            --supporting-color: #96ceb4;
-            --highlight-color: #ffeaa7;
-            --accent-color: #fd79a8;
+            --primary-color: {{ .ColorScheme.Primary }};
+            --secondary-color: {{ .ColorScheme.Secondary }};
+            --tertiary-color: {{ .ColorScheme.Tertiary }};
+            --supporting-color: {{ .ColorScheme.Supporting }};
+            --highlight-color: {{ .ColorScheme.Highlight }};
+            --accent-color: {{ .ColorScheme.Accent }};
         }
 
         * {
