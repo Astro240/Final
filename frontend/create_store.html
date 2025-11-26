@@ -974,6 +974,13 @@
                     </div>
                 </div>
 
+                <!-- Error Box -->
+                <div id="errorBox" style="display: none; background-color: #fee; border: 1px solid #fcc; color: #c33; padding: 15px; margin-bottom: 20px; border-radius: 8px; position: relative;">
+                    <strong>Error:</strong>
+                    <span id="errorMessage"></span>
+                    <button onclick="hideError()" style="position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 20px; cursor: pointer; color: #c33;">&times;</button>
+                </div>
+
                 <!-- Navigation Buttons -->
                 <div class="navigation-buttons">
                     <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">

@@ -1,6 +1,29 @@
 let currentStep = 1;
 const totalSteps = 7;
 
+function showError(message) {
+    const errorBox = document.getElementById('errorBox');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    if (errorBox && errorMessage) {
+        errorMessage.textContent = message;
+        errorBox.style.display = 'block';
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            errorBox.style.display = 'none';
+        }, 5000);
+    }
+}
+
+function hideError() {
+    const errorBox = document.getElementById('errorBox');
+    if (errorBox) {
+        errorBox.style.display = 'none';
+    }
+}
+
 function updateProgress() {
     const progressFill = document.getElementById('progressFill');
     const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
@@ -56,6 +79,7 @@ function changeStep(direction) {
         return;
     }
 
+    hideError();
     const newStep = currentStep + direction;
 
     if (newStep >= 1 && newStep <= totalSteps) {
@@ -72,7 +96,7 @@ function validateCurrentStep() {
     for (let field of requiredFields) {
         if (!field.value.trim()) {
             field.focus();
-            alert('Please fill in all required fields.');
+            showError('Please fill in all required fields.');
             return false;
         }
     }
@@ -81,7 +105,7 @@ function validateCurrentStep() {
     if (currentStep === 4) {
         const paymentMethods = document.querySelectorAll('input[name="paymentMethods"]:checked');
         if (paymentMethods.length === 0) {
-            alert('Please select at least one payment method.');
+            showError('Please select at least one payment method.');
             return false;
         }
     }
@@ -89,7 +113,7 @@ function validateCurrentStep() {
     if (currentStep === 5) {
         const categories = document.querySelectorAll('input[name="categories"]:checked');
         if (categories.length === 0) {
-            alert('Please select at least one product category.');
+            showError('Please select at least one product category.');
             return false;
         }
     }
@@ -178,19 +202,18 @@ function submitForm() {
                 try {
                     const jsonData = JSON.parse(data);
                     if (jsonData.success) {
-                        alert('🎉 Congratulations! Your store has been created successfully!\n\nYou will be redirected to your store dashboard.');
                         window.location.href = `/store/${jsonData.store_id}/dashboard`;
                     } else {
-                        alert('Error creating store: ' + jsonData.error);
+                        showError('Error creating store: ' + jsonData.error);
                     }
                 } catch (e) {
                     console.error('Failed to parse JSON:', e);
-                    alert('Server response: ' + data);
+                    showError('Server response: ' + data);
                 }
             })
             .catch(error => {
                 console.error('Fetch error:', error);
-                alert('An unexpected error occurred: ' + error);
+                showError('An unexpected error occurred: ' + error);
             });
         }
     }

@@ -12,8 +12,14 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/index.html")
 		return
 	}
+	
 	for _, store := range stores {
 		if r.URL.Path == "/"+strings.ToLower(store.Name)+".com" || r.Host == strings.ToLower(store.Name)+".com" {
+			store.Products, err = GetProductsByStoreID(store.ID)
+			if  err != nil {
+				HandleError(w, r, 500, "Couldn't Load Products")
+				return
+			}
 			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
 			if err != nil {
 				HandleError(w, r, 500, "Couldn't Find Template")

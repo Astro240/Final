@@ -64,13 +64,13 @@ func GetStores() ([]Store, error) {
 		for i := 0; i < len(colors); i++ {
 			if i == 0 {
 				color.Primary = colors[i]
-			}else if i == 1 {
+			} else if i == 1 {
 				color.Secondary = colors[i]
 			} else if i == 2 {
 				color.Background = colors[i]
 			} else if i == 3 {
 				color.Accent = colors[i]
-			}else if i == 4 {
+			} else if i == 4 {
 				color.Supporting = colors[i]
 			} else if i == 5 {
 				color.Tertiary = colors[i]
@@ -109,13 +109,13 @@ func GetMyStores(userID int) ([]Store, error) {
 		for i := 0; i < len(colors); i++ {
 			if i == 0 {
 				color.Primary = colors[i]
-			}else if i == 1 {
+			} else if i == 1 {
 				color.Secondary = colors[i]
 			} else if i == 2 {
 				color.Background = colors[i]
 			} else if i == 3 {
 				color.Accent = colors[i]
-			}else if i == 4 {
+			} else if i == 4 {
 				color.Supporting = colors[i]
 			} else if i == 5 {
 				color.Tertiary = colors[i]
@@ -184,6 +184,9 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 			r.FormValue("luxury-primary"),
 			r.FormValue("luxury-secondary"),
 			r.FormValue("luxury-background"))
+	} else {
+		http.Error(w, `{"error": "Couldn't determine template colors"}`, http.StatusInternalServerError)
+		return
 	}
 
 	logo := r.FormValue("storeLogo")
@@ -210,7 +213,7 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, `{"error": "`+bannerImage+`"}`, http.StatusInternalServerError)
 			return
 		}
-	}else{
+	} else {
 		http.Error(w, `{"error": "Banner is required"}`, http.StatusInternalServerError)
 		return
 	}
@@ -224,4 +227,3 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
-

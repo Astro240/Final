@@ -13,14 +13,24 @@ type StoreDisplay struct {
 }
 
 type Store struct {
-	ID          uint   `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Template    string `json:"template"`
-	ColorScheme Color  `json:"color_scheme"`
-	Logo        string `json:"logo"`
-	Banner      string `json:"banner"`
-	OwnerID     uint   `json:"owner_id"`
+	ID          uint      `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Template    string    `json:"template"`
+	ColorScheme Color     `json:"color_scheme"`
+	Logo        string    `json:"logo"`
+	Banner      string    `json:"banner"`
+	OwnerID     uint      `json:"owner_id"`
+	Products    []Product `json:"products"`
+}
+
+type Product struct {
+	ID          uint    `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	Image       string  `json:"image"`
+	Quantity    int     `json:"quantity"`
 }
 
 type Color struct {
