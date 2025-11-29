@@ -7,27 +7,25 @@ import (
 )
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	stores, err := GetStores()
-	if err != nil {
-		http.ServeFile(w, r, "../frontend/index.html")
-		return
+	storeName := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, "/"))
+	storeName = strings.TrimSuffix(storeName, ".com")
+	if storeName == "" {
+		storeName = r.Host
 	}
-
-	for _, store := range stores {
-		if r.URL.Path == "/"+strings.ToLower(store.Name)+".com" || r.Host == strings.ToLower(store.Name)+".com" {
-			store.Products, err = GetProductsByStoreID(store.ID)
-			if err != nil {
-				HandleError(w, r, 500, "Couldn't Load Products")
-				return
-			}
+	if storeName != "" {
+		store, err := GetStoreByName(storeName)
+		if err == nil && store.ID != 0 {
 			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
 			if err != nil {
-				HandleError(w, r, 500, "Couldn't Find Template")
+				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 				return
 			}
-			err = tmpl.Execute(w, store)
-			if err != nil {
-				HandleError(w, r, 500, "Couldn't Load Template")
+			userID, validUser := ValidateUser(w, r)
+			if validUser && uint(userID) == store.OwnerID {
+				store.IsOwner = true
+			}
+			if err := tmpl.Execute(w, store); err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 				return
 			}
 			return

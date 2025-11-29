@@ -160,8 +160,12 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
-	name := r.FormValue("storeTitle")
-	description := r.FormValue("storeDescription")
+	name := strings.TrimSpace(r.FormValue("storeTitle"))
+	description := strings.TrimSpace(r.FormValue("storeDescription"))
+	if err = ValidateStoreName(name); err != nil {
+		http.Error(w, `{"error": "`+err.Error()+`"}`, http.StatusInternalServerError)
+		return
+	}
 	selectedTemplate := r.FormValue("selectedTemplate")
 	colors := []string{}
 	if selectedTemplate == "modern" {
@@ -226,4 +230,47 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func GetStoreByName(storeName string) (Store, error) {
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		return Store{}, err
+	}
+	defer db.Close()
+
+	row := db.QueryRow("SELECT id, name,description, template, color_scheme, logo, banner, owner_id FROM stores WHERE name = ?", storeName)
+	if err != nil {
+		return Store{}, err
+	}
+	var store Store
+	var color Color
+	var colorScheme string
+	if err := row.Scan(&store.ID, &store.Name, &store.Description, &store.Template, &colorScheme, &store.Logo, &store.Banner, &store.OwnerID); err != nil {
+		return Store{}, err
+	}
+	colors := strings.Split(colorScheme, ",")
+	for i := 0; i < len(colors); i++ {
+		if i == 0 {
+			color.Primary = colors[i]
+		} else if i == 1 {
+			color.Secondary = colors[i]
+		} else if i == 2 {
+			color.Background = colors[i]
+		} else if i == 3 {
+			color.Accent = colors[i]
+		} else if i == 4 {
+			color.Supporting = colors[i]
+		} else if i == 5 {
+			color.Tertiary = colors[i]
+		} else if i == 6 {
+			color.Highlight = colors[i]
+		}
+	}
+	store.Products, err = GetProductsByStoreID(store.ID)
+	if err != nil {
+		return Store{}, err
+	}
+	store.ColorScheme = color
+	return store, nil
 }

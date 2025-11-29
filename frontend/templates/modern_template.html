@@ -315,6 +315,100 @@
             background: #2d3748;
         }
 
+        /* Add Product Form */
+        .add-product-section {
+            padding: 5rem 0;
+            background: #f7fafc;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px #0000000d;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px #667eea26;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.75rem;
+            cursor: pointer;
+            border-style: dashed;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: #2d3748;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px #00000033;
+        }
+
         /* Footer */
         footer {
             background: var(--primary-color);
@@ -351,7 +445,23 @@
             color: #a0aec0;
             text-align: center;
         }
-
+        #formMessage {
+            grid-column: 1 / -1;
+            font-size: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+        #formMessage.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        #formMessage.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links,
@@ -404,6 +514,22 @@
 
             footer {
                 padding: 2rem 0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 2rem;
+            }
+
+            .form-title {
+                font-size: 2rem;
+            }
+
+            .add-product-section {
+                padding: 3rem 0;
             }
         }
 
@@ -493,12 +619,45 @@
             </div>
         </div>
     </section>
-
+    {{ if .IsOwner }}
+    <section class="add-product-section" id="addProduct">
+        <div class="container">
+            <div class="form-container">
+                <h2 class="form-title">Add New Product</h2>
+                <form enctype="multipart/form-data" id="addProductForm">
+                    <div class="form-grid">
+                        <div id="formMessage" class="form-message"></div>
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price (BD)</label>
+                            <input type="number" id="productPrice" name="price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">Image</label>
+                            <input type="file" id="productImage" name="image" accept="image/*">
+                        </div>
+                        <input type="hidden" name="store_id" value="{{ .ID }}">
+                        <div class="form-group full-width">
+                            <button type="submit" class="submit-btn">Add Product</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    {{ end }}
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>About ModernStore</h3>
+                    <h3>About {{ .Name }}</h3>
                     <p>We believe in the power of simplicity and the beauty of well-designed products that enhance your daily life.</p>
                 </div>
                 <div class="footer-section">
@@ -551,5 +710,6 @@
             link.addEventListener('click', closeMobileMenu);
         });
     </script>
+    <script src="src/create_product.js" defer></script>
 </body>
 </html>

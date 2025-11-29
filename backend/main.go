@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("/api/verify_2fa", api.TwoFactorAuth)
 	http.HandleFunc("/api/create_store", api.CreateStoreHandler)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)
+	http.HandleFunc("/api/create_product", api.CreateProductAPI)
 
 	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		panic(err)

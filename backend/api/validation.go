@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-
+	"fmt"
 	"database/sql"
 	"github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -117,4 +117,26 @@ func ValidateImage(path string, avatar string) (bool, string) {
 	}
 	avatar = uuid.String() + photoType
 	return true, avatar
+}
+
+func ValidateStoreName(name string) error {
+	if strings.Contains(name, " ") || strings.Contains(name, ",") {
+		return fmt.Errorf("Store name cannot contain spaces or commas")
+	}
+	
+	invalidChars := regexp.MustCompile(`[!@#$%^&*()_+=\[\]{}|\\:;"'<>,?/\u200B]`)
+	if invalidChars.MatchString(name) {
+		return fmt.Errorf("Store name contains invalid characters")
+	}
+
+	htmlTags := regexp.MustCompile(`<[^>]*>`)
+	if htmlTags.MatchString(name) {
+		return fmt.Errorf("Store name cannot contain HTML tags")
+	}
+
+	if strings.TrimSpace(name) != name {
+		return fmt.Errorf("Store name cannot have leading or trailing whitespace")
+	}
+
+	return nil
 }

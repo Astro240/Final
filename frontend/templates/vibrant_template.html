@@ -435,6 +435,115 @@
             box-shadow: 0 10px 25px #fd79a880;
         }
 
+        /* Add Product Form */
+        .add-product-section {
+            padding: 5rem 0;
+            margin: 3rem 20px;
+            background: linear-gradient(135deg, #fffffff2, #fff0f5f2);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 15px 30px #0000001a;
+        }
+
+        .form-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px #0000001a;
+            border-top: 5px solid;
+            border-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color)) 1;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px #ff6b6b26;
+            transform: scale(1.02);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.85rem;
+            cursor: pointer;
+            border-style: dashed;
+            border-color: var(--secondary-color);
+        }
+
+        .form-group input[type="file"]:hover {
+            background: #4ecdc41a;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--accent-color), var(--highlight-color));
+            color: white;
+            padding: 1.3rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px #fd79a866;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px #fd79a899;
+        }
+
         /* Footer */
         footer {
             background: #2d3436f2;
@@ -482,7 +591,23 @@
             text-align: center;
             color: #ddd;
         }
-
+        #formMessage {
+            grid-column: 1 / -1;
+            font-size: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+        #formMessage.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        #formMessage.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links,
@@ -555,6 +680,23 @@
             .mobile-nav {
                 width: 80%;
             }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 2rem;
+            }
+
+            .form-title {
+                font-size: 2rem;
+            }
+
+            .add-product-section {
+                padding: 3rem 0;
+                margin: 2rem 10px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -612,11 +754,11 @@
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
-            <li><a href="#home">🏠 Home</a></li>
-            <li><a href="#products">🛍️ Products</a></li>
-            <li><a href="#about">🌟 About</a></li>
-            <li><a href="#contact">📞 Contact</a></li>
-            <li><a href="#cart">🛒 Cart (0)</a></li>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#cart">Cart (0)</a></li>
         </ul>
     </div>
 
@@ -625,7 +767,7 @@
             <div class="container">
                 <h1>{{ .Name }}</h1>
                 <p>{{ .Description }}</p>
-                <a href="#products" class="cta-button">Explore Magic ✨</a>
+                <a href="#products" class="cta-button">Explore Magic</a>
             </div>
         </div>
     </section>
@@ -658,7 +800,42 @@
             </div>
         </div>
     </section>
-
+    {{ if .IsOwner }}
+    <section class="add-product-section">
+        <div class="container">
+            <div class="form-container">
+                <h2 class="form-title">Add Your Product</h2>
+                <form id="addProductForm" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div id="formMessage" class="form-message"></div>
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="productName" required placeholder="Rainbow Art Set">
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price (BD)</label>
+                            <input type="number" id="productPrice" name="productPrice" step="0.01" required placeholder="45.99">
+                        </div>
+                        <div class="form-group">
+                            <label for="productQuantity">Quantity</label>
+                            <input type="number" id="productQuantity" name="productQuantity" min="1" required placeholder="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">Product Image</label>
+                            <input type="file" id="productImage" name="productImage" accept="image/*">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" name="productDescription" required placeholder="Complete creative kit with vibrant colors..."></textarea>
+                        </div>
+                        <input type="hidden" name="store_id" value="{{ .ID }}">
+                    </div>
+                    <button type="submit" class="submit-btn">Add to Store</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    {{ end }}
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -668,21 +845,21 @@
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
-                    <a href="#products">🛍️ Products</a>
-                    <a href="#about">🌟 About Us</a>
-                    <a href="#contact">📞 Contact</a>
-                    <a href="#shipping">🚚 Shipping</a>
+                    <a href="#products">Products</a>
+                    <a href="#about">About Us</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#shipping">Shipping</a>
                 </div>
                 <div class="footer-section">
                     <h3>Customer Love</h3>
-                    <a href="#support">💖 Support</a>
-                    <a href="#returns">🔄 Returns</a>
-                    <a href="#warranty">🛡️ Warranty</a>
-                    <a href="#reviews">⭐ Reviews</a>
+                    <a href="#support">Support</a>
+                    <a href="#returns">Returns</a>
+                    <a href="#warranty">Warranty</a>
+                    <a href="#reviews">Reviews</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 VibrantShop. Made with 💜 for creative souls.</p>
+                <p>&copy; 2025 VibrantShop. Made with Love for creative souls.</p>
             </div>
         </div>
     </footer>
@@ -716,5 +893,6 @@
             link.addEventListener('click', closeMobileMenu);
         });
     </script>
+    <script src="src/create_product.js" defer></script>
 </body>
 </html>

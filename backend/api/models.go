@@ -22,6 +22,7 @@ type Store struct {
 	Banner      string    `json:"banner"`
 	OwnerID     uint      `json:"owner_id"`
 	Products    []Product `json:"products"`
+	IsOwner     bool      `json:"is_owner"`
 }
 
 type Product struct {
