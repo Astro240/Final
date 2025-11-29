@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +40,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 20% 20%, #9ca3af14 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, #dbeafe1a 0%, transparent 50%),
                 radial-gradient(circle at 40% 60%, #bfdbfe0f 0%, transparent 50%);
@@ -256,7 +257,7 @@
         }
 
         .cart-icon {
-            background: linear-gradient(135deg, var(--secondary-color), #2563eb);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
             color: #ffffff;
             padding: 1rem 2rem;
             border: none;
@@ -540,7 +541,7 @@
 
         /* Footer */
         footer {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #2c568d 100%);
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
             color: #ffffff;
             padding: 5rem 0 2rem;
             margin-top: 5rem;
@@ -634,6 +635,7 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+
             .nav-links,
             .cart-icon {
                 display: none;
@@ -745,6 +747,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="mobile-overlay" id="mobileOverlay"></div>
 
@@ -796,37 +799,25 @@
                 <h2>SIGNATURE COLLECTION</h2>
                 <p>Meticulously curated pieces that embody sophistication and exclusivity</p>
             </div>
-            
+
             <div class="product-grid">
+                {{range .Products}}
                 <div class="product-card">
-                    <div class="product-image"><img src="/products/diamond_heritage_ring.jpg" alt="Diamond Heritage Ring" style="width: 100%"></div>
+                    <div class="product-image">
+                        {{if .Image}}
+                        <img src="/products/{{.Image}}" alt="{{.Name}}">
+                        {{else}}
+                        📦
+                        {{end}}
+                    </div>
                     <div class="product-info">
-                        <h3 class="product-title">Diamond Heritage Ring</h3>
-                        <p class="product-description">Swiss-crafted timepiece with hand-set diamonds and platinum casing. A masterpiece of horological excellence.</p>
-                        <div class="product-price">12,999 BD</div>
-                        <button class="add-to-cart">ADD TO COLLECTION</button>
+                        <h3 class="product-title">{{.Name}}</h3>
+                        <p class="product-description">{{.Description}}</p>
+                        <div class="product-price">{{.Price}} BD</div>
+                        <button class="add-to-cart">Add to Collection</button>
                     </div>
                 </div>
-
-                <div class="product-card">
-                    <div class="product-image"><img src="/products/pen.jpg" alt="Platinum Fountain Pen" style="width: 100%"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Platinum Fountain Pen</h3>
-                        <p class="product-description">Artisan-crafted writing instrument with 18k gold nib and precious stone accents. A symbol of distinction.</p>
-                        <div class="product-price">3,499 BD</div>
-                        <button class="add-to-cart">ADD TO COLLECTION</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image"><img src="/products/decanter_set_blue.jpg" alt="Crystal Decanter Set" style="width: 100%"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Crystal Decanter Set</h3>
-                        <p class="product-description">Hand-blown crystal with gold leaf accents. Perfect for the connoisseur who appreciates the finest spirits.</p>
-                        <div class="product-price">2,199 BD</div>
-                        <button class="add-to-cart">ADD TO COLLECTION</button>
-                    </div>
-                </div>
+                {{end}}
             </div>
         </div>
     </section>
@@ -836,7 +827,8 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>LUXURIA</h3>
-                    <p>For over a century, we have been the epitome of luxury, crafting exceptional experiences for the most discerning clientele.</p>
+                    <p>For over a century, we have been the epitome of luxury, crafting exceptional experiences for the
+                        most discerning clientele.</p>
                 </div>
                 <div class="footer-section">
                     <h3>SERVICES</h3>
@@ -889,4 +881,5 @@
         });
     </script>
 </body>
+
 </html>

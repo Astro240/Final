@@ -638,45 +638,23 @@
             </div>
             
             <div class="product-grid">
+                {{range .Products}}
                 <div class="product-card">
-                    <div class="product-image">🎨</div>
+                    <div class="product-image">
+                        {{if .Image}}
+                        <img src="/products/{{.Image}}" alt="{{.Name}}">
+                        {{else}}
+                        🎨
+                        {{end}}
+                    </div>
                     <div class="product-info">
-                        <h3 class="product-title">Rainbow Art Set</h3>
-                        <p class="product-description">Complete creative kit with vibrant colors and premium brushes to unleash your artistic vision.</p>
-                        <div class="product-price">45.99 BD</div>
-                        <button class="add-to-cart">Add to Cart 🎯</button>
+                        <h3 class="product-title">{{.Name}}</h3>
+                        <p class="product-description">{{.Description}}</p>
+                        <div class="product-price">{{.Price}} BD</div>
+                        <button class="add-to-cart">Add to Cart</button>
                     </div>
                 </div>
-
-                <div class="product-card">
-                    <div class="product-image">🌈</div>
-                    <div class="product-info">
-                        <h3 class="product-title">Holographic Backpack</h3>
-                        <p class="product-description">Iridescent design that changes colors as you move. Perfect for festival adventures!</p>
-                        <div class="product-price">89.99 BD</div>
-                        <button class="add-to-cart">Add to Cart 🚀</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">💫</div>
-                    <div class="product-info">
-                        <h3 class="product-title">LED Galaxy Projector</h3>
-                        <p class="product-description">Transform any room into a cosmic wonderland with swirling colors and starlight.</p>
-                        <div class="product-price">67.99 BD</div>
-                        <button class="add-to-cart">Add to Cart ⭐</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">🔥</div>
-                    <div class="product-info">
-                        <h3 class="product-title">Neon Sneakers</h3>
-                        <p class="product-description">Electric colors that glow in the dark. Step into the future of fashion!</p>
-                        <div class="product-price">129.99 BD</div>
-                        <button class="add-to-cart">Add to Cart 💥</button>
-                    </div>
-                </div>
+                {{end}}
             </div>
         </div>
     </section>
