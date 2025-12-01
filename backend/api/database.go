@@ -27,9 +27,12 @@ func CreateDatabase() {
 		age INTEGER,
 		user_type INTEGER,
 		profile_picture TEXT,
+		store_id INTEGER,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_type) REFERENCES user_type(id)
+		FOREIGN KEY (user_type) REFERENCES user_type(id),
+		FOREIGN KEY (store_id) REFERENCES stores(id)
 	);
+	
 	CREATE TABLE IF NOT EXISTS verification_codes (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER,
@@ -61,6 +64,7 @@ func CreateDatabase() {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (owner_id) REFERENCES users(id)
 	);
+	
 	CREATE TABLE IF NOT EXISTS items (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		store_id INTEGER,
@@ -110,7 +114,11 @@ func CreateDatabase() {
     	FOREIGN KEY (order_id) REFERENCES orders(id),
     	FOREIGN KEY (item_id) REFERENCES items(id)
 	);
+
+	insert or ignore into users (id, email, password, first_name, user_type) values
+	(0, 'astropify@gmail.com', '$2a$10$MleK0bpPilssP8IyMai7A.5azKNbMcz8bJrLxWmbLnhcKtRHY87V2', 'admin', 1);
 	`
+
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		log.Fatal(err)

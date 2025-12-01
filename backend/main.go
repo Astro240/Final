@@ -41,7 +41,9 @@ func main() {
 
 	//APIs for the project
 	http.HandleFunc("/api/login", api.LoginHandler)
+	http.HandleFunc("/api/store_login", api.StoreLoginHandler)
 	http.HandleFunc("/api/register", api.RegisterHandler)
+	http.HandleFunc("/api/store_register", api.StoreRegisterHandler)
 	http.HandleFunc("/api/verify_2fa", api.TwoFactorAuth)
 	http.HandleFunc("/api/create_store", api.CreateStoreHandler)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)

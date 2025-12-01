@@ -462,6 +462,140 @@
             color: #991b1b;
             border: 1px solid #f87171;
         }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px #0000001a;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .modal-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #718096;
+            transition: all 0.3s;
+        }
+
+        .modal-tab.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .modal-content {
+            display: none;
+        }
+
+        .modal-content.active {
+            display: block;
+        }
+
+        .form-group-modal {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-modal label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group-modal input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group-modal input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px #667eea26;
+        }
+
+        .modal-submit {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-submit:hover {
+            background: #2d3748;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px #00000033;
+        }
+
+        .modal-switch {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .modal-switch a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal-switch a:hover {
+            text-decoration: underline;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links,
@@ -560,7 +694,10 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <a href="#cart" class="cart-icon">Cart (0)</a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button id="loginBtn" class="cart-icon" style="background: var(--primary-color); color: white; border: none;">Login</button>
+                <a href="#cart" class="cart-icon">Cart (0)</a>
+            </div>
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <span></span>
                 <span></span>
@@ -580,6 +717,7 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
             <li><a href="#cart">Cart (0)</a></li>
+            <li><button id="mobileLoginBtn" style="background: none; border: none; color: var(--secondary-color); font-size: 1.1rem; cursor: pointer;">Login</button></li>
         </ul>
     </div>
 
@@ -681,35 +819,57 @@
         </div>
     </footer>
 
-    <script>
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const mobileNav = document.getElementById('mobileNav');
-        const mobileNavClose = document.getElementById('mobileNavClose');
-        const mobileOverlay = document.getElementById('mobileOverlay');
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-tabs">
+                <div class="modal-tab active" id="loginTab">Login</div>
+                <div class="modal-tab" id="signupTab">Sign Up</div>
+            </div>
+            <div class="modal-content active" id="loginContent">
+                <div id="loginError" style="display: none; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+                <form id="loginForm">
+                    <div class="form-group-modal">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" name="email" required>
+                    </div>
+                    <div class="form-group-modal">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="modal-submit">Login</button>
+                </form>
+                <div class="modal-switch">
+                    Don't have an account? <a href="#" id="switchToSignup">Sign up</a>
+                </div>
+            </div>
+            <div class="modal-content" id="signupContent">
+                <div id="signupError" style="display: none; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+                <form id="signupForm">
+                    <div class="form-group-modal">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" name="name" required>
+                    </div>
+                    <input type="hidden" name="store_id" value="{{ .ID }}">
+                    <input type="text" name="honeypot" style="display:none;">
+                    <div class="form-group-modal">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" name="email" required>
+                    </div>
+                    <div class="form-group-modal">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="modal-submit">Sign Up</button>
+                </form>
+                <div class="modal-switch">
+                    Already have an account? <a href="#" id="switchToLogin">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function openMobileMenu() {
-            mobileNav.classList.add('active');
-            mobileOverlay.classList.add('active');
-            mobileMenuToggle.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMobileMenu() {
-            mobileNav.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-            mobileMenuToggle.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        mobileMenuToggle.addEventListener('click', openMobileMenu);
-        mobileNavClose.addEventListener('click', closeMobileMenu);
-        mobileOverlay.addEventListener('click', closeMobileMenu);
-
-        // Close menu when clicking on a link
-        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
-        });
-    </script>
+    <script src="src/navbar.js" defer></script>
     <script src="src/create_product.js" defer></script>
 </body>
 </html>

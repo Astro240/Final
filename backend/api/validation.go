@@ -1,18 +1,19 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
-	"fmt"
-	"database/sql"
+
 	"github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
-	"os"
 )
 
-func ValidateUser(w http.ResponseWriter, r *http.Request) (int,bool) {
+func ValidateUser(w http.ResponseWriter, r *http.Request) (int, bool) {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		return 0, false
@@ -123,8 +124,8 @@ func ValidateStoreName(name string) error {
 	if strings.Contains(name, " ") || strings.Contains(name, ",") {
 		return fmt.Errorf("Store name cannot contain spaces or commas")
 	}
-	
-	invalidChars := regexp.MustCompile(`[!@#$%^&*()_+=\[\]{}|\\:;"'<>,?/\u200B]`)
+
+	invalidChars := regexp.MustCompile(`[!@#$%^&*()_+=\[\]{}|\\:;"'<>,?/\x{200B}]`)
 	if invalidChars.MatchString(name) {
 		return fmt.Errorf("Store name contains invalid characters")
 	}
