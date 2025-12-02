@@ -194,21 +194,8 @@ function submitForm() {
                 credentials: 'include'
             })
             .then(response => {
-                console.log('Response status:', response.status);
-                return response.text();
-            })
-            .then(data => {
-                console.log('Raw response:', data);
-                try {
-                    const jsonData = JSON.parse(data);
-                    if (jsonData.success) {
-                        window.location.href = `/store/${jsonData.store_id}/dashboard`;
-                    } else {
-                        showError('Error creating store: ' + jsonData.error);
-                    }
-                } catch (e) {
-                    console.error('Failed to parse JSON:', e);
-                    showError('Server response: ' + data);
+                if (response.ok) {
+                    window.location.href = '/'+formData.get('storeTitle')+".com";
                 }
             })
             .catch(error => {
