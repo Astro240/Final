@@ -166,6 +166,15 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "`+err.Error()+`"}`, http.StatusInternalServerError)
 		return
 	}
+	query := "SELECT id FROM stores WHERE name = ?"
+	row := db.QueryRow(query, name)
+	var existingID int
+	err = row.Scan(&existingID)
+	if err != sql.ErrNoRows {
+		http.Error(w, `{"error": "Store name already exists"}`, http.StatusInternalServerError)
+		return
+	}
+	
 	selectedTemplate := r.FormValue("selectedTemplate")
 	colors := []string{}
 	if selectedTemplate == "modern" {
@@ -222,7 +231,7 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	colorscheme := strings.Join(colors, ",")
-	query := "INSERT INTO stores (name, description,template, color_scheme, logo, banner, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	query = "INSERT INTO stores (name, description,template, color_scheme, logo, banner, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
 	_, err = db.Exec(query, name, description, selectedTemplate, colorscheme, logoImage, bannerImage, userID)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
