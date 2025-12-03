@@ -12,7 +12,7 @@ func GetProductsByStoreID(storeID uint) ([]Product, error) {
 		return nil, err
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id, name, description, price, image, quantity FROM items WHERE store_id = ?", storeID)
+	rows, err := db.Query("SELECT id, name, description, price, image, quantity FROM products WHERE store_id = ?", storeID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func CreateProductAPI(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "`+imageName+`"}`, http.StatusInternalServerError)
 		return
 	}
-	insertQuery := "INSERT INTO items (name, description, price, image, quantity, store_id) VALUES (?, ?, ?, ?, ?, ?)"
+	insertQuery := "INSERT INTO products (name, description, price, image, quantity, store_id) VALUES (?, ?, ?, ?, ?, ?)"
 	_, err = db.Exec(insertQuery, itemName, itemDescription, itemPrice, imageName, itemQuantity, storeOwnerID)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to create product"}`, http.StatusInternalServerError)

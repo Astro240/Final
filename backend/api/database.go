@@ -65,7 +65,7 @@ func CreateDatabase() {
 		FOREIGN KEY (owner_id) REFERENCES users(id)
 	);
 	
-	CREATE TABLE IF NOT EXISTS items (
+	CREATE TABLE IF NOT EXISTS products (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		store_id INTEGER,
 		name TEXT NOT NULL,
@@ -87,32 +87,50 @@ func CreateDatabase() {
     	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     	FOREIGN KEY (user_id) REFERENCES users(id)
 	);
+
 	CREATE TABLE IF NOT EXISTS transactions (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    	user_id INTEGER,
+    	order_id INTEGER,
     	payment_method_id INTEGER,
     	amount REAL NOT NULL,
     	transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     	status TEXT NOT NULL, -- e.g., 'completed', 'pending', 'failed'
-    	FOREIGN KEY (user_id) REFERENCES users(id),
+    	FOREIGN KEY (order_id) REFERENCES orders(id),
     	FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
 	);
+
+	-- Cart table
+	CREATE TABLE IF NOT EXISTS cart (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	user_id INTEGER NOT NULL,
+    	product_id INTEGER NOT NULL,
+    	quantity INTEGER NOT NULL DEFAULT 1,
+    	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	FOREIGN KEY (user_id) REFERENCES users(id),
+    	FOREIGN KEY (product_id) REFERENCES products(id),
+    	UNIQUE(user_id, product_id)
+	);
+
+	-- Orders table
 	CREATE TABLE IF NOT EXISTS orders (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    	user_id INTEGER,
-    	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	user_id INTEGER NOT NULL,
     	total_amount REAL NOT NULL,
-    	status TEXT NOT NULL, -- e.g., 'pending', 'shipped', 'delivered'
+    	status TEXT NOT NULL DEFAULT 'pending',
+    	shipping_info TEXT NOT NULL,
+    	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     	FOREIGN KEY (user_id) REFERENCES users(id)
 	);
-	CREATE TABLE IF NOT EXISTS order_items (
+
+	-- Order product table
+	CREATE TABLE IF NOT EXISTS order_products (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    	order_id INTEGER,
-    	item_id INTEGER,
+    	order_id INTEGER NOT NULL,
+    	product_id INTEGER NOT NULL,
     	quantity INTEGER NOT NULL,
-    	price REAL NOT NULL, -- Price at the time of order
+    	price REAL NOT NULL,
     	FOREIGN KEY (order_id) REFERENCES orders(id),
-    	FOREIGN KEY (item_id) REFERENCES items(id)
+    	FOREIGN KEY (product_id) REFERENCES products(id)
 	);
 
 	insert or ignore into users (id, email, password, first_name, user_type) values

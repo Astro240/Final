@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4299e1;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #1a202c;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .checkout-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            background: #edf2f7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #a0aec0;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-price {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .item-quantity {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .item-total {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .order-summary {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .summary-row.total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #4299e1;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(66, 153, 225, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .empty-cart-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            display: block;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    </header>
+
+    <div class="container">
+        <h1>Checkout</h1>
+        
+        <div id="alertMessage" class="alert"></div>
+
+        {{ if .Items }}
+        <div class="checkout-grid">
+            <div class="checkout-section">
+                <h2 class="section-title">Shipping Information</h2>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label for="full_name">Full Name *</label>
+                        <input type="text" id="full_name" name="full_name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State/Province</label>
+                            <input type="text" id="state" name="state">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="zip_code">ZIP/Postal Code</label>
+                            <input type="text" id="zip_code" name="zip_code">
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country *</label>
+                            <input type="text" id="country" name="country" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="checkout-section">
+                <h2 class="section-title">Order Summary</h2>
+                <div class="cart-items">
+                    {{ range .Items }}
+                    <div class="cart-item">
+                        <div class="item-image">🛍️</div>
+                        <div class="item-details">
+                            <div class="item-name">{{ .Product.Name }}</div>
+                            <div class="item-price">${{ printf "%.2f" .Product.Price }}</div>
+                            <div class="item-quantity">Quantity: {{ .Quantity }}</div>
+                        </div>
+                        <div class="item-total">${{ printf "%.2f" .ItemTotal }}</div>
+                    </div>
+                    {{ end }}
+                </div>
+
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal ({{ .TotalItems }} items)</span>
+                        <span>${{ printf "%.2f" .TotalPrice }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>FREE</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>${{ printf "%.2f" .TotalPrice }}</span>
+                    </div>
+                </div>
+
+                <button type="submit" form="checkoutForm" class="submit-btn" id="placeOrderBtn">
+                    Place Order
+                </button>
+                
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #718096;">
+                    Payment processing will be handled separately
+                </p>
+            </div>
+        </div>
+        {{ else }}
+        <div class="checkout-section">
+            <div class="empty-cart">
+                <div class="empty-cart-icon">🛒</div>
+                <h2>Your cart is empty</h2>
+                <p>Add some items to your cart before checking out.</p>
+                <a href="/stores" class="submit-btn" style="display: inline-block; margin-top: 1.5rem; text-decoration: none; max-width: 300px;">
+                    Browse Stores
+                </a>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+
+    <script>
+        const checkoutForm = document.getElementById('checkoutForm');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        const alertMessage = document.getElementById('alertMessage');
+
+        function showAlert(message, type) {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert ${type}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    window.location.href = '/stores';
+                }, 2000);
+            }
+        }
+
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.textContent = 'Processing...';
+
+                const formData = new FormData(checkoutForm);
+
+                try {
+                    const response = await fetch('/api/create-order', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showAlert('Order placed successfully! Redirecting...', 'success');
+                    } else {
+                        showAlert(data.error || 'Failed to place order', 'error');
+                        placeOrderBtn.disabled = false;
+                        placeOrderBtn.textContent = 'Place Order';
+                    }
+                } catch (error) {
+                    showAlert('An error occurred. Please try again.', 'error');
+                    placeOrderBtn.disabled = false;
+                    placeOrderBtn.textContent = 'Place Order';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

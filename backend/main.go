@@ -35,6 +35,7 @@ func main() {
 	http.Handle("/logos/", http.StripPrefix("/logos/", http.FileServer(http.Dir("./store_images/logos"))))
 	http.Handle("/banners/", http.StripPrefix("/banners/", http.FileServer(http.Dir("./store_images/banners"))))
 	http.Handle("/products/", http.StripPrefix("/products/", http.FileServer(http.Dir("./store_images/products"))))
+
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("../frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("../frontend/data"))))
@@ -48,6 +49,14 @@ func main() {
 	http.HandleFunc("/api/create_store", api.CreateStoreHandler)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)
 	http.HandleFunc("/api/create_product", api.CreateProductAPI)
+
+	// Cart and Checkout routes
+	http.HandleFunc("/api/add-to-cart", api.AddToCart)
+	http.HandleFunc("/api/get-cart", api.GetCart)
+	http.HandleFunc("/api/update-cart", api.UpdateCartItem)
+	http.HandleFunc("/api/remove-from-cart", api.RemoveFromCart)
+	http.HandleFunc("/api/create-order", api.CreateOrder)
+	http.HandleFunc("/api/get-orders", api.GetOrders)
 
 	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		panic(err)

@@ -115,6 +115,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "`+msg+`"}`, http.StatusBadRequest)
 		return
 	}
+
+	token := GenerateEmailCode()
+	err = SendEmail(email, "Verification Code To Astropify: "+token, "Welcome to Astropify, Where you can create your store on the fly! Your verification code is: "+token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
+		return
+	}
+
 	avatarPath := "./avatars/"
 	picture := "default.png"
 	//check if profilePicture is not empty, then validate and save
@@ -144,7 +152,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Error retrieving user ID"}`, http.StatusInternalServerError)
 		return
 	}
-	token := GenerateEmailCode()
 
 	query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+5 minutes'))"
 	_, err = db.Exec(query, userID, token)
@@ -152,12 +159,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Failed to store verification code"}`, http.StatusInternalServerError)
 		return
 	}
-	err = SendEmail(email, "Verification Code To Astropify: "+token, "Welcome to Astropify, Where you can create your store on the fly! Your verification code is: "+token)
-	if err != nil {
-		http.Error(w, `{"error": "Failed to send email"}`, http.StatusInternalServerError)
-		return
-	}
-
+	
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Registration successful", "user_id": "` + fmt.Sprint(userID) + `", "email": "` + email + `"}`))
 }

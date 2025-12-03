@@ -196,6 +196,8 @@ function submitForm() {
             .then(response => {
                 if (response.ok) {
                     window.location.href = '/'+formData.get('storeTitle')+".com";
+                }else {
+                    showError(response.error || 'Failed to create store');
                 }
             })
             .catch(error => {

@@ -8,13 +8,19 @@ import (
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	storeName := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, "/"))
+	isCheckout := false
+	if strings.HasSuffix(storeName, "/checkout") {
+		isCheckout = true
+		storeName = strings.TrimSuffix(storeName, "/checkout")
+	}
 	storeName = strings.TrimSuffix(storeName, ".com")
 	if storeName == "" {
-		storeName = r.Host
+		http.ServeFile(w, r, "../frontend/index.html")
+		return
 	}
 	if storeName != "" {
 		store, err := GetStoreByName(storeName)
-		if err == nil && store.ID != 0 {
+		if err == nil && store.ID != 0 && !isCheckout {
 			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
@@ -29,9 +35,21 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			return
+		} else if isCheckout && err == nil && store.ID != 0 {
+			http.ServeFile(w, r, "../frontend/checkout.html")
+			// tmpl, err := template.ParseFiles("../frontend/checkout.html")
+			// if err != nil {
+			// 	HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+			// 	return
+			// }
+			// if err := tmpl.Execute(w, store); err != nil {
+			// 	HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+			// 	return
+			// }
+			return
 		}
 	}
-	http.ServeFile(w, r, "../frontend/index.html")
+	HandleError(w, r, http.StatusNotFound, "Invalid Path")
 }
 
 func SampleStoreView(w http.ResponseWriter, r *http.Request) {
