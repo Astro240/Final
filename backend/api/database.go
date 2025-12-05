@@ -20,7 +20,7 @@ func CreateDatabase() {
 	sqlStmt := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT NOT NULL UNIQUE,
+		email TEXT NOT NULL,
 		password TEXT NOT NULL,
 		first_name TEXT,
 		last_name TEXT,

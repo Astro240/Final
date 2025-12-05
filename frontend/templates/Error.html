@@ -38,12 +38,11 @@
         <h2 style="font-size: 4rem; font-weight: 600; color: white; text-align: center;">{{.ErrorNbr}}</h2>
         <h2 style="font-size: 3rem; font-weight: 600; color: white; text-align: center;">{{.ErrorMsg}}</h2>
         <center>
-            <a href="/login" style="color: white; text-decoration: none;"><button onclick="refreshAndGoBack()" class="glowDiv"><span>Go Back</span></button></a>
+            <a style="color: white; text-decoration: none;"><button onclick="refreshAndGoBack()" class="glowDiv"><span>Go Back</span></button></a>
         </center>
         <script>
             function refreshAndGoBack() {
                 history.back();
-                location.reload();
             }
         </script>
     </div>

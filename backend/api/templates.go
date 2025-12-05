@@ -9,9 +9,13 @@ import (
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	storeName := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, "/"))
 	isCheckout := false
+	isDashboard := false
 	if strings.HasSuffix(storeName, "/checkout") {
 		isCheckout = true
 		storeName = strings.TrimSuffix(storeName, "/checkout")
+	} else if strings.HasSuffix(storeName, "/dashboard") {
+		isDashboard = true
+		storeName = strings.TrimSuffix(storeName, "/dashboard")
 	}
 	storeName = strings.TrimSuffix(storeName, ".com")
 	if storeName == "" {
@@ -20,7 +24,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	if storeName != "" {
 		store, err := GetStoreByName(storeName)
-		if err == nil && store.ID != 0 && !isCheckout {
+		if err == nil && store.ID != 0 && !isCheckout && !isDashboard {
 			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
@@ -36,16 +40,20 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		} else if isCheckout && err == nil && store.ID != 0 {
-			http.ServeFile(w, r, "../frontend/checkout.html")
-			// tmpl, err := template.ParseFiles("../frontend/checkout.html")
-			// if err != nil {
-			// 	HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
-			// 	return
-			// }
-			// if err := tmpl.Execute(w, store); err != nil {
-			// 	HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
-			// 	return
-			// }
+			//Redirect to the proper checkout handler
+			CheckoutPageForStore(w, r, int(store.ID))
+			return
+		} else if isDashboard && err == nil && store.ID != 0 {
+			//validate the user and display the dashboard
+			tmpl, err := template.ParseFiles("../frontend/dashboard.html")
+			if err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+				return
+			}
+			if err := tmpl.Execute(w, nil); err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+				return
+			}
 			return
 		}
 	}

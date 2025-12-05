@@ -417,6 +417,9 @@
             transition: all 0.5s ease;
             position: relative;
             box-shadow: 0 4px 6px #0000000d;
+            max-width: 450px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .product-card::before {
@@ -458,21 +461,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        .product-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, #ffffff66, transparent);
-            transition: left 0.5s ease;
-        }
-
-        .product-card:hover .product-image::after {
-            left: 100%;
         }
 
         .product-info {
@@ -948,6 +936,11 @@
                 font-size: 1.1rem;
             }
 
+            .product-image {
+                height: 250px;
+                font-size: 3rem;
+            }
+
             .product-grid {
                 grid-template-columns: 1fr;
                 gap: 2rem;
@@ -1020,7 +1013,7 @@
             }
 
             .product-image {
-                height: 250px;
+                height: 200px;
             }
 
             .product-info {
@@ -1055,7 +1048,7 @@
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);">
                     Login
                 </button>
-                <a href="#cart" class="cart-icon">Cart (0)</a>
+                <a onclick="goToCheckout()" class="cart-icon">Cart (0)</a>
             </div>
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <span></span>
@@ -1075,7 +1068,7 @@
             <li><a href="#collections">Collections</a></li>
             <li><a href="#heritage">Heritage</a></li>
             <li><a href="#contact">Contact</a></li>
-            <li><a href="#cart">Cart (0)</a></li>
+            <li><a onclick="goToCheckout()">Cart (0)</a></li>
             <li><button id="mobileLoginBtn"
                     style="background: none; border: none; color: #4b5563; font-size: 1.2rem; cursor: pointer;">Login</button>
             </li>
@@ -1198,15 +1191,15 @@
             <div class="modal-content active" id="loginContent">
                 <div id="loginError" style="display: none; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
                 <form id="loginForm">
+                    <input type="hidden" name="store_id" value="{{ .ID }}">
+                    <input type="text" name="honeypot" style="display:none;">
                     <div class="form-group-modal">
                         <label for="loginEmail">Email</label>
                         <input type="email" id="loginEmail" name="email" required>
                     </div>
-                    <input type="hidden" name="store_id" value="{{ .ID }}">
-                    <input type="text" name="honeypot" style="display:none;">
                     <div class="form-group-modal">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" name="password" required>
+                        <input type="password" id="loginPassword" name="loginPassword" required>
                     </div>
                     <button type="submit" class="modal-submit">Login</button>
                 </form>
@@ -1217,19 +1210,19 @@
             <div class="modal-content" id="signupContent">
                 <div id="signupError" style="display: none; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
                 <form id="signupForm">
-                    <div class="form-group-modal">
-                        <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" name="name" required>
-                    </div>
                     <input type="hidden" name="store_id" value="{{ .ID }}">
                     <input type="text" name="honeypot" style="display:none;">
                     <div class="form-group-modal">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" name="signupName" required>
+                    </div>
+                    <div class="form-group-modal">
                         <label for="signupEmail">Email</label>
-                        <input type="email" id="signupEmail" name="email" required>
+                        <input type="email" id="signupEmail" name="signupEmail" required>
                     </div>
                     <div class="form-group-modal">
                         <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" name="password" required>
+                        <input type="password" id="signupPassword" name="signupPassword" required>
                     </div>
                     <button type="submit" class="modal-submit">Sign Up</button>
                 </form>

@@ -43,3 +43,18 @@ type Color struct {
 	Tertiary   string `json:"tertiary"`
 	Highlight  string `json:"highlight"`
 }
+
+// Cart and Checkout
+type CartItem struct {
+	ID           int     `json:"id"`
+	ProductID    int     `json:"product_id"`
+	Quantity     int     `json:"quantity"`
+	Product      Product `json:"product"`
+	ItemTotal    float64 `json:"item_total"`
+}
+
+type CartResponse struct {
+	Items      []CartItem `json:"items"`
+	TotalItems int        `json:"total_items"`
+	TotalPrice float64    `json:"total_price"`
+}

@@ -322,7 +322,13 @@
                 <div class="cart-items">
                     {{ range .Items }}
                     <div class="cart-item">
-                        <div class="item-image">🛍️</div>
+                        <div class="item-image">
+                             {{ if .Product.Image }}
+                             <img src="/products/{{ .Product.Image }}" alt="🛍️" style="width: 100%;height:100%;">
+                             {{else}}
+                                🛍️
+                            {{end}}
+                        </div>
                         <div class="item-details">
                             <div class="item-name">{{ .Product.Name }}</div>
                             <div class="item-price">${{ printf "%.2f" .Product.Price }}</div>
@@ -363,7 +369,7 @@
                 <div class="empty-cart-icon">🛒</div>
                 <h2>Your cart is empty</h2>
                 <p>Add some items to your cart before checking out.</p>
-                <a href="/stores" class="submit-btn" style="display: inline-block; margin-top: 1.5rem; text-decoration: none; max-width: 300px;">
+                <a onclick="goBack()" class="submit-btn" style="display: inline-block; margin-top: 1.5rem; text-decoration: none; max-width: 300px;">
                     Browse Stores
                 </a>
             </div>
@@ -372,6 +378,9 @@
     </div>
 
     <script>
+        function goBack(){
+            history.back();
+        }
         const checkoutForm = document.getElementById('checkoutForm');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
         const alertMessage = document.getElementById('alertMessage');

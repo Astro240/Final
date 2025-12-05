@@ -159,7 +159,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Failed to store verification code"}`, http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Registration successful", "user_id": "` + fmt.Sprint(userID) + `", "email": "` + email + `"}`))
 }
@@ -188,7 +188,25 @@ func StoreLoginHandler(w http.ResponseWriter, r *http.Request) {
 	query := `SELECT id, password FROM users WHERE email = ? AND store_id = ?`
 	row := db.QueryRow(query, email, storeID)
 	if row.Err() == sql.ErrNoRows {
-		http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
+		queryStoreOwner := `SELECT id, password FROM users WHERE email = ? AND store_id IS NULL`
+		new_row := db.QueryRow(queryStoreOwner, email)
+		if new_row.Err() == sql.ErrNoRows {
+			http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
+			return
+		}
+		var userID int
+		var storedPassword string
+		if err := row.Scan(&userID, &storedPassword); err != nil {
+			http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
+			return
+		}
+		if bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(password)) != nil {
+			http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
+			return
+		}
+		// Successful login
+		SetCookie(w, userID, "session_token")
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
@@ -203,6 +221,7 @@ func StoreLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Successful login
+	SetCookie(w, userID, "customer_token")
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -219,9 +238,9 @@ func StoreRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
-	email := strings.ToLower(r.FormValue("email"))
-	password := r.FormValue("password")
-	name := r.FormValue("name")
+	email := strings.ToLower(r.FormValue("signupEmail"))
+	password := r.FormValue("signupPassword")
+	name := r.FormValue("signupName")
 	storeID := r.FormValue("store_id")
 	honeypot := r.FormValue("honeypot")
 
@@ -260,23 +279,34 @@ func StoreRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Email already exists"}`, http.StatusBadRequest)
 		return
 	}
+	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? and store_id IS NULL", email).Scan(&exists)
+	if err != nil {
+		http.Error(w, `{"error": "Database query error"}`, http.StatusInternalServerError)
+		return
+	}
+	if exists > 0 {
+		http.Error(w, `{"error": "Email already exists"}`, http.StatusBadRequest)
+		return
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		http.Error(w, `{"error": "Error processing password"}`, http.StatusInternalServerError)
 		return
 	}
 	query := "INSERT INTO users (email, password, first_name, user_type, store_id) VALUES (?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, email, string(hashedPassword), name, 2, storeID)
+	result, err := db.Exec(query, email, string(hashedPassword), name, 2, storeID)
 	if err != nil {
 		http.Error(w, `{"error": "Error creating user"}`, http.StatusInternalServerError)
 		return
 	}
 	// Get the last inserted ID
-	// userID, err := result.LastInsertId()
-	// if err != nil {
-	// 	http.Error(w, `{"error": "Error retrieving user ID"}`, http.StatusInternalServerError)
-	// 	return
-	// }
+	userID, err := result.LastInsertId()
+	if err != nil {
+		http.Error(w, `{"error": "Error retrieving user ID"}`, http.StatusInternalServerError)
+		return
+	}
 	// Successful registration
+	SetCookie(w, int(userID), "customer_token")
+
 	w.WriteHeader(http.StatusOK)
 }

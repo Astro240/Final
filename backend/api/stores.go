@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"strings"
@@ -288,7 +287,7 @@ func GetStoreByName(storeName string) (Store, error) {
 // Cart and Checkout related functions
 
 func AddToCart(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
+	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
 		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 		return
@@ -332,19 +331,24 @@ func AddToCart(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"success": true}`))
 }
 
-func GetCart(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
+func GetCart(w http.ResponseWriter, r *http.Request, store_id int) CartResponse {
+	cartData, err := getCartData(w, r, store_id)
+	if err != nil {
+		return CartResponse{}
+	}
+	return cartData
+}
+
+func getCartData(w http.ResponseWriter, r *http.Request, store_id int) (CartResponse, error) {
+	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
 		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
-		return
+		return CartResponse{}, nil
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 
 	db, err := sql.Open("sqlite3", DATABASEPATH)
 	if err != nil {
-		http.Error(w, `{"error": "Internal Server Error"}`, http.StatusInternalServerError)
-		return
+		return CartResponse{}, err
 	}
 	defer db.Close()
 
@@ -353,60 +357,50 @@ func GetCart(w http.ResponseWriter, r *http.Request) {
 			   p.id, p.name, p.description, p.price, p.image, p.store_id
 		FROM cart c
 		JOIN products p ON c.product_id = p.id
-		WHERE c.user_id = ?
-	`, userID)
+		WHERE c.user_id = ? AND p.store_id = ?
+	`, userID, store_id)
 
 	if err != nil {
-		http.Error(w, `{"error": "Failed to fetch cart"}`, http.StatusInternalServerError)
-		return
+		return CartResponse{}, err
 	}
 	defer rows.Close()
 
-	var items []map[string]interface{}
+	var items []CartItem
 	totalPrice := 0.0
 	totalItems := 0
 
 	for rows.Next() {
-		var id, productID, userID, quantity, pID, storeID int
-		var name, description, image string
-		var price float64
+		var id, productID, userID, quantity, storeID int
+		var product Product
 
-		err := rows.Scan(&id, &productID, &userID, &quantity, &pID, &name, &description, &price, &image, &storeID)
+		err := rows.Scan(&id, &productID, &userID, &quantity,
+			&product.ID, &product.Name, &product.Description, &product.Price, &product.Image, &storeID)
 		if err != nil {
 			continue
 		}
 
-		itemTotal := price * float64(quantity)
+		itemTotal := product.Price * float64(quantity)
 		totalPrice += itemTotal
 		totalItems += quantity
 
-		items = append(items, map[string]interface{}{
-			"id":         id,
-			"product_id": productID,
-			"quantity":   quantity,
-			"product": map[string]interface{}{
-				"id":          pID,
-				"name":        name,
-				"description": description,
-				"price":       price,
-				"image":       image,
-				"store_id":    storeID,
-			},
-			"item_total": itemTotal,
+		items = append(items, CartItem{
+			ID:        id,
+			ProductID: productID,
+			Quantity:  quantity,
+			Product:   product,
+			ItemTotal: itemTotal,
 		})
 	}
 
-	response := map[string]interface{}{
-		"items":       items,
-		"total_items": totalItems,
-		"total_price": totalPrice,
-	}
-
-	json.NewEncoder(w).Encode(response)
+	return CartResponse{
+		Items:      items,
+		TotalItems: totalItems,
+		TotalPrice: totalPrice,
+	}, nil
 }
 
 func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
+	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
 		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 		return
@@ -440,7 +434,7 @@ func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveFromCart(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
+	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
 		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 		return
@@ -501,21 +495,7 @@ func CheckoutPage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	type CartItemDisplay struct {
-		ID        int
-		ProductID int
-		Quantity  int
-		Product   Product
-		ItemTotal float64
-	}
-
-	type CheckoutDisplay struct {
-		Items      []CartItemDisplay
-		TotalItems int
-		TotalPrice float64
-	}
-
-	var items []CartItemDisplay
+	var items []CartItem
 	totalPrice := 0.0
 	totalItems := 0
 
@@ -533,7 +513,7 @@ func CheckoutPage(w http.ResponseWriter, r *http.Request) {
 		totalPrice += itemTotal
 		totalItems += quantity
 
-		items = append(items, CartItemDisplay{
+		items = append(items, CartItem{
 			ID:        id,
 			ProductID: productID,
 			Quantity:  quantity,
@@ -542,7 +522,7 @@ func CheckoutPage(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	data := CheckoutDisplay{
+	data := CartResponse{
 		Items:      items,
 		TotalItems: totalItems,
 		TotalPrice: totalPrice,
@@ -560,192 +540,75 @@ func CheckoutPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreateOrder(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
+func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int) {
+	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
-		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	// Get shipping info from form
-	fullName := strings.TrimSpace(r.FormValue("full_name"))
-	email := strings.TrimSpace(r.FormValue("email"))
-	phone := strings.TrimSpace(r.FormValue("phone"))
-	address := strings.TrimSpace(r.FormValue("address"))
-	city := strings.TrimSpace(r.FormValue("city"))
-	state := strings.TrimSpace(r.FormValue("state"))
-	zipCode := strings.TrimSpace(r.FormValue("zip_code"))
-	country := strings.TrimSpace(r.FormValue("country"))
-
-	if fullName == "" || email == "" || address == "" || city == "" || country == "" {
-		http.Error(w, `{"error": "All shipping fields are required"}`, http.StatusBadRequest)
-		return
-	}
-
-	shippingInfo := strings.Join([]string{fullName, email, phone, address, city, state, zipCode, country}, "|")
 
 	db, err := sql.Open("sqlite3", DATABASEPATH)
 	if err != nil {
-		http.Error(w, `{"error": "Internal Server Error"}`, http.StatusInternalServerError)
+		HandleError(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	defer db.Close()
 
-	// Get cart items and calculate total
 	rows, err := db.Query(`
-		SELECT c.id, c.product_id, c.quantity, p.price
+		SELECT c.id, c.product_id, c.user_id, c.quantity,
+			   p.id, p.name, p.description, p.price, p.image, p.store_id
 		FROM cart c
 		JOIN products p ON c.product_id = p.id
-		WHERE c.user_id = ?
-	`, userID)
+		WHERE c.user_id = ? AND p.store_id = ?
+	`, userID, storeID)
 
 	if err != nil {
-		http.Error(w, `{"error": "Failed to fetch cart"}`, http.StatusInternalServerError)
-		return
-	}
-
-	type CartData struct {
-		ID        int
-		ProductID int
-		Quantity  int
-		Price     float64
-	}
-
-	var cartItems []CartData
-	totalAmount := 0.0
-
-	for rows.Next() {
-		var item CartData
-		if err := rows.Scan(&item.ID, &item.ProductID, &item.Quantity, &item.Price); err != nil {
-			rows.Close()
-			http.Error(w, `{"error": "Failed to process cart"}`, http.StatusInternalServerError)
-			return
-		}
-		totalAmount += item.Price * float64(item.Quantity)
-		cartItems = append(cartItems, item)
-	}
-	rows.Close()
-
-	if len(cartItems) == 0 {
-		http.Error(w, `{"error": "Cart is empty"}`, http.StatusBadRequest)
-		return
-	}
-
-	// Start transaction
-	tx, err := db.Begin()
-	if err != nil {
-		http.Error(w, `{"error": "Internal Server Error"}`, http.StatusInternalServerError)
-		return
-	}
-
-	// Create order
-	result, err := tx.Exec(`
-		INSERT INTO orders (user_id, total_amount, status, shipping_info, created_at)
-		VALUES (?, ?, 'pending', ?, datetime('now'))
-	`, userID, totalAmount, shippingInfo)
-
-	if err != nil {
-		tx.Rollback()
-		http.Error(w, `{"error": "Failed to create order"}`, http.StatusInternalServerError)
-		return
-	}
-
-	orderID, err := result.LastInsertId()
-	if err != nil {
-		tx.Rollback()
-		http.Error(w, `{"error": "Failed to create order"}`, http.StatusInternalServerError)
-		return
-	}
-
-	// Create order items
-	for _, item := range cartItems {
-		_, err = tx.Exec(`
-			INSERT INTO order_products (order_id, product_id, quantity, price)
-			VALUES (?, ?, ?, ?)
-		`, orderID, item.ProductID, item.Quantity, item.Price)
-
-		if err != nil {
-			tx.Rollback()
-			http.Error(w, `{"error": "Failed to create order items"}`, http.StatusInternalServerError)
-			return
-		}
-	}
-
-	// Clear cart
-	_, err = tx.Exec("DELETE FROM cart WHERE user_id = ?", userID)
-	if err != nil {
-		tx.Rollback()
-		http.Error(w, `{"error": "Failed to clear cart"}`, http.StatusInternalServerError)
-		return
-	}
-
-	// Commit transaction
-	if err = tx.Commit(); err != nil {
-		http.Error(w, `{"error": "Failed to complete order"}`, http.StatusInternalServerError)
-		return
-	}
-
-	response := map[string]interface{}{
-		"success":  true,
-		"order_id": orderID,
-		"message":  "Order created successfully",
-	}
-
-	json.NewEncoder(w).Encode(response)
-}
-
-func GetOrders(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
-	if !validUser {
-		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	db, err := sql.Open("sqlite3", DATABASEPATH)
-	if err != nil {
-		http.Error(w, `{"error": "Internal Server Error"}`, http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-
-	rows, err := db.Query(`
-		SELECT id, user_id, total_amount, status, shipping_info, created_at
-		FROM orders
-		WHERE user_id = ?
-		ORDER BY created_at DESC
-	`, userID)
-
-	if err != nil {
-		http.Error(w, `{"error": "Failed to fetch orders"}`, http.StatusInternalServerError)
+		HandleError(w, r, http.StatusInternalServerError, "Failed to fetch cart")
 		return
 	}
 	defer rows.Close()
 
-	var orders []map[string]interface{}
+	var items []CartItem
+	totalPrice := 0.0
+	totalItems := 0
 
 	for rows.Next() {
-		var id, userID int
-		var totalAmount float64
-		var status, shippingInfo, createdAt string
+		var id, productID, userID, quantity, storeID int
+		var product Product
 
-		err := rows.Scan(&id, &userID, &totalAmount, &status, &shippingInfo, &createdAt)
+		err := rows.Scan(&id, &productID, &userID, &quantity,
+			&product.ID, &product.Name, &product.Description, &product.Price, &product.Image, &storeID)
 		if err != nil {
 			continue
 		}
 
-		orders = append(orders, map[string]interface{}{
-			"id":            id,
-			"user_id":       userID,
-			"total_amount":  totalAmount,
-			"status":        status,
-			"shipping_info": shippingInfo,
-			"created_at":    createdAt,
+		itemTotal := product.Price * float64(quantity)
+		totalPrice += itemTotal
+		totalItems += quantity
+
+		items = append(items, CartItem{
+			ID:           id,
+			ProductID:    productID,
+			Quantity:     quantity,
+			Product:      product,
+			ItemTotal:    itemTotal,
 		})
 	}
 
-	json.NewEncoder(w).Encode(orders)
+	data := CartResponse{
+		Items:      items,
+		TotalItems: totalItems,
+		TotalPrice: totalPrice,
+	}
+
+	tmpl, err := template.ParseFiles("../frontend/checkout.html")
+	if err != nil {
+		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+		return
+	}
+
+	if err := tmpl.Execute(w, data); err != nil {
+		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+		return
+	}
 }

@@ -32,6 +32,29 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) (int, bool) {
 	if err := row.Scan(&userID); err != nil {
 		return 0, false
 	}
+
+	return userID, true
+}
+
+func ValidateCustomer(w http.ResponseWriter, r *http.Request) (int, bool) {
+	cookie, err := r.Cookie("customer_token")
+	if err != nil {
+		return 0, false
+	}
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		return 0, false
+	}
+	defer db.Close()
+	var userID int
+	query := "SELECT user_id FROM sessions WHERE session_token = ?"
+	row := db.QueryRow(query, cookie.Value)
+	if row.Err() == sql.ErrNoRows {
+		return 0, false
+	}
+	if err := row.Scan(&userID); err != nil {
+		return 0, false
+	}
 	return userID, true
 }
 
