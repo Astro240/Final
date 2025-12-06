@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/register.html")
 	})
+	http.HandleFunc("/logout", api.LogoutHandler)
 	http.HandleFunc("/store", api.StorePage)
 	http.HandleFunc("/templates", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../frontend/template.html")

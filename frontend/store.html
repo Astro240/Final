@@ -4,6 +4,67 @@
             margin: 0;
             background-color: black;
         }
+        
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-dropdown-content.show {
+            display: block;
+        }
+        
+        .profile-dropdown-content a {
+            color: #333;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+            font-weight: 500;
+        }
+        
+        .profile-dropdown-content a:hover {
+            background: rgba(0, 102, 204, 0.1);
+        }
+        
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+            object-fit: cover;
+        }
+        
+        .profile-pic:hover {
+            border-color: rgba(255, 255, 255, 0.9);
+            transform: scale(1.05);
+        }
+
+        .dropdown-bridge {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 100%;
+            height: 8px;
+            background: transparent;
+        }
     </style>
     <script type="importmap">
         { "imports": 
@@ -25,9 +86,28 @@
         <a href="/" style="color: white; text-decoration: none; float: left;">
             <img src="./img/logo.png" style="height: 75px; width: 75x;margin-top: -10px;" draggable="false" />
         </a>
+        
+        {{ if .User.ProfilePicture }}
+        <div class="profile-dropdown" style="float: right;" id="profileDropdown">
+            <img src="/avatars/{{ .User.ProfilePicture }}" alt="Profile" class="profile-pic" id="profilePic" />
+            <div class="dropdown-bridge"></div>
+            <div class="profile-dropdown-content" id="dropdownContent">
+                <a href="/profile" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                    <strong>{{ .User.Fullname }}</strong>
+                </a>
+                <a href="/profile">👤 My Profile</a>
+                <a href="/dashboard">📊 Dashboard</a>
+                <a href="/stores">🏪 My Stores</a>
+                <a href="/settings">⚙️ Settings</a>
+                <a href="/logout" style="color: #d32f2f; border-top: 1px solid rgba(0, 0, 0, 0.1);">🚪 Logout</a>
+            </div>
+        </div>
+        {{ else }}
         <a href="/login" style="color: white; text-decoration: none;"><button style="float:right" class="glowDiv">
                 <span>Login</span>
             </button></a>
+        {{ end }}
+        
         <a href="/stores" style="color: white; text-decoration: none;"><button style="float:left;margin-left: 100px;"
                 class="navbarElements" id="storeButton">
                 <span style="color:white">Stores</span>
@@ -42,43 +122,62 @@
             </button></a>
     </div>
 
-        <!-- Move the store cards above the background image -->
+    <!-- Move the store cards above the background image -->
     <div style="position: relative; z-index: 1; margin-top: 120px; padding: 40px 20px;">
         <div style="max-width: 1400px; margin: 0 auto;">
             <!-- Hero Section -->
             <div style="text-align: center; margin-bottom: 60px;">
-                <h1 style="font-size: 3rem; color: white; margin: 0 0 15px 0; font-weight: 900; text-shadow: 0 4px 20px rgba(0,0,0,0.3);">Stores</h1>
-                <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; margin: 0;">Manage and explore your personal storefront collection</p>
+                <h1
+                    style="font-size: 3rem; color: white; margin: 0 0 15px 0; font-weight: 900; text-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    Stores</h1>
+                <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; margin: 0;">Manage and explore your personal
+                    storefront collection</p>
             </div>
 
             <!-- My Stores Grid -->
+            {{ if .ValidUser }}
             <div style="margin-bottom: 80px;">
                 <div style="display: flex; align-items: center; margin-bottom: 30px; gap: 15px;">
-                    <div style="width: 4px; height: 30px; background: linear-gradient(180deg, #0066cc, #0052a3); border-radius: 2px;"></div>
+                    <div
+                        style="width: 4px; height: 30px; background: linear-gradient(180deg, #0066cc, #0052a3); border-radius: 2px;">
+                    </div>
                     <h2 style="margin: 0; color: #001a4d; font-size: 1.8rem; font-weight: 700;">Personal Stores</h2>
-                    <span style="background: rgba(0, 102, 204, 0.15); color: #003d99; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">{{ len .MyStores }} Active</span>
+                    <span
+                        style="background: rgba(0, 102, 204, 0.15); color: #003d99; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">{{
+                        len .MyStores }} Active</span>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px;">
                     <!-- Add Store Card -->
-                    <a href="/templates" style="text-decoration: none;"><div style="background: linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1)); border: 2px dashed rgba(0, 102, 204, 0.4); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; min-height: 280px;"
-                        onmouseover="this.style.background='linear-gradient(135deg, rgba(100, 180, 255, 0.3), rgba(80, 160, 240, 0.2))'; this.style.borderColor='rgba(0, 102, 204, 0.6)'; this.style.transform='translateY(-4px)';"
-                        onmouseout="this.style.background='linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1))'; this.style.borderColor='rgba(0, 102, 204, 0.4)'; this.style.transform='translateY(0)';">
-                        <div style="font-size: 3.5rem; color: #0066cc; margin-bottom: 15px; font-weight: 300;">+</div>
-                        <p style="color: #001a4d; font-size: 1rem; margin: 0; text-align: center; font-weight: 600;">Create New Store</p>
-                    </div></a>
-                    
+                    <a href="/templates" style="text-decoration: none;">
+                        <div style="background: linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1)); border: 2px dashed rgba(0, 102, 204, 0.4); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; min-height: 280px;"
+                            onmouseover="this.style.background='linear-gradient(135deg, rgba(100, 180, 255, 0.3), rgba(80, 160, 240, 0.2))'; this.style.borderColor='rgba(0, 102, 204, 0.6)'; this.style.transform='translateY(-4px)';"
+                            onmouseout="this.style.background='linear-gradient(135deg, rgba(100, 180, 255, 0.2), rgba(80, 160, 240, 0.1))'; this.style.borderColor='rgba(0, 102, 204, 0.4)'; this.style.transform='translateY(0)';">
+                            <div style="font-size: 3.5rem; color: #0066cc; margin-bottom: 15px; font-weight: 300;">+
+                            </div>
+                            <p
+                                style="color: #001a4d; font-size: 1rem; margin: 0; text-align: center; font-weight: 600;">
+                                Create New Store</p>
+                        </div>
+                    </a>
+
                     <!-- My Stores List -->
                     {{ range .MyStores }}
                     <div style="background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240, 248, 255, 0.85)); backdrop-filter: blur(10px); border: 1px solid rgba(0, 102, 204, 0.2); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; min-height: 280px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);"
                         onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 16px 48px rgba(0, 102, 204, 0.15)'; this.style.borderColor='rgba(0, 102, 204, 0.4)';"
                         onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.08)'; this.style.borderColor='rgba(0, 102, 204, 0.2)';">
-                        <h3 style="color: #001a4d; font-size: 1.4rem; margin: 0 0 12px 0; font-weight: 700;">{{.Name}}</h3>
-                        <p style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;">{{.Description}}</p>
+                        <h3 style="color: #001a4d; font-size: 1.4rem; margin: 0 0 12px 0; font-weight: 700;">{{.Name}}
+                        </h3>
+                        <p
+                            style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;">
+                            {{.Description}}</p>
                         <div style="display: flex; gap: 10px; margin-top: auto;">
-                            <button style="flex: 1; background: linear-gradient(135deg, #0066cc, #0052a3); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
+                            <button
+                                style="flex: 1; background: linear-gradient(135deg, #0066cc, #0052a3); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
                                 onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 20px rgba(0, 102, 204, 0.3)';"
-                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">View</button>
-                            <button style="flex: 1; background: transparent; color: #0066cc; border: 2px solid #0066cc; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
+                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+                                onclick="VisitStore('{{ .Name }}.com')">View</button>
+                            <button
+                                style="flex: 1; background: transparent; color: #0066cc; border: 2px solid #0066cc; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
                                 onmouseover="this.style.background='rgba(0, 102, 204, 0.08)'; this.style.borderColor='#0052a3';"
                                 onmouseout="this.style.background='transparent'; this.style.borderColor='#0066cc';">Edit</button>
                         </div>
@@ -86,24 +185,34 @@
                     {{ end }}
                 </div>
             </div>
+            {{ end }}
 
             <!-- All Stores Section -->
             <div>
                 <div style="display: flex; align-items: center; margin-bottom: 30px; gap: 15px;">
-                    <div style="width: 4px; height: 30px; background: linear-gradient(180deg, #5a7a8a, #3d5a73); border-radius: 2px;"></div>
+                    <div
+                        style="width: 4px; height: 30px; background: linear-gradient(180deg, #5a7a8a, #3d5a73); border-radius: 2px;">
+                    </div>
                     <h2 style="margin: 0; color: #001a4d; font-size: 1.8rem; font-weight: 700;">Explore Stores</h2>
-                    <span style="background: rgba(90, 122, 138, 0.15); color: #3d5a73; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">{{ len .AllStores }} Available</span>
+                    <span
+                        style="background: rgba(90, 122, 138, 0.15); color: #3d5a73; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">{{
+                        len .AllStores }} Available</span>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px;">
                     {{ range .AllStores }}
                     <div style="background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240, 248, 255, 0.85)); backdrop-filter: blur(10px); border: 1px solid rgba(90, 122, 138, 0.2); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; min-height: 280px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);"
                         onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 16px 48px rgba(90, 122, 138, 0.15)'; this.style.borderColor='rgba(90, 122, 138, 0.4)';"
                         onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.08)'; this.style.borderColor='rgba(90, 122, 138, 0.2)';">
-                        <h3 style="color: #001a4d; font-size: 1.4rem; margin: 0 0 12px 0; font-weight: 700;">{{.Name}}</h3>
-                        <p style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;">{{.Description}}</p>
-                        <button style="width: 100%; background: linear-gradient(135deg, #5a7a8a, #3d5a73); color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
+                        <h3 style="color: #001a4d; font-size: 1.4rem; margin: 0 0 12px 0; font-weight: 700;">{{.Name}}
+                        </h3>
+                        <p
+                            style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;">
+                            {{.Description}}</p>
+                        <button
+                            style="width: 100%; background: linear-gradient(135deg, #5a7a8a, #3d5a73); color: white; border: none; padding: 12px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
                             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 20px rgba(90, 122, 138, 0.3)';"
-                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';" onclick="VisitStore('{{ .Name }}.com')">Visit Store</button>
+                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+                            onclick="VisitStore('{{ .Name }}.com')">Visit Store</button>
                     </div>
                     {{ end }}
                 </div>
@@ -146,6 +255,36 @@
     <script>
         function VisitStore(storeName) {
             window.location.href = `/${encodeURIComponent(storeName)}`;
+        }
+
+        // Profile dropdown functionality
+        const profileDropdown = document.getElementById('profileDropdown');
+        const dropdownContent = document.getElementById('dropdownContent');
+        
+        if (profileDropdown && dropdownContent) {
+            let timeout;
+            
+            profileDropdown.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                dropdownContent.classList.add('show');
+            });
+            
+            profileDropdown.addEventListener('mouseleave', function() {
+                timeout = setTimeout(function() {
+                    dropdownContent.classList.remove('show');
+                }, 100);
+            });
+            
+            dropdownContent.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                dropdownContent.classList.add('show');
+            });
+            
+            dropdownContent.addEventListener('mouseleave', function() {
+                timeout = setTimeout(function() {
+                    dropdownContent.classList.remove('show');
+                }, 100);
+            });
         }
     </script>
 </body>

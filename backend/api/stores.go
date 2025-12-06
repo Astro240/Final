@@ -16,12 +16,17 @@ func StorePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var myStore []Store
+	var User UserProfile
 	userID, validUser := ValidateUser(w, r)
 	if validUser {
 		myStore, err = GetMyStores(userID)
 		if err != nil {
 			HandleError(w, r, http.StatusInternalServerError, "Unable to retrieve your stores")
 			return
+		}
+		placeHolder, valid := getUser(userID)
+		if valid {
+			User = placeHolder
 		}
 	}
 	tmpl, err := template.ParseFiles("../frontend/store.html")
@@ -32,6 +37,8 @@ func StorePage(w http.ResponseWriter, r *http.Request) {
 	Stores := StoreDisplay{
 		MyStores:  myStore,
 		AllStores: store,
+		User:      User,
+		ValidUser: validUser,
 	}
 	if err := tmpl.Execute(w, Stores); err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
@@ -587,11 +594,11 @@ func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int) {
 		totalItems += quantity
 
 		items = append(items, CartItem{
-			ID:           id,
-			ProductID:    productID,
-			Quantity:     quantity,
-			Product:      product,
-			ItemTotal:    itemTotal,
+			ID:        id,
+			ProductID: productID,
+			Quantity:  quantity,
+			Product:   product,
+			ItemTotal: itemTotal,
 		})
 	}
 

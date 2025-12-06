@@ -9,6 +9,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	RemoveCookie(w, r, "session_token")
+	http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

@@ -8,8 +8,16 @@ type ErrorResponse struct {
 
 //Store and Store Display
 type StoreDisplay struct {
-	MyStores  []Store `json:"my_stores"`
-	AllStores []Store `json:"all_stores"`
+	MyStores  []Store     `json:"my_stores"`
+	AllStores []Store     `json:"all_stores"`
+	User      UserProfile `json:"user"`
+	ValidUser bool        `json:"valid_user"`
+}
+
+type UserProfile struct {
+	Fullname       string `json:"full_name"`
+	ProfilePicture string `json:"profile_picture"`
+	Email          string `json:"email"`
 }
 
 type Store struct {
@@ -46,11 +54,11 @@ type Color struct {
 
 // Cart and Checkout
 type CartItem struct {
-	ID           int     `json:"id"`
-	ProductID    int     `json:"product_id"`
-	Quantity     int     `json:"quantity"`
-	Product      Product `json:"product"`
-	ItemTotal    float64 `json:"item_total"`
+	ID        int     `json:"id"`
+	ProductID int     `json:"product_id"`
+	Quantity  int     `json:"quantity"`
+	Product   Product `json:"product"`
+	ItemTotal float64 `json:"item_total"`
 }
 
 type CartResponse struct {

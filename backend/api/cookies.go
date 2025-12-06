@@ -2,9 +2,10 @@ package api
 
 import (
 	"database/sql"
+	"net/http"
+
 	"github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
-	"net/http"
 )
 
 func SetCookie(w http.ResponseWriter, id int, name string) {
@@ -48,4 +49,16 @@ func GetCookie(r *http.Request, name string) (string, error) {
 		return "", err
 	}
 	return cookie.Value, nil
+}
+
+func RemoveCookie(w http.ResponseWriter, r *http.Request, name string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     name,
+		Value:    "",
+		Path:     "/", // ensure cookie is available site-wide
+		HttpOnly: true,
+		Secure:   false,                // true if HTTPS
+		SameSite: http.SameSiteLaxMode, // or NoneMode with Secure for cross-site
+		MaxAge:   -1,
+	})
 }
