@@ -57,6 +57,10 @@ func main() {
 	http.HandleFunc("/api/remove-from-cart", api.RemoveFromCart)
 	http.HandleFunc("/api/create-order", api.CreateOrder)
 
+	// Payment routes
+	http.HandleFunc("/api/pending-order", api.GetPendingOrder)
+	http.HandleFunc("/api/process-payment", api.ProcessPayment)
+
 	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		panic(err)
 	}

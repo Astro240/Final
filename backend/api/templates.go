@@ -10,7 +10,12 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	storeName := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, "/"))
 	isCheckout := false
 	isDashboard := false
-	if strings.HasSuffix(storeName, "/checkout") {
+	isPayment := false
+	// Check longer suffix first to avoid matching /checkout when /checkout/payment is intended
+	if strings.HasSuffix(storeName, "/checkout/payment") {
+		isPayment = true
+		storeName = strings.TrimSuffix(storeName, "/checkout/payment")
+	} else if strings.HasSuffix(storeName, "/checkout") {
 		isCheckout = true
 		storeName = strings.TrimSuffix(storeName, "/checkout")
 	} else if strings.HasSuffix(storeName, "/dashboard") {
@@ -24,7 +29,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	if storeName != "" {
 		store, err := GetStoreByName(storeName)
-		if err == nil && store.ID != 0 && !isCheckout && !isDashboard {
+		if err == nil && store.ID != 0 && !isCheckout && !isDashboard && !isPayment {
 			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
@@ -54,6 +59,13 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 				return
 			}
+			return
+		} else if isPayment && err == nil && store.ID != 0 {
+			if _, validUser := ValidateCustomer(w, r); !validUser {
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+				return
+			}
+			http.ServeFile(w, r, "../frontend/payment.html")
 			return
 		}
 	}

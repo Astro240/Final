@@ -1,3 +1,95 @@
+// Create notification container if it doesn't exist
+function createNotificationContainer() {
+    if (!document.getElementById('notificationContainer')) {
+        const container = document.createElement('div');
+        container.id = 'notificationContainer';
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        `;
+        document.body.appendChild(container);
+    }
+}
+
+// Show notification toast
+function showNotification(message, type = 'info') {
+    createNotificationContainer();
+    
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: white;
+        font-weight: 500;
+        animation: slideIn 0.3s ease-out;
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    `;
+    
+    const colors = {
+        success: 'linear-gradient(135deg, #48bb78, #38a169)',
+        error: 'linear-gradient(135deg, #f56565, #e53e3e)',
+        warning: 'linear-gradient(135deg, #ed8936, #dd6b20)',
+        info: 'linear-gradient(135deg, #4299e1, #3182ce)'
+    };
+    
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+    };
+    
+    notification.style.background = colors[type] || colors.info;
+    notification.innerHTML = `<span style="font-size: 1.2em;">${icons[type] || icons.info}</span> ${message}`;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    `;
+    
+    if (!document.getElementById('notificationStyles')) {
+        style.id = 'notificationStyles';
+        document.head.appendChild(style);
+    }
+    
+    document.getElementById('notificationContainer').appendChild(notification);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+
 // Handle Add to Cart functionality
 document.addEventListener('DOMContentLoaded', () => {
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
@@ -27,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     button.textContent = '✓ Added!';
                     button.style.background = '#48bb78';
+                    showNotification('Item added to cart successfully!', 'success');
                     
                     setTimeout(() => {
                         button.textContent = originalText;
@@ -35,16 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 2000);
                 } else {
                     if (response.status === 401) {
-                        alert('Please login to add items to cart');
-                        window.location.href = '/login';
+                        showNotification('Please login to add items to cart', 'warning');
+                        button.textContent = originalText;
+                        button.style.background = '';
+                        button.disabled = false;
+                        openModal();
                     } else {
-                        alert(data.error || 'Failed to add to cart');
+                        showNotification(data.error || 'Failed to add to cart', 'error');
                         button.textContent = originalText;
                         button.disabled = false;
                     }
                 }
             } catch (error) {
-                alert('An error occurred. Please try again.');
+                showNotification('An error occurred. Please try again.', 'error');
                 button.textContent = originalText;
                 button.disabled = false;
             }

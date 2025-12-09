@@ -118,7 +118,9 @@ func CreateDatabase() {
     	total_amount REAL NOT NULL,
     	status TEXT NOT NULL DEFAULT 'pending',
     	shipping_info TEXT NOT NULL,
+    	payment_info TEXT,
     	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     	FOREIGN KEY (user_id) REFERENCES users(id)
 	);
 
