@@ -36,7 +36,7 @@
                 </a>
                 <a href="/profile">👤 My Profile</a>
                 <a href="/dashboard">📊 Dashboard</a>
-                <a href="/stores">🏪 My Stores</a>
+                <a href="/store">🏪 My Stores</a>
                 <a href="/settings">⚙️ Settings</a>
                 <a href="/logout" style="color: #d32f2f; border-top: 1px solid rgba(0, 0, 0, 0.1);">🚪 Logout</a>
             </div>
@@ -47,7 +47,7 @@
             </button></a>
         {{ end }}
         
-        <a href="/stores" style="color: white; text-decoration: none;"><button style="float:left;margin-left: 100px;"
+        <a href="/store" style="color: white; text-decoration: none;"><button style="float:left;margin-left: 100px;"
                 class="navbarElements" id="storeButton">
                 <span style="color:white">Stores</span>
             </button></a>
@@ -107,7 +107,7 @@
                         <h3 style="color: #001a4d; font-size: 1.4rem; margin: 0 0 12px 0; font-weight: 700;">{{.Name}}
                         </h3>
                         <p
-                            style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;">
+                            style="color: #334455; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; flex-grow: 1;text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                             {{.Description}}</p>
                         <div style="display: flex; gap: 10px; margin-top: auto;">
                             <button
