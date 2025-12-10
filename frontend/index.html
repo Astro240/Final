@@ -25,9 +25,26 @@
         <a href="/" style="color: white; text-decoration: none; float: left;">
             <img src="./img/logo.png" style="height: 75px; width: 75x;margin-top: -10px;" draggable="false" />
         </a>
+        {{ if .ProfilePicture }}
+        <div class="profile-dropdown" style="float: right;" id="profileDropdown">
+            <img src="/avatars/{{ .ProfilePicture }}" alt="Profile" class="profile-pic" id="profilePic" />
+            <div class="dropdown-bridge"></div>
+            <div class="profile-dropdown-content" id="dropdownContent">
+                <a href="/profile" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                    <strong>{{ .Fullname }}</strong>
+                </a>
+                <a href="/profile">👤 My Profile</a>
+                <a href="/dashboard">📊 Dashboard</a>
+                <a href="/stores">🏪 My Stores</a>
+                <a href="/settings">⚙️ Settings</a>
+                <a href="/logout" style="color: #d32f2f; border-top: 1px solid rgba(0, 0, 0, 0.1);">🚪 Logout</a>
+            </div>
+        </div>
+        {{ else }}
         <a href="/login" style="color: white; text-decoration: none;"><button style="float:right" class="glowDiv">
                 <span>Login</span>
             </button></a>
+        {{ end }}
         <a href="/store" style="color: black; text-decoration: none;"><button style="float:left;margin-left: 100px;"
                 class="navbarElements">
                 <span>Stores</span>
@@ -117,4 +134,35 @@
         </div>
     </footer>
     <script src="src/globe.js" type="module"> </script>
+    <script>
+        // Profile dropdown functionality
+        const profileDropdown = document.getElementById('profileDropdown');
+        const dropdownContent = document.getElementById('dropdownContent');
+        
+        if (profileDropdown && dropdownContent) {
+            let timeout;
+            
+            profileDropdown.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                dropdownContent.classList.add('show');
+            });
+            
+            profileDropdown.addEventListener('mouseleave', function() {
+                timeout = setTimeout(function() {
+                    dropdownContent.classList.remove('show');
+                }, 100);
+            });
+            
+            dropdownContent.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                dropdownContent.classList.add('show');
+            });
+            
+            dropdownContent.addEventListener('mouseleave', function() {
+                timeout = setTimeout(function() {
+                    dropdownContent.classList.remove('show');
+                }, 100);
+            });
+        }
+    </script>
 </body>

@@ -623,9 +623,33 @@
 
         /* Add Product Form */
         .add-product-section {
-            padding: 6rem 0 4rem;
-            background: linear-gradient(135deg, #f8f9fa, var(--background-color));
-            border-top: 1px solid #9ca3af33;
+            display: none;
+        }
+
+        .add-product-trigger {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(30, 58, 95, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 300;
+        }
+
+        .add-product-trigger:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 15px 40px rgba(30, 58, 95, 0.4);
         }
 
         .form-container {
@@ -787,6 +811,39 @@
             box-shadow: 0 20px 40px #1e3a5f4d;
             position: relative;
             border: 1px solid #9ca3af33;
+        }
+
+        .add-product-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            display: none;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 2rem 0;
+        }
+
+        .add-product-modal-overlay.active {
+            display: flex;
+        }
+
+        .add-product-modal {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(156, 163, 175, 0.2);
         }
 
         .modal-close {
@@ -1114,43 +1171,41 @@
         </div>
     </section>
     {{ if .IsOwner }}
-    <section class="add-product-section">
-        <div class="container">
-            <div class="form-container">
-                <h2 class="form-title">ADD TO COLLECTION</h2>
-                <form id="addProductForm" enctype="multipart/form-data">
-                    <div class="form-grid">
-                        <div id="formMessage" class="form-message">
-                        </div>
-                        <div class="form-group">
-                            <label for="productName">Product Name</label>
-                            <input type="text" id="productName" name="productName" required placeholder="Heritage Timepiece">
-                        </div>
-                        <div class="form-group">
-                            <label for="productPrice">Price (BD)</label>
-                            <input type="number" id="productPrice" name="productPrice" step="0.01" required
-                                placeholder="2199.00">
-                        </div>
-                        <div class="form-group">
-                            <label for="productQuantity">Quantity</label>
-                            <input type="number" id="productQuantity" name="productQuantity" min="1" required placeholder="1">
-                        </div>
-                        <div class="form-group">
-                            <label for="productImage">Product Image</label>
-                            <input type="file" id="productImage" name="productImage" accept="image/*">
-                        </div>
-                        <div class="form-group full-width">
-                            <label for="productDescription">Description</label>
-                            <textarea id="productDescription" name="productDescription" required
-                                placeholder="Exceptional craftsmanship meets timeless elegance..."></textarea>
-                        </div>
-                        <input type="hidden" name="store_id" value="{{ .ID }}">
+    <button class="add-product-trigger" id="addProductTrigger">+</button>
+    
+    <div class="add-product-modal-overlay" id="addProductModalOverlay">
+        <div class="add-product-modal">
+            <button class="modal-close" id="addProductModalClose" style="position: absolute; top: 1rem; right: 1rem; font-size: 2rem; cursor: pointer; color: var(--primary-color); background: none; border: none; line-height: 1;">&times;</button>
+            <h2 class="form-title">ADD TO COLLECTION</h2>
+            <form id="addProductForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div id="formMessage" class="form-message"></div>
+                    <div class="form-group">
+                        <label for="productName">Product Name</label>
+                        <input type="text" id="productName" name="productName" required placeholder="Heritage Timepiece">
                     </div>
-                    <button type="submit" class="submit-btn">ADD TO COLLECTION</button>
-                </form>
-            </div>
+                    <div class="form-group">
+                        <label for="productPrice">Price (BD)</label>
+                        <input type="number" id="productPrice" name="productPrice" step="0.01" required placeholder="2199.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantity">Quantity</label>
+                        <input type="number" id="productQuantity" name="productQuantity" min="1" required placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="productImage">Product Image</label>
+                        <input type="file" id="productImage" name="productImage" accept="image/*">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" name="productDescription" required placeholder="Exceptional craftsmanship meets timeless elegance..."></textarea>
+                    </div>
+                    <input type="hidden" name="store_id" value="{{ .ID }}">
+                </div>
+                <button type="submit" class="submit-btn">ADD TO COLLECTION</button>
+            </form>
         </div>
-    </section>
+    </div>
     {{ end }}
     <footer>
         <div class="container">
@@ -1236,6 +1291,32 @@
     <script src="src/navbar.js" defer></script>
     <script src="src/create_product.js" defer></script>
     <script src="src/cart.js" defer></script>
+    <script>
+        // Add Product Modal functionality
+        const addProductTrigger = document.getElementById('addProductTrigger');
+        const addProductModalOverlay = document.getElementById('addProductModalOverlay');
+        const addProductModalClose = document.getElementById('addProductModalClose');
+        
+        if (addProductTrigger) {
+            addProductTrigger.addEventListener('click', () => {
+                addProductModalOverlay.classList.add('active');
+            });
+        }
+        
+        if (addProductModalClose) {
+            addProductModalClose.addEventListener('click', () => {
+                addProductModalOverlay.classList.remove('active');
+            });
+        }
+        
+        if (addProductModalOverlay) {
+            addProductModalOverlay.addEventListener('click', (e) => {
+                if (e.target === addProductModalOverlay) {
+                    addProductModalOverlay.classList.remove('active');
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

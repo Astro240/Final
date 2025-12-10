@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Performance Dashboard</title>
+    <title>Store Performance Dashboard - {{ .Store.Name }}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: {{ .Store.ColorScheme.Primary }};
+            --secondary-color: {{ .Store.ColorScheme.Secondary }};
+            --background-color: {{ .Store.ColorScheme.Background }};
+            --accent-color: {{ if .Store.ColorScheme.Accent }}{{ .Store.ColorScheme.Accent }}{{ else }}#4299e1{{ end }};
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,7 +22,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
             min-height: 100vh;
             color: #e2e8f0;
         }
@@ -28,20 +35,20 @@
 
         /* Sidebar */
         .sidebar {
-            background: rgba(30, 58, 138, 0.9);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(59, 130, 246, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             padding: 2rem 0;
         }
 
         .logo {
             padding: 0 2rem 2rem;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 2rem;
         }
 
         .logo h1 {
-            color: #60a5fa;
+            color: var(--accent-color);
             font-size: 1.5rem;
             font-weight: 700;
         }
@@ -64,9 +71,9 @@
         }
 
         .nav-link:hover, .nav-link.active {
-            background: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-            border-right: 3px solid #60a5fa;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent-color);
+            border-right: 3px solid var(--accent-color);
         }
 
         .nav-link i {
@@ -86,11 +93,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            background: rgba(30, 64, 175, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
             padding: 1.5rem 2rem;
             border-radius: 12px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .header h2 {
@@ -108,7 +115,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            background: var(--accent-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -125,9 +132,9 @@
         }
 
         .stat-card {
-            background: rgba(30, 64, 175, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
@@ -161,9 +168,9 @@
 
         /* Chart Section */
         .chart-section {
-            background: rgba(30, 64, 175, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
@@ -188,8 +195,8 @@
 
         .time-filter {
             padding: 0.5rem 1rem;
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 6px;
             color: #cbd5e1;
             cursor: pointer;
@@ -197,15 +204,15 @@
         }
 
         .time-filter:hover, .time-filter.active {
-            background: rgba(59, 130, 246, 0.4);
-            color: #60a5fa;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--accent-color);
         }
 
         /* Trades Table */
         .trades-section {
-            background: rgba(30, 64, 175, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 2rem;
         }
@@ -223,7 +230,7 @@
         }
 
         .new-trade-btn {
-            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            background: var(--accent-color);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -248,11 +255,11 @@
         .trades-table td {
             padding: 1rem;
             text-align: left;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .trades-table th {
-            background: rgba(59, 130, 246, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             color: #94a3b8;
             font-weight: 600;
             font-size: 0.9rem;
@@ -261,11 +268,11 @@
         }
 
         .trades-table tr:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .symbol {
-            color: #60a5fa;
+            color: var(--accent-color);
             font-weight: 600;
         }
 
@@ -314,7 +321,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <h1><i class="fas fa-store"></i> StoreDash</h1>
+                <h1><i class="fas fa-store"></i> {{ .Store.Name }}</h1>
             </div>
             <nav>
                 <ul class="nav-menu">
@@ -374,7 +381,7 @@
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" style="color: #60a5fa;">$24,847.92</div>
+                    <div class="stat-value" style="color: var(--accent-color);">$24,847.92</div>
                     <div class="stat-label">Total Revenue</div>
                     <div class="stat-change positive">+18.3%</div>
                 </div>
@@ -384,12 +391,12 @@
                     <div class="stat-change positive">+12.4%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: #60a5fa;">89</div>
+                    <div class="stat-value" style="color: var(--accent-color);">89</div>
                     <div class="stat-label">Active Products</div>
                     <div class="stat-change positive">+5.9%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: #60a5fa;">$159.28</div>
+                    <div class="stat-value" style="color: var(--accent-color);">$159.28</div>
                     <div class="stat-label">Avg Order Value</div>
                     <div class="stat-change positive">+8.7%</div>
                 </div>
@@ -497,6 +504,9 @@
     </div>
 
     <script>
+        // Get accent color from CSS variable
+        const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+        
         // Sales Performance Chart
         const ctx = document.getElementById('portfolioChart').getContext('2d');
         const portfolioChart = new Chart(ctx, {
@@ -506,8 +516,8 @@
                 datasets: [{
                     label: 'Monthly Sales',
                     data: [15000, 18500, 22300, 19800, 25400, 28900, 31200, 29500, 33800, 24847],
-                    borderColor: '#60a5fa',
-                    backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                    borderColor: accentColor,
+                    backgroundColor: accentColor + '1a',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4
@@ -524,7 +534,7 @@
                 scales: {
                     x: {
                         grid: {
-                            color: 'rgba(59, 130, 246, 0.1)'
+                            color: 'rgba(255, 255, 255, 0.1)'
                         },
                         ticks: {
                             color: '#94a3b8'
@@ -532,7 +542,7 @@
                     },
                     y: {
                         grid: {
-                            color: 'rgba(59, 130, 246, 0.1)'
+                            color: 'rgba(255, 255, 255, 0.1)'
                         },
                         ticks: {
                             color: '#94a3b8',

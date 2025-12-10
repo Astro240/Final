@@ -24,7 +24,23 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	storeName = strings.TrimSuffix(storeName, ".com")
 	if storeName == "" {
-		http.ServeFile(w, r, "../frontend/index.html")
+		userID, validUser := ValidateUser(w, r)
+		var User UserProfile
+		if validUser {
+			placeHolder, valid := getUser(userID)
+			if valid {
+				User = placeHolder
+			}
+		}
+		tmpl, err := template.ParseFiles("../frontend/index.html")
+		if err != nil {
+			HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+			return
+		}
+		if err := tmpl.Execute(w, User); err != nil {
+			HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+			return
+		}
 		return
 	}
 	if storeName != "" {
@@ -46,16 +62,27 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if isCheckout && err == nil && store.ID != 0 {
 			//Redirect to the proper checkout handler
-			CheckoutPageForStore(w, r, int(store.ID))
+			CheckoutPageForStore(w, r, int(store.ID), store)
 			return
 		} else if isDashboard && err == nil && store.ID != 0 {
 			//validate the user and display the dashboard
+			userID, validUser := ValidateUser(w, r)
+			if !validUser || uint(userID) != store.OwnerID {
+				HandleError(w, r, http.StatusForbidden, "Access denied")
+				return
+			}
+
 			tmpl, err := template.ParseFiles("../frontend/dashboard.html")
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 				return
 			}
-			if err := tmpl.Execute(w, nil); err != nil {
+
+			dashboardData := DashboardData{
+				Store: store,
+			}
+
+			if err := tmpl.Execute(w, dashboardData); err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 				return
 			}
@@ -65,7 +92,21 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, "/login", http.StatusSeeOther)
 				return
 			}
-			http.ServeFile(w, r, "../frontend/payment.html")
+
+			tmpl, err := template.ParseFiles("../frontend/payment.html")
+			if err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+				return
+			}
+
+			paymentData := PaymentPageData{
+				Store: store,
+			}
+
+			if err := tmpl.Execute(w, paymentData); err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+				return
+			}
 			return
 		}
 	}

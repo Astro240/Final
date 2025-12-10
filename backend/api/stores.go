@@ -547,7 +547,7 @@ func CheckoutPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int) {
+func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int,store Store) {
 	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -560,6 +560,7 @@ func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int) {
 		return
 	}
 	defer db.Close()
+
 
 	rows, err := db.Query(`
 		SELECT c.id, c.product_id, c.user_id, c.quantity,
@@ -606,6 +607,7 @@ func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int) {
 		Items:      items,
 		TotalItems: totalItems,
 		TotalPrice: totalPrice,
+		Store:      store,
 	}
 
 	tmpl, err := template.ParseFiles("../frontend/checkout.html")

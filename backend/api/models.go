@@ -65,4 +65,13 @@ type CartResponse struct {
 	Items      []CartItem `json:"items"`
 	TotalItems int        `json:"total_items"`
 	TotalPrice float64    `json:"total_price"`
+	Store      Store      `json:"store"`
+}
+
+type PaymentPageData struct {
+	Store Store `json:"store"`
+}
+
+type DashboardData struct {
+	Store Store `json:"store"`
 }
