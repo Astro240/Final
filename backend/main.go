@@ -50,7 +50,8 @@ func main() {
 	http.HandleFunc("/api/create_store", api.CreateStoreHandler)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)
 	http.HandleFunc("/api/create_product", api.CreateProductAPI)
-
+	http.HandleFunc("/api/favorite_product", api.FavoriteProduct)
+	http.HandleFunc("/api/unfavorite_product", api.UnfavoriteProduct)
 	// Cart and Checkout routes
 	http.HandleFunc("/api/add-to-cart", api.AddToCart)
 	http.HandleFunc("/api/update-cart", api.UpdateCartItem)

@@ -134,7 +134,13 @@ func CreateDatabase() {
     	FOREIGN KEY (order_id) REFERENCES orders(id),
     	FOREIGN KEY (product_id) REFERENCES products(id)
 	);
-
+	CREATE TABLE IF NOT EXISTS favorites (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	user_id INTEGER NOT NULL,
+    	product_id INTEGER NOT NULL,
+    	FOREIGN KEY (user_id) REFERENCES users(id),
+    	FOREIGN KEY (product_id) REFERENCES products(id)
+	);
 	insert or ignore into users (id, email, password, first_name, user_type) values
 	(0, 'astropify@gmail.com', '$2a$10$MleK0bpPilssP8IyMai7A.5azKNbMcz8bJrLxWmbLnhcKtRHY87V2', 'admin', 1);
 	`

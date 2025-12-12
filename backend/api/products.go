@@ -106,3 +106,73 @@ func CreateProductAPI(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"success": true}`))
 }
+
+func FavoriteProduct(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte(`{"error": "Only Post Method Allowed"}`))
+		return
+	}
+	userid, valid := ValidateCustomer(w, r)
+	if !valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"error": "Failed to validated customer","invalid": true}`))
+		return
+	}
+	product_id := r.FormValue("product_id")
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "Database Error"}`))
+		return
+	}
+	defer db.Close()
+	query := "INSERT INTO favorites (user_id,product_id) values(?,?);"
+	_, err = db.Exec(query, userid, product_id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "Failed to favorite product"}`))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"success": true}`))
+}
+
+func UnfavoriteProduct(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte(`{"error": "Only Post Method Allowed"}`))
+		return
+	}
+	userid, valid := ValidateCustomer(w, r)
+	if !valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"error": "Failed to validated customer","invalid": true}`))
+		return
+	}
+	product_id := r.FormValue("product_id")
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "Database Error"}`))
+		return
+	}
+	defer db.Close()
+	query := "DELETE FROM favorites WHERE user_id = ? AND product_id = ?;"
+	result, err := db.Exec(query, userid, product_id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "Failed to unfavorite product"}`))
+		return
+	}
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(`{"error": "Favorite not found"}`))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"success": true}`))
+}
