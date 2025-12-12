@@ -293,6 +293,16 @@
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
         }
+        
+        .status-warm {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+        
+        .status-new {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
 
         .chart-container {
             position: relative;
@@ -381,24 +391,24 @@
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--accent-color);">$24,847.92</div>
+                    <div class="stat-value" style="color: var(--accent-color);"></div>
                     <div class="stat-label">Total Revenue</div>
-                    <div class="stat-change positive">+18.3%</div>
+                    <div class="stat-change positive"></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value positive">156</div>
+                    <div class="stat-value positive"></div>
                     <div class="stat-label">Items Sold</div>
-                    <div class="stat-change positive">+12.4%</div>
+                    <div class="stat-change positive"></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--accent-color);">89</div>
+                    <div class="stat-value" style="color: var(--accent-color);"></div>
                     <div class="stat-label">Active Products</div>
-                    <div class="stat-change positive">+5.9%</div>
+                    <div class="stat-change positive"></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--accent-color);">$159.28</div>
+                    <div class="stat-value" style="color: var(--accent-color);"></div>
                     <div class="stat-label">Avg Order Value</div>
-                    <div class="stat-change positive">+8.7%</div>
+                    <div class="stat-change positive"></div>
                 </div>
             </div>
 
@@ -442,61 +452,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>10/15/2023</td>
-                            <td class="symbol">Premium Headphones</td>
-                            <td><span class="status-badge status-win">HOT</span></td>
-                            <td>Electronics</td>
-                            <td>45</td>
-                            <td>$149.99</td>
-                            <td>$6,749.55</td>
-                            <td class="positive">+$2,024.87</td>
-                            <td class="positive">30.0%</td>
-                        </tr>
-                        <tr>
-                            <td>09/22/2023</td>
-                            <td class="symbol">Wireless Mouse</td>
-                            <td><span class="status-badge status-win">HOT</span></td>
-                            <td>Electronics</td>
-                            <td>67</td>
-                            <td>$29.99</td>
-                            <td>$2,009.33</td>
-                            <td class="positive">+$603.34</td>
-                            <td class="positive">25.1%</td>
-                        </tr>
-                        <tr>
-                            <td>08/30/2023</td>
-                            <td class="symbol">Coffee Mug Set</td>
-                            <td><span class="status-badge status-loss">SLOW</span></td>
-                            <td>Home & Kitchen</td>
-                            <td>12</td>
-                            <td>$24.99</td>
-                            <td>$299.88</td>
-                            <td class="negative">-$45.12</td>
-                            <td class="negative">-15.0%</td>
-                        </tr>
-                        <tr>
-                            <td>07/18/2023</td>
-                            <td class="symbol">Bluetooth Speaker</td>
-                            <td><span class="status-badge status-win">HOT</span></td>
-                            <td>Electronics</td>
-                            <td>38</td>
-                            <td>$79.99</td>
-                            <td>$3,039.62</td>
-                            <td class="positive">+$912.87</td>
-                            <td class="positive">30.0%</td>
-                        </tr>
-                        <tr>
-                            <td>06/05/2023</td>
-                            <td class="symbol">Desk Organizer</td>
-                            <td><span class="status-badge status-win">HOT</span></td>
-                            <td>Office Supplies</td>
-                            <td>52</td>
-                            <td>$19.99</td>
-                            <td>$1,039.48</td>
-                            <td class="positive">+$311.84</td>
-                            <td class="positive">30.0%</td>
-                        </tr>
+                        
                     </tbody>
                 </table>
             </div>
@@ -512,15 +468,15 @@
         const portfolioChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct','Nov','Dec'],
                 datasets: [{
-                    label: 'Monthly Sales',
-                    data: [15000, 18500, 22300, 19800, 25400, 28900, 31200, 29500, 33800, 24847],
-                    borderColor: accentColor,
-                    backgroundColor: accentColor + '1a',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
+                    // label: 'Monthly Sales',
+                    // data: [15000, 18500, 22300, 19800, 25400, 28900, 31200, 29500, 33800, 24847, 24847, 31200],
+                    // borderColor: accentColor,
+                    // backgroundColor: accentColor + '1a',
+                    // borderWidth: 3,
+                    // fill: true,
+                    // tension: 0.4
                 }]
             },
             options: {
@@ -561,47 +517,212 @@
             }
         });
 
-        // Time filter functionality
+        // WebSocket Connection for Real-time Updates
+        let ws;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        const storeId = {{ .Store.ID }};
+        
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/dashboard?store_id=${storeId}`;
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    console.log('WebSocket connected');
+                    reconnectAttempts = 0;
+                    const header = document.querySelector('.header h2');
+                    if (header) {
+                        header.style.borderLeft = '4px solid #22c55e';
+                    }
+                    updateConnectionIndicator(true);
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('WebSocket data received:', data);
+                        console.log('Revenue:', data.total_revenue, 'Items:', data.items_sold, 'Products:', data.active_products);
+                        console.log('Top Products:', data.top_products ? data.top_products.length : 0);
+                        updateDashboard(data);
+                    } catch (e) {
+                        console.error('Error parsing WebSocket message:', e, event.data);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                };
+                
+                ws.onclose = function(event) {
+                    console.log('WebSocket disconnected, code:', event.code, 'reason:', event.reason);
+                    const header = document.querySelector('.header h2');
+                    if (header) {
+                        header.style.borderLeft = '4px solid #ef4444';
+                    }
+                    updateConnectionIndicator(false);
+                    
+                    // Attempt to reconnect with exponential backoff
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        reconnectAttempts++;
+                        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
+                        console.log(`Reconnecting in ${delay}ms... (attempt ${reconnectAttempts})`);
+                        setTimeout(connectWebSocket, delay);
+                    } else {
+                        console.error('Max reconnection attempts reached');
+                        updateConnectionIndicator(false, 'Connection failed');
+                    }
+                };
+            } catch (e) {
+                console.error('Error creating WebSocket:', e);
+            }
+        }
+        
+        function updateConnectionIndicator(connected, message) {
+            const indicator = document.getElementById('connectionIndicator');
+            if (indicator) {
+                const icon = indicator.querySelector('i');
+                const text = indicator.querySelector('span');
+                if (connected) {
+                    icon.style.color = '#22c55e';
+                    text.textContent = message || 'Live Updates Active';
+                } else {
+                    icon.style.color = '#ef4444';
+                    text.textContent = message || 'Disconnected';
+                }
+            }
+        }
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            }
+        });
+        
+        function updateDashboard(data) {
+            console.log('Updating dashboard with data:', data);
+            
+            // Update stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            
+            if (statCards.length < 4) {
+                console.error('Not enough stat cards found:', statCards.length);
+                return;
+            }
+            
+            // Total Revenue
+            const revenueValue = statCards[0].querySelector('.stat-value');
+            const revenueChange = statCards[0].querySelector('.stat-change');
+            if (revenueValue && revenueChange) {
+                revenueValue.textContent = '' + data.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " BHD";
+                revenueChange.textContent = (data.revenue_change >= 0 ? '+' : '') + data.revenue_change.toFixed(1) + '%';
+                revenueChange.className = 'stat-change ' + (data.revenue_change >= 0 ? 'positive' : 'negative');
+            }
+            
+            // Items Sold
+            const itemsValue = statCards[1].querySelector('.stat-value');
+            const itemsChange = statCards[1].querySelector('.stat-change');
+            if (itemsValue && itemsChange) {
+                itemsValue.textContent = data.items_sold;
+                itemsChange.textContent = (data.sales_change >= 0 ? '+' : '') + data.sales_change.toFixed(1) + '%';
+                itemsChange.className = 'stat-change ' + (data.sales_change >= 0 ? 'positive' : 'negative');
+            }
+            
+            // Active Products
+            const productsValue = statCards[2].querySelector('.stat-value');
+            const productsChange = statCards[2].querySelector('.stat-change');
+            if (productsValue && productsChange) {
+                productsValue.textContent = data.active_products;
+                productsChange.textContent = (data.products_change >= 0 ? '+' : '') + data.products_change.toFixed(1) + '%';
+                productsChange.className = 'stat-change ' + (data.products_change >= 0 ? 'positive' : 'negative');
+            }
+            
+            // Average Order Value
+            const avgValue = statCards[3].querySelector('.stat-value');
+            const avgChange = statCards[3].querySelector('.stat-change');
+            if (avgValue && avgChange) {
+                avgValue.textContent = '' + data.avg_order_value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " BHD";
+                avgChange.textContent = (data.avg_change >= 0 ? '+' : '') + data.avg_change.toFixed(1) + '%';
+                avgChange.className = 'stat-change ' + (data.avg_change >= 0 ? 'positive' : 'negative');
+            }
+            
+            console.log('Stats updated successfully');
+            
+            // Update chart if we have sales data
+            if (data.sales_data && data.sales_data.length > 0) {
+                console.log('Updating chart with', data.sales_data.length, 'data points');
+                const labels = data.sales_data.map(d => d.label);
+                const values = data.sales_data.map(d => d.value);
+                
+                portfolioChart.data.labels = labels;
+                portfolioChart.data.datasets[0].data = values;
+                portfolioChart.update('none'); // Update without animation for real-time feel
+                console.log('Chart updated');
+            } else {
+                console.log('No sales data to update chart');
+            }
+            
+            // Update top products table
+            if (data.top_products && data.top_products.length > 0) {
+                console.log('Updating top products table with', data.top_products.length, 'products');
+                const tbody = document.querySelector('.trades-table tbody');
+                if (!tbody) {
+                    console.error('Could not find .trades-table tbody element');
+                    return;
+                }
+                tbody.innerHTML = '';
+                
+                data.top_products.forEach(product => {
+                    const row = document.createElement('tr');
+                    const profit = product.profit;
+                    const profitClass = profit > 0 ? 'positive' : profit < 0 ? 'negative' : '';
+                    
+                    // Map performance to status class
+                    let statusClass = 'status-loss';
+                    if (product.performance === 'HOT') {
+                        statusClass = 'status-win';
+                    } else if (product.performance === 'WARM') {
+                        statusClass = 'status-warm';
+                    } else if (product.performance === 'NEW') {
+                        statusClass = 'status-new';
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${product.date_added}</td>
+                        <td class="symbol">${product.product_name}</td>
+                        <td><span class="status-badge ${statusClass}">${product.performance}</span></td>
+                        <td>${product.category}</td>
+                        <td>${product.units_sold}</td>
+                        <td>${product.price.toFixed(2)} BHD</td>
+                        <td>${product.revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} BHD</td>
+                        <td class="${profitClass}">${profit > 0 ? '+' : ''}${profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} BHD</td>
+                        <td class="${profitClass}">${product.margin.toFixed(1)}%</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                console.log('Top products table updated successfully');
+            } else {
+                console.log('No top products to display');
+                // Show empty state if no products
+                const tbody = document.querySelector('.trades-table tbody');
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #94a3b8;">No products available yet. Add your first product to get started!</td></tr>';
+            }
+        }
+        
+        // Connect to WebSocket when page loads
+        connectWebSocket();
+
+        // Time filter functionality (disabled while using real-time data)
         document.querySelectorAll('.time-filter').forEach(filter => {
             filter.addEventListener('click', function() {
                 document.querySelectorAll('.time-filter').forEach(f => f.classList.remove('active'));
                 this.classList.add('active');
-                
-                // Update chart data based on selection
-                const period = this.textContent;
-                updateChartData(period);
+                // Note: Time filtering would need backend support to fetch historical data
             });
         });
-
-        function updateChartData(period) {
-            // Store performance data for different time periods
-            const data = {
-                '1D': {
-                    labels: ['9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM'],
-                    data: [800, 950, 1100, 1350, 1200, 1450, 1600, 1750]
-                },
-                '1W': {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    data: [3200, 2800, 3500, 4100, 4800, 5200, 3900]
-                },
-                '1M': {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-                    data: [15000, 18500, 22300, 19800, 25400, 28900, 31200, 29500, 33800, 24847]
-                },
-                '3M': {
-                    labels: ['Aug', 'Sep', 'Oct'],
-                    data: [29500, 33800, 24847]
-                },
-                '1Y': {
-                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                    data: [55800, 74100, 94500, 24847]
-                }
-            };
-
-            portfolioChart.data.labels = data[period].labels;
-            portfolioChart.data.datasets[0].data = data[period].data;
-            portfolioChart.update();
-        }
 
         // Add hover effects to nav links
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -611,6 +732,13 @@
                 this.classList.add('active');
             });
         });
+        
+        // Add connection status indicator
+        const connectionIndicator = document.createElement('div');
+        connectionIndicator.id = 'connectionIndicator';
+        connectionIndicator.style.cssText = 'position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background: rgba(0,0,0,0.8); border-radius: 8px; color: white; font-size: 0.9rem; z-index: 1000;';
+        connectionIndicator.innerHTML = '<i class="fas fa-circle" style="color: #22c55e; margin-right: 8px;"></i><span>Live Updates Active</span>';
+        document.body.appendChild(connectionIndicator);
     </script>
 </body>
 </html>
