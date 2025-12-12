@@ -9,7 +9,7 @@
             --primary-color: {{ .ColorScheme.Primary }};
             --secondary-color: {{ .ColorScheme.Secondary }};
             --background-color: {{ .ColorScheme.Background }};
-            --accent-color: {{ .ColorScheme.Accent }};
+            --accent-color: {{ if .ColorScheme.Accent }}{{ .ColorScheme.Accent }}{{ else }}#667eea{{ end }};
         }
 
         * {
@@ -51,6 +51,7 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .nav-links {
@@ -64,10 +65,12 @@
             color: var(--secondary-color);
             font-weight: 500;
             transition: color 0.3s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .nav-links a:hover {
             color: var(--primary-color);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .cart-icon {
@@ -78,6 +81,7 @@
             text-decoration: none;
             font-weight: 600;
             transition: background 0.3s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .cart-icon:hover {
@@ -99,6 +103,7 @@
             margin: 3px 0;
             transition: all 0.3s ease;
             border-radius: 3px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .mobile-menu-toggle.active span:nth-child(1) {
@@ -146,6 +151,7 @@
             color: var(--primary-color);
             background: none;
             border: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .mobile-nav-links {
@@ -164,10 +170,12 @@
             display: block;
             padding: 0.5rem;
             transition: color 0.3s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .mobile-nav-links a:hover {
             color: var(--primary-color);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .mobile-overlay {
@@ -191,6 +199,7 @@
             color: white;
             padding: 6rem 0;
             text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .hero h1 {
@@ -218,6 +227,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
             text-decoration: none;
             display: inline-block;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .cta-button:hover {
@@ -279,6 +289,7 @@
             font-size: 3rem;
             color: #a0aec0;
             overflow: hidden;
+            position: relative;
         }
 
         .product-image img {
@@ -321,14 +332,12 @@
             box-shadow: 0 0 20px var(--primary-color), 0 0 40px var(--primary-color);
         }
 
+        .favorite-btn:not(.favorited)::before {
+            content: '☆';
+        }
+
         .favorite-btn.favorited::before {
             content: '★';
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
         }
 
         @keyframes favoriteGlow {
@@ -361,6 +370,7 @@
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 1rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .add-to-cart {
@@ -373,6 +383,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .add-to-cart:hover {
@@ -457,6 +468,7 @@
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 2.5rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .form-grid {
@@ -480,6 +492,7 @@
             color: var(--primary-color);
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .form-group input,
@@ -522,6 +535,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 1rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .submit-btn:hover {
@@ -554,6 +568,7 @@
             text-decoration: none;
             margin-bottom: 0.5rem;
             display: block;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .footer-section a:hover {
@@ -565,6 +580,7 @@
             padding-top: 2rem;
             color: #a0aec0;
             text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         #formMessage {
             grid-column: 1 / -1;
@@ -622,6 +638,7 @@
             background: none;
             border: none;
             line-height: 1;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-tabs {
@@ -643,6 +660,7 @@
         .modal-tab.active {
             color: var(--primary-color);
             border-bottom: 2px solid var(--accent-color);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-content {
@@ -663,6 +681,7 @@
             color: var(--primary-color);
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .form-group-modal input {
@@ -692,6 +711,7 @@
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-submit:hover {
@@ -711,6 +731,7 @@
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-switch a:hover {
@@ -876,7 +897,7 @@
                         {{else}}
                         📦
                         {{end}}
-                        <button class="favorite-btn" data-product-id="{{ .ID }}" aria-label="Add to favorites">☆</button>
+                        <button class="favorite-btn" data-product-id="{{ .ID }}" aria-label="Add to favorites"></button>
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">{{.Name}}</h3>
@@ -926,12 +947,6 @@
             </form>
         </div>
     </div>
-    {{ end }}
-    <footer>
-                </form>
-            </div>
-        </div>
-    </section>
     {{ end }}
     <footer>
         <div class="container">

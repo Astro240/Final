@@ -8,10 +8,10 @@
         :root {
             --primary-color: {{ .ColorScheme.Primary }};
             --secondary-color: {{ .ColorScheme.Secondary }};
-            --tertiary-color: {{ .ColorScheme.Tertiary }};
-            --supporting-color: {{ .ColorScheme.Supporting }};
-            --highlight-color: {{ .ColorScheme.Highlight }};
-            --accent-color: {{ .ColorScheme.Accent }};
+            --tertiary-color: {{ if .ColorScheme.Tertiary }}{{ .ColorScheme.Tertiary }}{{ else }}#45b7d1{{ end }};
+            --supporting-color: {{ if .ColorScheme.Supporting }}{{ .ColorScheme.Supporting }}{{ else }}#96ceb4{{ end }};
+            --highlight-color: {{ if .ColorScheme.Highlight }}{{ .ColorScheme.Highlight }}{{ else }}#ffeaa7{{ end }};
+            --accent-color: {{ if .ColorScheme.Accent }}{{ .ColorScheme.Accent }}{{ else }}#fd79a8{{ end }};
         }
 
         * {
@@ -109,6 +109,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
 
         .mobile-nav-close {
@@ -143,6 +144,7 @@
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             transform: translateX(10px);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .mobile-overlay {
@@ -187,7 +189,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px #ff6b6b80;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3)) drop-shadow(0 0 30px #ff6b6b80);
         }
 
         .nav-links {
@@ -211,6 +213,7 @@
             color: white;
             transform: translateY(-3px);
             box-shadow: 0 5px 15px #00000033;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .cart-icon {
@@ -222,6 +225,7 @@
             font-weight: 700;
             transition: all 0.3s;
             box-shadow: 0 5px 15px #fd79a866;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .cart-icon:hover {
@@ -262,7 +266,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 50px #ff6b6b4d;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3)) drop-shadow(0 0 50px #ff6b6b4d);
             animation: pulse 2s ease-in-out infinite alternate;
         }
 
@@ -293,6 +297,7 @@
             display: inline-block;
             box-shadow: 0 10px 30px #00000033;
             animation: gradientShift 3s ease infinite;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .cta-button:hover {
@@ -322,6 +327,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
 
         .section-title p {
@@ -461,6 +467,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 1.5rem;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
 
         .add-to-cart {
@@ -475,6 +482,7 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 5px 15px #fd79a84d;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .add-to-cart:hover {
@@ -506,6 +514,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .add-product-trigger:hover {
@@ -567,6 +576,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
 
         .form-grid {
@@ -639,6 +649,7 @@
             transition: all 0.3s ease;
             margin-top: 1rem;
             box-shadow: 0 5px 15px #fd79a866;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .submit-btn:hover {
@@ -672,6 +683,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
 
         .footer-section p, .footer-section a {
@@ -680,11 +692,13 @@
             margin-bottom: 0.5rem;
             display: block;
             transition: all 0.3s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .footer-section a:hover {
             color: var(--secondary-color);
             transform: translateX(10px);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .footer-bottom {
@@ -692,6 +706,7 @@
             padding-top: 2rem;
             text-align: center;
             color: #ddd;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         #formMessage {
             grid-column: 1 / -1;
@@ -773,6 +788,7 @@
         .modal-tab.active {
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-content {
@@ -823,6 +839,7 @@
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-submit:hover {
@@ -841,6 +858,7 @@
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .modal-switch a:hover {
