@@ -22,17 +22,9 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color), var(--supporting-color), var(--highlight-color));
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,242,245,0.95) 100%);
             color: #2d3436;
             overflow-x: hidden;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
 
         .container {
@@ -236,21 +228,36 @@
         /* Hero Section */
         .hero {
             text-align: center;
-            padding: 6rem 0;
+            padding: 7rem 0;
             position: relative;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
 
         .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #ffffff1a;
-            backdrop-filter: blur(5px);
-            border-radius: 30px;
-            margin: 0 20px;
+            top: -50%;
+            right: -5%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 350px;
+            height: 350px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            z-index: 0;
         }
 
         .hero-content {
@@ -259,13 +266,11 @@
         }
 
         .hero h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 900;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
             filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3)) drop-shadow(0 0 50px #ff6b6b4d);
             animation: pulse 2s ease-in-out infinite alternate;
         }
@@ -308,56 +313,43 @@
         /* Products Section */
         .products {
             padding: 5rem 0;
-            background: #fffffff2;
-            margin: 3rem 20px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
+            background: linear-gradient(180deg, rgba(var(--primary-color-rgb), 0.03) 0%, transparent 100%);
+            margin: 3rem 0;
+            border-radius: 0;
         }
 
         .section-title h2 {
-            font-size: 3rem;
-            font-weight: 900;
+            font-size: 2.8rem;
+            font-weight: 800;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
-        }
-
-        .section-title p {
-            font-size: 1.2rem;
-            color: #636e72;
+            color: var(--primary-color);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
-            margin-top: 3rem;
             padding: 0 2rem;
         }
 
         .product-card {
             background: white;
-            border-radius: 25px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 15px 30px #0000001a;
-            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             max-width: 420px;
             margin: 0 auto;
             width: 100%;
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .product-card:hover {
-            transform: translateY(-10px) rotate(2deg);
-            box-shadow: 0 25px 50px #00000033;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
         }
 
         .product-card::before {
@@ -366,8 +358,9 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--tertiary-color), var(--supporting-color));
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            z-index: 10;
         }
 
         .product-image {
@@ -659,12 +652,21 @@
 
         /* Footer */
         footer {
-            background: #2d3436f2;
+            background: linear-gradient(135deg, #2d3436 0%, #1e272e 100%);
             color: white;
-            padding: 3rem 0;
-            margin: 3rem 20px 20px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
+            padding: 3.5rem 0 2rem;
+            margin-top: 4rem;
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
         }
 
         .footer-content {
@@ -996,14 +998,14 @@
         <nav class="container">
             <div class="logo">{{ .Name }}</div>
             <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#products">Products</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a onclick="goToPage('/home')">Home</a></li>
+                <li><a onclick="goToPage('/orders')">Orders</a></li>
+                <li><a onclick="goToPage('/about')">About</a></li>
+                <li><a onclick="goToPage('/contact')">Contact</a></li>
             </ul>
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <button id="loginBtn" class="cart-icon" style="background: linear-gradient(45deg, var(--accent-color), var(--highlight-color)); color: white; border: none;">Login</button>
-                <a onclick="goToCheckout()" class="cart-icon">🛒 Cart (0)</a>
+                <a onclick="goToCheckout()" class="cart-icon">Cart (<span id="cart-total">0</span>)</a>
             </div>
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <span></span>
@@ -1019,11 +1021,11 @@
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#products">Products</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a onclick="goToCheckout()">Cart (0)</a></li>
+            <li><a onclick="goToPage('/home')">Home</a></li>
+            <li><a onclick="goToPage('/orders')">Orders</a></li>
+            <li><a onclick="goToPage('/about')">About</a></li>
+            <li><a onclick="goToPage('/contact')">Contact</a></li>
+            <li><a onclick="goToCheckout()">Cart (<span id="cart-total">0</span>)</a></li>
             <li><button id="mobileLoginBtn" style="background: none; border: none; color: #2d3436; font-size: 1.2rem; cursor: pointer;">Login</button></li>
         </ul>
     </div>
@@ -1033,18 +1035,19 @@
             <div class="container">
                 <h1>{{ .Name }}</h1>
                 <p>{{ .Description }}</p>
-                <a href="#products" class="cta-button">Explore Magic</a>
+                <a onclick="goToPage('/products')" class="cta-button">Explore Magic</a>
             </div>
         </div>
     </section>
 
     <section class="products" id="products">
         <div class="container">
+            <center>
             <div class="section-title">
                 <h2>Amazing Products</h2>
                 <p>Each item is a burst of creativity waiting to inspire your imagination</p>
             </div>
-            
+            </center><br>
             <div class="product-grid">
                 {{range .Products}}
                 <div class="product-card">
@@ -1113,17 +1116,17 @@
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
-                    <a href="#products">Products</a>
-                    <a href="#about">About Us</a>
-                    <a href="#contact">Contact</a>
-                    <a href="#shipping">Shipping</a>
+                    <a onclick="goToPage('/products')">Products</a>
+                    <a onclick="goToPage('/about')">About Us</a>
+                    <a onclick="goToPage('/contact')">Contact</a>
+                    <a onclick="goToPage('/shipping')">Shipping</a>
                 </div>
                 <div class="footer-section">
                     <h3>Customer Love</h3>
-                    <a href="#support">Support</a>
-                    <a href="#returns">Returns</a>
-                    <a href="#warranty">Warranty</a>
-                    <a href="#reviews">Reviews</a>
+                    <a onclick="goToPage('/support')">Support</a>
+                    <a onclick="goToPage('/returns')">Returns</a>
+                    <a onclick="goToPage('/warranty')">Warranty</a>
+                    <a onclick="goToPage('/reviews')">Reviews</a>
                 </div>
             </div>
             <div class="footer-bottom">

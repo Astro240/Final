@@ -1176,17 +1176,17 @@
         <nav class="container">
             <div class="logo">{{ .Name }}</div>
             <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#collections">Collections</a></li>
-                <li><a href="#heritage">Heritage</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a onclick="goToPage('/home')">Home</a></li>
+                <li><a onclick="goToPage('/orders')">Orders</a></li>
+                <li><a onclick="goToPage('/heritage')">Heritage</a></li>
+                <li><a onclick="goToPage('/contact')">Contact</a></li>
             </ul>
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <button id="loginBtn" class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);">
                     Login
                 </button>
-                <a onclick="goToCheckout()" class="cart-icon">Cart (0)</a>
+                <a onclick="goToCheckout()" class="cart-icon">Cart (<span id="cart-total">0</span>)</a>
             </div>
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <span></span>
@@ -1202,11 +1202,11 @@
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#collections">Collections</a></li>
-            <li><a href="#heritage">Heritage</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a onclick="goToCheckout()">Cart (0)</a></li>
+            <li><a onclick="goToPage('/home')">Home</a></li>
+            <li><a onclick="goToPage('/orders')">Orders</a></li>
+            <li><a onclick="goToPage('/heritage')">Heritage</a></li>
+            <li><a onclick="goToPage('/contact')">Contact</a></li>
+            <li><a onclick="goToCheckout()">Cart (<span id="cart-total">0</span>)</a></li>
             <li><button id="mobileLoginBtn"
                     style="background: none; border: none; color: #4b5563; font-size: 1.2rem; cursor: pointer;">Login</button>
             </li>
@@ -1218,7 +1218,7 @@
             <div class="container">
                 <h1>{{ .Name }}</h1>
                 <p>{{ .Description }}</p>
-                <a href="#products" class="cta-button">EXPLORE COLLECTION</a>
+                <a onclick="goToPage('/products')" class="cta-button">EXPLORE COLLECTION</a>
             </div>
         </div>
     </section>
@@ -1299,17 +1299,17 @@
                 </div>
                 <div class="footer-section">
                     <h3>SERVICES</h3>
-                    <a href="#concierge">Personal Concierge</a>
-                    <a href="#authentication">Authentication</a>
-                    <a href="#restoration">Restoration</a>
-                    <a href="#appraisal">Appraisal Services</a>
+                    <a onclick="goToPage('/concierge')">Personal Concierge</a>
+                    <a onclick="goToPage('/authentication')">Authentication</a>
+                    <a onclick="goToPage('/restoration')">Restoration</a>
+                    <a onclick="goToPage('/appraisal')">Appraisal Services</a>
                 </div>
                 <div class="footer-section">
                     <h3>EXCLUSIVES</h3>
-                    <a href="#private">Private Collections</a>
-                    <a href="#bespoke">Bespoke Services</a>
-                    <a href="#vip">VIP Membership</a>
-                    <a href="#events">Exclusive Events</a>
+                    <a onclick="goToPage('/private')">Private Collections</a>
+                    <a onclick="goToPage('/bespoke')">Bespoke Services</a>
+                    <a onclick="goToPage('/vip')">VIP Membership</a>
+                    <a onclick="goToPage('/events')">Exclusive Events</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -1398,6 +1398,8 @@
                 }
             });
         }
+
+        
     </script>
 </body>
 

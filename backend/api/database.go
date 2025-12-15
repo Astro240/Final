@@ -29,8 +29,8 @@ func CreateDatabase() {
 		profile_picture TEXT,
 		store_id INTEGER,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_type) REFERENCES user_type(id),
-		FOREIGN KEY (store_id) REFERENCES stores(id)
+		FOREIGN KEY (user_type) REFERENCES user_type(id) ON DELETE CASCADE,
+		FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE
 	);
 	
 	CREATE TABLE IF NOT EXISTS verification_codes (
@@ -39,14 +39,14 @@ func CreateDatabase() {
 		code TEXT NOT NULL,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		expires_at DATETIME,
-		FOREIGN KEY (user_id) REFERENCES users(id)
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	CREATE TABLE IF NOT EXISTS sessions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER,
 		session_token TEXT NOT NULL UNIQUE,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_id) REFERENCES users(id)
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	CREATE TABLE IF NOT EXISTS user_type (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +62,7 @@ func CreateDatabase() {
 		banner TEXT,
 		owner_id INTEGER,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (owner_id) REFERENCES users(id)
+		FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 	
 	CREATE TABLE IF NOT EXISTS products (
@@ -74,7 +74,7 @@ func CreateDatabase() {
 		image TEXT,
 		quantity INTEGER DEFAULT 0,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (store_id) REFERENCES stores(id)
+		FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE
 	);
 	INSERT OR IGNORE INTO user_type (id, name) VALUES
 	(1, 'admin'),
@@ -85,7 +85,7 @@ func CreateDatabase() {
     	method_name TEXT NOT NULL,
     	account_details TEXT, -- This could be a card number or account ID
     	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    	FOREIGN KEY (user_id) REFERENCES users(id)
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 
 	CREATE TABLE IF NOT EXISTS transactions (
@@ -95,8 +95,8 @@ func CreateDatabase() {
     	amount REAL NOT NULL,
     	transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     	status TEXT NOT NULL, -- e.g., 'completed', 'pending', 'failed'
-    	FOREIGN KEY (order_id) REFERENCES orders(id),
-    	FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+    	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    	FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE CASCADE
 	);
 
 	-- Cart table
@@ -106,8 +106,8 @@ func CreateDatabase() {
     	product_id INTEGER NOT NULL,
     	quantity INTEGER NOT NULL DEFAULT 1,
     	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    	FOREIGN KEY (user_id) REFERENCES users(id),
-    	FOREIGN KEY (product_id) REFERENCES products(id),
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     	UNIQUE(user_id, product_id)
 	);
 
@@ -121,7 +121,7 @@ func CreateDatabase() {
     	payment_info TEXT,
     	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    	FOREIGN KEY (user_id) REFERENCES users(id)
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	);
 
 	-- Order product table
@@ -131,15 +131,15 @@ func CreateDatabase() {
     	product_id INTEGER NOT NULL,
     	quantity INTEGER NOT NULL,
     	price REAL NOT NULL,
-    	FOREIGN KEY (order_id) REFERENCES orders(id),
-    	FOREIGN KEY (product_id) REFERENCES products(id)
+    	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 	);
 	CREATE TABLE IF NOT EXISTS favorites (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
     	user_id INTEGER NOT NULL,
     	product_id INTEGER NOT NULL,
-    	FOREIGN KEY (user_id) REFERENCES users(id),
-    	FOREIGN KEY (product_id) REFERENCES products(id)
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 	);
 	insert or ignore into users (id, email, password, first_name, user_type) values
 	(0, 'astropify@gmail.com', '$2a$10$MleK0bpPilssP8IyMai7A.5azKNbMcz8bJrLxWmbLnhcKtRHY87V2', 'admin', 1);

@@ -31,6 +31,7 @@
             display: grid;
             grid-template-columns: 250px 1fr;
             min-height: 100vh;
+            position: relative;
         }
 
         /* Sidebar */
@@ -85,6 +86,8 @@
         .main-content {
             padding: 2rem;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Header */
@@ -338,6 +341,329 @@
         }
 
         /* Responsive */
+        /* View System */
+        .dashboard-view {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 250px;
+            min-height: 100vh;
+        }
+
+        .dashboard-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inventory-view {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 250px;
+            min-height: 100vh;
+        }
+
+        .inventory-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .add-product-view {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 250px;
+            min-height: 100vh;
+        }
+
+        .add-product-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .view-header h2 {
+            color: #ffffff;
+            font-size: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Products List */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #f1f5f9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 2rem;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .product-qty {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .product-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .product-edit {
+            background: rgba(66, 153, 225, 0.6);
+            color: #ffffff;
+        }
+
+        .product-edit:hover {
+            background: rgba(66, 153, 225, 0.8);
+        }
+
+        .product-delete {
+            background: rgba(239, 68, 68, 0.6);
+            color: #ffffff;
+        }
+
+        .product-delete:hover {
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        /* Add Product Form */
+        .add-product-form {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #ffffff;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .form-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Edit Product View */
+        .edit-product-view {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 250px;
+            min-height: 100vh;
+        }
+
+        .edit-product-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-product-form {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #cbd5e1;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             .dashboard-container {
                 grid-template-columns: 1fr;
@@ -349,6 +675,16 @@
             
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .inventory-content {
+                width: 95%;
+                margin: 1rem auto;
+                padding: 1rem;
             }
         }
     </style>
@@ -363,25 +699,19 @@
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="fas fa-tachometer-alt"></i>
+                        <a href="#" class="nav-link active" onclick="switchView('dashboard'); return false;">
+                            <i class="fas fa-chart-bar"></i>
                             Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-chart-bar"></i>
-                            Analytics
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="#" class="nav-link" onclick="switchView('inventory'); return false;">
                             <i class="fas fa-box"></i>
                             Inventory
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="#" class="nav-link" onclick="switchView('add'); return false;">
                             <i class="fas fa-plus"></i>
                             Add Product
                         </a>
@@ -402,8 +732,9 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
-        <main class="main-content">
+        <!-- Dashboard View -->
+        <div class="dashboard-view active" id="dashboardView">
+            <main class="main-content">
             <!-- Header -->
             <header class="header">
                 <h2>Dashboard</h2>
@@ -460,9 +791,6 @@
             <div class="trades-section">
                 <div class="section-header">
                     <h3 class="section-title">Top Performing Products</h3>
-                    <button class="new-trade-btn">
-                        <i class="fas fa-plus"></i> Add Product
-                    </button>
                 </div>
                 <table class="trades-table">
                     <thead>
@@ -486,7 +814,130 @@
         </main>
     </div>
 
+    <!-- Inventory View -->
+    <div class="inventory-view" id="inventoryView">
+        <main class="main-content">
+            
+            <header class="header">
+                <h2>Inventory Management</h2>
+                <div class="user-info">
+                    <span>Welcome back, Store Manager</span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </header>
+            <div class="products-grid" id="productsGrid">
+                <div class="empty-state">
+                    <i class="fas fa-box"></i>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Product View -->
+    <div class="add-product-view" id="addProductView">
+        <main class="main-content">
+            <header class="header">
+                <h2>Add Product</h2>
+                <div class="user-info">
+                    <span>Welcome back, Store Manager</span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <form class="add-product-form" id="addProductForm" enctype="multipart/form-data" onsubmit="handleAddProduct(event)">
+                <div class="form-group">
+                    <label for="productName">Product Name *</label>
+                    <input type="text" id="productName" name="productName" required placeholder="Enter product name">
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">Price (BHD) *</label>
+                    <input type="number" id="productPrice" name="productPrice" step="0.01" required placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="productQuantity">Quantity *</label>
+                    <input type="number" id="productQuantity" name="productQuantity" min="1" required placeholder="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">Product Image</label>
+                    <input type="file" id="productImage" name="productImage" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea id="productDescription" name="productDescription" placeholder="Enter product description"></textarea>
+                </div>
+
+                <div id="formMessage" style="margin-bottom: 1rem; padding: 1rem; border-radius: 6px; display: none;"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="form-btn btn-submit">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                    <button type="button" class="form-btn btn-cancel" onclick="switchView('dashboard')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- Edit Product View -->
+    <div class="edit-product-view" id="editProductView">
+        <main class="main-content">
+            <div class="view-header">
+                <button class="back-btn" onclick="switchView('inventory')">
+                    <i class="fas fa-arrow-left"></i> Back to Inventory
+                </button>
+                <h2>Edit Product</h2>
+            </div>
+
+            <form class="edit-product-form" onsubmit="handleEditProduct(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="editProductName">Product Name *</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editProductDescription">Description</label>
+                    <textarea id="editProductDescription"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editProductPrice">Price (BHD) *</label>
+                    <input type="number" id="editProductPrice" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editProductQuantity">Quantity *</label>
+                    <input type="number" id="editProductQuantity" min="0" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="form-btn btn-submit">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="form-btn btn-cancel" onclick="switchView('inventory')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </main>
+        </div>
+    </div>
+
     <script>
+        // Store variables
+        let storeId = {{ .Store.ID }};
+        let currentEditProductId = null;
+
         // Get accent color from CSS variable
         const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
         
@@ -544,11 +995,275 @@
             }
         });
 
+        // ===== INVENTORY MANAGEMENT FUNCTIONS =====
+        
+        function switchView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.remove('active');
+            document.getElementById('inventoryView').classList.remove('active');
+            document.getElementById('addProductView').classList.remove('active');
+            document.getElementById('editProductView').classList.remove('active');
+
+            // Show selected view
+            if (viewName === 'dashboard') {
+                document.getElementById('dashboardView').classList.add('active');
+            } else if (viewName === 'inventory') {
+                document.getElementById('inventoryView').classList.add('active');
+                loadProducts();
+            } else if (viewName === 'add') {
+                document.getElementById('addProductView').classList.add('active');
+                document.querySelector('.add-product-form').reset();
+            } else if (viewName === 'edit') {
+                document.getElementById('editProductView').classList.add('active');
+            }
+        }
+
+        async function loadProducts() {
+            const productsGrid = document.getElementById('productsGrid');
+            productsGrid.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading products...</p></div>';
+
+            try {
+                const response = await fetch(`/api/products?store_id=${storeId}`);
+                const data = await response.json();
+
+                if (data && data.products && data.products.length > 0) {
+                    productsGrid.innerHTML = '';
+                    data.products.forEach(product => {
+                        const card = createProductCard(product);
+                        productsGrid.appendChild(card);
+                    });
+                } else {
+                    productsGrid.innerHTML = '<div class="empty-state"><i class="fas fa-box"></i><p>No products yet. <a href="#" onclick="switchView(\'add\')" style="color: var(--accent-color);">Add your first product!</a></p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                productsGrid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error loading products</p></div>';
+            }
+        }
+
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            // Determine image source
+            let imageHtml = '';
+            if (product.image) {
+                imageHtml = `
+                    <div class="product-image">
+                        <img src="/products/${product.image}" alt="${product.name}" onerror="this.parentElement.innerHTML = '<div class=\\"product-placeholder\\"><i class=\\"fas fa-image\\"></i></div>
+                    </div>
+                `;
+            } else {
+                imageHtml = `
+                    <div class="product-image">
+                        <div class="product-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            card.innerHTML = `
+                ${imageHtml}
+                <div class="product-name">${product.name}</div>
+                <div class="product-price">${product.price.toFixed(2)} BHD</div>
+                <div class="product-qty">
+                    <i class="fas fa-warehouse"></i> Stock: ${product.quantity}
+                </div>
+                ${product.description ? `<div style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1rem;">${product.description}</div>` : ''}
+                <div class="product-actions">
+                    <button class="product-btn product-edit" onclick="openEditForm(${product.id}, '${product.name.replace(/'/g, "\\'")}', '${product.description ? product.description.replace(/'/g, "\\'") : ''}', ${product.price}, ${product.quantity})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="product-btn product-delete" onclick="deleteProduct(${product.id})">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function openEditForm(productId, name, description, price, quantity) {
+            currentEditProductId = productId;
+            document.getElementById('editProductName').value = name;
+            document.getElementById('editProductDescription').value = description;
+            document.getElementById('editProductPrice').value = price;
+            document.getElementById('editProductQuantity').value = quantity;
+            switchView('edit');
+        }
+
+        async function handleEditProduct(e) {
+            e.preventDefault();
+
+            const productData = {
+                id: currentEditProductId,
+                store_id: storeId,
+                name: document.getElementById('editProductName').value,
+                description: document.getElementById('editProductDescription').value,
+                price: parseFloat(document.getElementById('editProductPrice').value),
+                quantity: parseInt(document.getElementById('editProductQuantity').value)
+            };
+
+            try {
+                const response = await fetch('/api/products/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productData)
+                });
+
+                if (response.ok) {
+                    showNotification('Product updated successfully!', 'success');
+                    loadProducts();
+                } else {
+                    showNotification('Failed to update product', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating product:', error);
+                showNotification('Error updating product', 'error');
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+
+            try {
+                const response = await fetch('/api/products/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: productId, store_id: storeId })
+                });
+
+                if (response.ok) {
+                    showNotification('Product deleted successfully!', 'success');
+                    loadProducts();
+                } else {
+                    showNotification('Failed to delete product', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                showNotification('Error deleting product', 'error');
+            }
+        }
+
+        function handleAddProduct(e) {
+            e.preventDefault();
+            const form = document.getElementById('addProductForm');
+            const formData = new FormData(form);
+            formData.append('store_id', storeId);
+
+            const imageInput = document.querySelector('input[name="productImage"]');
+            const formMessage = document.getElementById('formMessage');
+            let imageProcessed = false;
+
+            // Process product image file
+            if (imageInput && imageInput.files[0]) {
+                const imageFile = imageInput.files[0];
+                const imageReader = new FileReader();
+                imageReader.onloadend = function () {
+                    let base64data = imageReader.result;
+                    if (base64data === "data:,") {
+                        base64data = "";
+                    }
+                    formData.set('productImage', base64data);
+                    imageProcessed = true;
+                    checkAndSubmit();
+                };
+                imageReader.readAsDataURL(imageFile);
+            } else {
+                formData.set('productImage', '');
+                imageProcessed = true;
+                checkAndSubmit();
+            }
+
+            function checkAndSubmit() {
+                if (imageProcessed) {
+                    fetch('/api/create_product', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                formMessage.innerText = 'Product created successfully!';
+                                formMessage.classList.remove('error');
+                                formMessage.classList.add('success');
+                                formMessage.style.display = 'block';
+                                formMessage.style.background = '#d1fae5';
+                                formMessage.style.color = '#065f46';
+                                formMessage.style.border = '1px solid #10b981';
+                                form.reset();
+                                setTimeout(() => {
+                                    switchView('inventory');
+                                    formMessage.style.display = 'none';
+                                }, 1500);
+                            } else {
+                                formMessage.innerText = 'Error creating product: ' + data.error;
+                                formMessage.classList.remove('success');
+                                formMessage.classList.add('error');
+                                formMessage.style.display = 'block';
+                                formMessage.style.background = '#fee2e2';
+                                formMessage.style.color = '#991b1b';
+                                formMessage.style.border = '1px solid #f87171';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            formMessage.innerText = 'An unexpected error occurred: ' + error;
+                            formMessage.classList.remove('success');
+                            formMessage.classList.add('error');
+                            formMessage.style.display = 'block';
+                            formMessage.style.background = '#fee2e2';
+                            formMessage.style.color = '#991b1b';
+                            formMessage.style.border = '1px solid #f87171';
+                        });
+                }
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: ${type === 'success' ? '#22c55e' : '#ef4444'};
+                color: white;
+                border-radius: 8px;
+                z-index: 4000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // ===== END INVENTORY MANAGEMENT FUNCTIONS =====
+        
+        // Set up event listeners when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update "Add Product" button in nav
+            const addProductLink = document.querySelector('a[href="#"]');
+            if (addProductLink && addProductLink.querySelector('i.fa-plus')) {
+                addProductLink.onclick = function(e) {
+                    e.preventDefault();
+                    switchView('add');
+                };
+            }
+
+            // Update "Add Product" button in trades section
+            document.querySelector('.new-trade-btn').onclick = function(e) {
+                e.preventDefault();
+                switchView('add');
+            };
+        });
+        
         // WebSocket Connection for Real-time Updates
         let ws;
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
-        const storeId = {{ .Store.ID }};
         
         function connectWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -558,7 +1273,6 @@
                 ws = new WebSocket(wsUrl);
                 
                 ws.onopen = function() {
-                    console.log('WebSocket connected');
                     reconnectAttempts = 0;
                     const header = document.querySelector('.header h2');
                     if (header) {
@@ -570,9 +1284,6 @@
                 ws.onmessage = function(event) {
                     try {
                         const data = JSON.parse(event.data);
-                        console.log('WebSocket data received:', data);
-                        console.log('Revenue:', data.total_revenue, 'Items:', data.items_sold, 'Products:', data.active_products);
-                        console.log('Top Products:', data.top_products ? data.top_products.length : 0);
                         updateDashboard(data);
                     } catch (e) {
                         console.error('Error parsing WebSocket message:', e, event.data);
@@ -630,7 +1341,6 @@
         });
         
         function updateDashboard(data) {
-            console.log('Updating dashboard with data:', data);
             
             // Update stat cards
             const statCards = document.querySelectorAll('.stat-card');
@@ -676,25 +1386,29 @@
                 avgChange.className = 'stat-change ' + (data.avg_change >= 0 ? 'positive' : 'negative');
             }
             
-            console.log('Stats updated successfully');
             
             // Update chart if we have sales data
             if (data.sales_data && data.sales_data.length > 0) {
-                console.log('Updating chart with', data.sales_data.length, 'data points');
-                const labels = data.sales_data.map(d => d.label);
-                const values = data.sales_data.map(d => d.value);
+                // Keep all 12 months and fill in values for available data
+                const fullYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const fullValues = new Array(12).fill(0);
                 
-                portfolioChart.data.labels = labels;
-                portfolioChart.data.datasets[0].data = values;
+                // Map the incoming data to the correct month position
+                data.sales_data.forEach(item => {
+                    const monthIndex = fullYear.findIndex(m => m === item.label);
+                    if (monthIndex !== -1) {
+                        fullValues[monthIndex] = item.value;
+                    }
+                });
+                
+                portfolioChart.data.labels = fullYear;
+                portfolioChart.data.datasets[0].data = fullValues;
                 portfolioChart.update('none'); // Update without animation for real-time feel
-                console.log('Chart updated');
             } else {
-                console.log('No sales data to update chart');
             }
             
             // Update top products table
             if (data.top_products && data.top_products.length > 0) {
-                console.log('Updating top products table with', data.top_products.length, 'products');
                 const tbody = document.querySelector('.trades-table tbody');
                 if (!tbody) {
                     console.error('Could not find .trades-table tbody element');
@@ -730,9 +1444,7 @@
                     `;
                     tbody.appendChild(row);
                 });
-                console.log('Top products table updated successfully');
             } else {
-                console.log('No top products to display');
                 // Show empty state if no products
                 const tbody = document.querySelector('.trades-table tbody');
                 tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #94a3b8;">No products available yet. Add your first product to get started!</td></tr>';

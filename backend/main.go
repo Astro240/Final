@@ -52,12 +52,16 @@ func main() {
 	http.HandleFunc("/api/create_product", api.CreateProductAPI)
 	http.HandleFunc("/api/favorite_product", api.FavoriteProduct)
 	http.HandleFunc("/api/unfavorite_product", api.UnfavoriteProduct)
+	http.HandleFunc("/api/products", api.GetProductsAPI)
+	http.HandleFunc("/api/products/update", api.UpdateProductAPI)
+	http.HandleFunc("/api/products/delete", api.DeleteProductAPI)
 
 	// WebSocket routes
 	http.HandleFunc("/ws/dashboard", api.DashboardWebSocketHandler)
 
 	// Cart and Checkout routes
 	http.HandleFunc("/api/add-to-cart", api.AddToCart)
+	http.HandleFunc("/api/get-cart", api.GetCartTotal)
 	http.HandleFunc("/api/update-cart", api.UpdateCartItem)
 	http.HandleFunc("/api/remove-from-cart", api.RemoveFromCart)
 	http.HandleFunc("/api/create-order", api.CreateOrder)
