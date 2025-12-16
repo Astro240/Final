@@ -11,18 +11,67 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	isCheckout := false
 	isDashboard := false
 	isPayment := false
-	// Check longer suffix first to avoid matching /checkout when /checkout/payment is intended
-	if strings.HasSuffix(storeName, "/checkout/payment") {
+
+	// Check for dashboard/checkout/payment at the start of path
+	if strings.HasPrefix(storeName, "checkout/payment") {
 		isPayment = true
-		storeName = strings.TrimSuffix(storeName, "/checkout/payment")
-	} else if strings.HasSuffix(storeName, "/checkout") {
+		storeName = ""
+	} else if strings.HasPrefix(storeName, "checkout") {
 		isCheckout = true
-		storeName = strings.TrimSuffix(storeName, "/checkout")
-	} else if strings.HasSuffix(storeName, "/dashboard") {
+		storeName = ""
+	} else if strings.HasPrefix(storeName, "dashboard") {
 		isDashboard = true
-		storeName = strings.TrimSuffix(storeName, "/dashboard")
+		storeName = ""
 	}
-	storeName = strings.TrimSuffix(storeName, ".com")
+
+	// Check if path contains a custom domain like /(name).com
+	if storeName != "" && strings.Contains(storeName, ".com") {
+		// Extract store name from path like "mystore.com" or "mystore.com/checkout"
+		pathParts := strings.Split(storeName, "/")
+		domainPart := pathParts[0] // Get "mystore.com"
+
+		// Check for checkout/dashboard/payment in remaining path
+		remainingPath := strings.Join(pathParts[1:], "/")
+		if strings.HasSuffix(remainingPath, "checkout/payment") {
+			isPayment = true
+		} else if strings.HasSuffix(remainingPath, "checkout") {
+			isCheckout = true
+		} else if strings.HasSuffix(remainingPath, "dashboard") {
+			isDashboard = true
+		}
+
+		// Extract store name from domain (e.g., "mystore.com" -> "mystore")
+		storeName = strings.TrimSuffix(domainPart, ".com")
+	} else if storeName == "" {
+		// Get hostname - try r.Host first (includes port), then r.URL.Hostname()
+		hostname := r.Host
+
+		if hostname == "" {
+			hostname = r.URL.Hostname()
+		}
+
+		// Remove port if present
+		if idx := strings.Index(hostname, ":"); idx != -1 {
+			hostname = hostname[:idx]
+		}
+		// If hostname is not the main domain, treat it as a custom store domain
+		if hostname != "" && hostname != "astropify.com" && hostname != "localhost" {
+			storeName = extractStoreNameFromDomain(hostname)
+		}
+	} else {
+		// Handle old path format like /mystore/checkout
+		if strings.HasSuffix(storeName, "/checkout/payment") {
+			isPayment = true
+			storeName = strings.TrimSuffix(storeName, "/checkout/payment")
+		} else if strings.HasSuffix(storeName, "/checkout") {
+			isCheckout = true
+			storeName = strings.TrimSuffix(storeName, "/checkout")
+		} else if strings.HasSuffix(storeName, "/dashboard") {
+			isDashboard = true
+			storeName = strings.TrimSuffix(storeName, "/dashboard")
+		}
+		storeName = strings.TrimSuffix(storeName, ".com")
+	}
 	if storeName == "" {
 		userID, validUser := ValidateUser(w, r)
 		var User UserProfile
@@ -89,7 +138,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if isPayment && err == nil && store.ID != 0 {
 			if _, validUser := ValidateCustomer(w, r); !validUser {
-				http.Redirect(w, r, "/login", http.StatusSeeOther)
+				HandleError(w, r, http.StatusUnauthorized, "Unauthorized, Please login!")
 				return
 			}
 
@@ -192,4 +241,28 @@ func SampleStoreView(w http.ResponseWriter, r *http.Request) {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 		return
 	}
+}
+
+func extractStoreNameFromDomain(hostname string) string {
+	if hostname == "" {
+		return ""
+	}
+
+	parts := strings.Split(hostname, ".")
+
+	if len(parts) >= 3 && parts[len(parts)-2] == "astropify" && parts[len(parts)-1] == "com" {
+		return parts[0]
+	}
+
+	if len(parts) >= 2 {
+		// Try the full domain first
+		store, err := GetStoreByCustomDomain(hostname)
+		if err == nil && store.ID != 0 {
+			return store.Name
+		}
+		// Return the first part as fallback
+		return parts[0]
+	}
+
+	return hostname
 }

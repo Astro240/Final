@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store Performance Dashboard - {{ .Store.Name }}</title>
@@ -638,6 +639,185 @@
             flex-direction: column;
         }
 
+        .orders-view {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 250px;
+            min-height: 100vh;
+        }
+
+        .orders-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+        }
+
+        .orders-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .orders-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .order-status {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.3);
+            color: #fcd34d;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .status-shipped {
+            background: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .status-delivered {
+            background: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .order-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .order-ship-btn {
+            background: rgba(34, 197, 94, 0.6);
+            color: #ffffff;
+        }
+
+        .order-ship-btn:hover {
+            background: rgba(34, 197, 94, 0.8);
+        }
+
+        .order-view-btn {
+            background: rgba(66, 153, 225, 0.6);
+            color: #ffffff;
+        }
+
+        .order-view-btn:hover {
+            background: rgba(66, 153, 225, 0.8);
+        }
+
+        .order-details-row {
+            display: none;
+        }
+
+        .order-details-row.expanded {
+            display: table-row;
+        }
+
+        .order-details-cell {
+            padding: 0;
+        }
+
+        .order-details-content {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .order-products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .order-product-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .order-product-card:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-quantity {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 0.9rem;
+            color: #a8d5ff;
+            font-weight: 600;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: #a8d5ff;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .expand-btn.expanded {
+            transform: rotate(180deg);
+        }
+
         .edit-product-form {
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
@@ -1024,6 +1204,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="#" class="nav-link" onclick="switchView('orders'); return false;">
+                            <i class="fas fa-shopping-cart"></i>
+                            Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="fas fa-cog"></i>
                             Settings
@@ -1249,6 +1435,47 @@
         </div>
     </div>
 
+    <!-- Orders View -->
+    <div class="orders-view" id="ordersView">
+        <main class="main-content">
+            <header class="header">
+                <button class="sidebar-toggle" style="display: none;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2>Orders</h2>
+                <div class="user-info">
+                    <span>Welcome back, Store Manager</span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div style="overflow-x: auto;">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;"></th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Order Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading orders...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
     <script>
         // Store variables
         let storeId = {{ .Store.ID }};
@@ -1356,6 +1583,7 @@
             document.getElementById('inventoryView').classList.remove('active');
             document.getElementById('addProductView').classList.remove('active');
             document.getElementById('editProductView').classList.remove('active');
+            document.getElementById('ordersView').classList.remove('active');
 
             // Show selected view
             if (viewName === 'dashboard') {
@@ -1368,6 +1596,9 @@
                 document.querySelector('.add-product-form').reset();
             } else if (viewName === 'edit') {
                 document.getElementById('editProductView').classList.add('active');
+            } else if (viewName === 'orders') {
+                document.getElementById('ordersView').classList.add('active');
+                loadOrders();
             }
         }
 
@@ -1594,6 +1825,154 @@
         }
 
         // ===== END INVENTORY MANAGEMENT FUNCTIONS =====
+
+        // ===== ORDERS MANAGEMENT FUNCTIONS =====
+
+        async function loadOrders() {
+            const ordersTable = document.getElementById('ordersTable');
+            const tbody = ordersTable.querySelector('tbody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading orders...</td></tr>';
+
+            try {
+                const response = await fetch(`/api/orders?store_id=${storeId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load orders');
+                }
+
+                const data = await response.json();
+
+                if (data.orders && data.orders.length > 0) {
+                    tbody.innerHTML = '';
+                    data.orders.forEach(order => {
+                        const statusClass = `status-${order.status}`;
+                        
+                        // Main order row
+                        const row = document.createElement('tr');
+                        row.className = 'order-row';
+                        row.dataset.orderId = order.id;
+                        row.innerHTML = `
+                            <td><button class="expand-btn" onclick="toggleOrderDetails(${order.id})"><i class="fas fa-chevron-down"></i></button></td>
+                            <td>#${order.id}</td>
+                            <td>${order.customer_name || 'N/A'}</td>
+                            <td>${parseFloat(order.total_amount).toFixed(2)} BHD</td>
+                            <td><span class="order-status ${statusClass}">${order.status}</span></td>
+                            <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <div class="order-actions">
+                                    ${order.status !== 'shipped' && order.status !== 'delivered' ? `
+                                        <button class="order-btn order-ship-btn" onclick="updateOrderStatus(${order.id}, 'shipped')">
+                                            <i class="fas fa-truck"></i> Ship
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+
+                        // Details row
+                        const detailsRow = document.createElement('tr');
+                        detailsRow.className = `order-details-row`;
+                        detailsRow.dataset.orderId = order.id;
+                        detailsRow.innerHTML = `
+                            <td colspan="7" class="order-details-cell">
+                                <div class="order-details-content">
+                                    <h3 style="color: #f1f5f9; margin-bottom: 1rem;">Order #${order.id} Items</h3>
+                                    <div class="order-products" id="products-${order.id}">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading products...
+                                    </div>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(detailsRow);
+
+                        // Fetch products for this order
+                        fetchOrderProducts(order.id);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #cbd5e1;">No orders yet</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #f87171;"><i class="fas fa-exclamation-circle"></i> Error loading orders</td></tr>';
+            }
+        }
+
+        function toggleOrderDetails(orderId) {
+            const detailsRow = document.querySelector(`tr.order-details-row[data-order-id="${orderId}"]`);
+            const expandBtn = document.querySelector(`tr.order-row[data-order-id="${orderId}"] .expand-btn`);
+            
+            if (detailsRow) {
+                detailsRow.classList.toggle('expanded');
+                expandBtn.classList.toggle('expanded');
+            }
+        }
+
+        async function fetchOrderProducts(orderId) {
+            try {
+                const response = await fetch(`/api/orders/${orderId}/products?store_id=${storeId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                const productsContainer = document.getElementById(`products-${orderId}`);
+
+                if (data.products && data.products.length > 0) {
+                    productsContainer.innerHTML = '';
+                    data.products.forEach(product => {
+                        const card = document.createElement('div');
+                        card.className = 'order-product-card';
+                        card.innerHTML = `
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-quantity">Quantity: ${product.quantity}</div>
+                            <div class="product-price">Price: ${parseFloat(product.price).toFixed(2)} BHD each</div>
+                            <div style="margin-top: 0.5rem; color: #a8d5ff; font-weight: 600;">Total: ${(product.quantity * product.price).toFixed(2)} BHD</div>
+                        `;
+                        productsContainer.appendChild(card);
+                    });
+                } else {
+                    productsContainer.innerHTML = '<p style="color: #cbd5e1;">No products found for this order</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching order products:', error);
+                const productsContainer = document.getElementById(`products-${orderId}`);
+                productsContainer.innerHTML = '<p style="color: #f87171;"><i class="fas fa-exclamation-circle"></i> Error loading products</p>';
+            }
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            if (!confirm(`Mark order #${orderId} as ${newStatus}?`)) return;
+
+            try {
+                const response = await fetch('/api/orders/update-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        status: newStatus,
+                        store_id: storeId
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`Order #${orderId} marked as ${newStatus}!`, 'success');
+                    loadOrders();
+                } else {
+                    showNotification(data.error || 'Failed to update order status', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                showNotification('Error updating order status', 'error');
+            }
+        }
+
+        // ===== END ORDERS MANAGEMENT FUNCTIONS =====
         
         // Set up event listeners when page loads
         document.addEventListener('DOMContentLoaded', function() {

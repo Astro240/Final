@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 
@@ -244,7 +245,14 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
+	ip, err := GetIPv4()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = AddHostEntry(strings.ToLower(name)+".com", ip)
+	if err != nil {
+		log.Fatal(err)
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -256,6 +264,50 @@ func GetStoreByName(storeName string) (Store, error) {
 	defer db.Close()
 
 	row := db.QueryRow("SELECT id, name,description, template, color_scheme, logo, banner, owner_id FROM stores WHERE name = ?", storeName)
+	if err != nil {
+		return Store{}, err
+	}
+	var store Store
+	var color Color
+	var colorScheme string
+	if err := row.Scan(&store.ID, &store.Name, &store.Description, &store.Template, &colorScheme, &store.Logo, &store.Banner, &store.OwnerID); err != nil {
+		return Store{}, err
+	}
+	colors := strings.Split(colorScheme, ",")
+	for i := 0; i < len(colors); i++ {
+		if i == 0 {
+			color.Primary = colors[i]
+		} else if i == 1 {
+			color.Secondary = colors[i]
+		} else if i == 2 {
+			color.Background = colors[i]
+		} else if i == 3 {
+			color.Accent = colors[i]
+		} else if i == 4 {
+			color.Supporting = colors[i]
+		} else if i == 5 {
+			color.Tertiary = colors[i]
+		} else if i == 6 {
+			color.Highlight = colors[i]
+		}
+	}
+	store.Products, err = GetProductsByStoreID(store.ID)
+	if err != nil {
+		return Store{}, err
+	}
+	store.ColorScheme = color
+	return store, nil
+}
+
+// GetStoreByCustomDomain retrieves a store by its custom domain
+func GetStoreByCustomDomain(customDomain string) (Store, error) {
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		return Store{}, err
+	}
+	defer db.Close()
+
+	row := db.QueryRow("SELECT id, name, description, template, color_scheme, logo, banner, owner_id FROM stores WHERE custom_domain = ?", customDomain)
 	if err != nil {
 		return Store{}, err
 	}

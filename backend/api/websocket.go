@@ -178,7 +178,8 @@ func getDashboardStats(db *sql.DB, storeID int) DashboardStats {
 		FROM orders o
 		JOIN order_products op ON o.id = op.order_id
 		JOIN products p ON op.product_id = p.id
-		WHERE p.store_id = ? AND o.status = 'paid'
+		WHERE p.store_id = ? AND (o.status = 'paid' OR o.status= 'shipped' 
+		OR o.status = 'completed')
 	`
 	err := db.QueryRow(query, storeID).Scan(&totalRevenue, &itemsSold)
 
@@ -214,7 +215,8 @@ func getDashboardStats(db *sql.DB, storeID int) DashboardStats {
 		FROM orders o
 		JOIN order_products op ON o.id = op.order_id
 		JOIN products p ON op.product_id = p.id
-		WHERE p.store_id = ? AND o.status = 'paid'
+		WHERE p.store_id = ? AND (o.status = 'paid' OR o.status= 'shipped' 
+		OR o.status = 'completed')
 		GROUP BY month
 		ORDER BY month
 	`

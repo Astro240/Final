@@ -2,11 +2,12 @@ package api
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"runtime"
 )
 
-func addHostEntry(domain string, ip string) error {
+func AddHostEntry(domain string, ip string) error {
 	hostsPath := ""
 	if runtime.GOOS == "windows" {
 		hostsPath = `C:\Windows\System32\drivers\etc\hosts`
@@ -28,4 +29,16 @@ func addHostEntry(domain string, ip string) error {
 	}
 
 	return nil
+}
+
+// GetIPv4 returns the local IPv4 address of the machine
+func GetIPv4() (string, error) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	return localAddr.IP.String(), nil
 }

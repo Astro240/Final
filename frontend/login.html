@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
@@ -131,15 +132,46 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-top: 10px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        button[type="submit"]:hover {
+        button[type="submit"]:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
         }
 
-        button[type="submit"]:active {
+        button[type="submit"]:active:not(:disabled) {
             transform: translateY(0);
+        }
+
+        button[type="submit"]:disabled {
+            opacity: 0.9;
+            cursor: not-allowed;
+        }
+
+        .button-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-right: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .button-spinner.active {
+            display: block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .login-footer {
@@ -156,72 +188,7 @@
             transition: color 0.3s ease;
         }
 
-        .login-footer a:hover {
-            color: #0052a3;
-            text-decoration: underline;
-        }
-
         /* Loading Spinner */
-        .spinner-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .spinner-container.active {
-            display: flex;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(255, 255, 255, 0.3);
-            border-top: 6px solid #0066cc;
-            border-right: 6px solid #0066cc;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .spinner-text {
-            position: absolute;
-            bottom: 30%;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        button[type="submit"]:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
 
         @media (max-width: 480px) {
             .login-card {
@@ -236,14 +203,6 @@
 </head>
 
 <body>
-    <!-- Loading Spinner -->
-    <div class="spinner-container" id="loadingSpinner">
-        <div>
-            <div class="spinner"></div>
-            <div class="spinner-text">Signing in...</div>
-        </div>
-    </div>
-
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
@@ -266,7 +225,10 @@
 
                 <input type="password" id="honeypot" name="honeypot" placeholder="••••••••" hidden>
 
-                <button type="submit" id="submitBtn">Sign In</button>
+                <button type="submit" id="submitBtn">
+                    <span class="button-text">Sign In</span>
+                    <div class="button-spinner"></div>
+                </button>
             </form>
 
             <div class="login-footer">
@@ -276,16 +238,18 @@
     </div>
 
     <script>
-        const loadingSpinner = document.getElementById('loadingSpinner');
         const submitBtn = document.getElementById('submitBtn');
         const loginForm = document.getElementById('loginForm');
+        const buttonText = submitBtn.querySelector('.button-text');
+        const buttonSpinner = submitBtn.querySelector('.button-spinner');
 
         loginForm.addEventListener("submit", function (event) {
             event.preventDefault();
             document.getElementById("errorMessage").innerText = '';
 
-            // Show loading spinner
-            loadingSpinner.classList.add('active');
+            // Show loading spinner in button
+            buttonText.style.display = 'none';
+            buttonSpinner.classList.add('active');
             submitBtn.disabled = true;
 
             var formData = new FormData(this);
@@ -299,7 +263,8 @@
                 .then(data => {
                     if (data.error) {
                         document.getElementById("errorMessage").innerText = data.error;
-                        loadingSpinner.classList.remove('active');
+                        buttonText.style.display = 'inline';
+                        buttonSpinner.classList.remove('active');
                         submitBtn.disabled = false;
                     } else {
                         // Redirect to home page on successful login
@@ -311,7 +276,8 @@
                 .catch(error => {
                     console.error('Error:', error);
                     document.getElementById("errorMessage").innerText = 'An error occurred. Please try again.';
-                    loadingSpinner.classList.remove('active');
+                    buttonText.style.display = 'inline';
+                    buttonSpinner.classList.remove('active');
                     submitBtn.disabled = false;
                 });
         });

@@ -145,7 +145,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetOrders(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
+	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
 		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 		return
@@ -411,6 +411,305 @@ func ProcessPayment(w http.ResponseWriter, r *http.Request) {
 		"success":  true,
 		"message":  "Payment processed successfully",
 		"order_id": orderID,
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+// GetStoreOrders retrieves all orders for products from a specific store
+func GetStoreOrders(w http.ResponseWriter, r *http.Request) {
+	user, err := GetCookie(r, "session_token")
+	if err != nil {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Database Error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Get user ID from session
+	var userID int
+	err = db.QueryRow("SELECT user_id FROM sessions WHERE session_token = ?", user).Scan(&userID)
+	if err != nil {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Get store ID for this user
+	storeIDStr := r.URL.Query().Get("store_id")
+	storeID := 0
+	if _, err := fmt.Sscanf(storeIDStr, "%d", &storeID); err != nil {
+		http.Error(w, `{"error": "Invalid store ID"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Verify user owns this store
+	var storeOwnerID int
+	err = db.QueryRow("SELECT owner_id FROM stores WHERE id = ?", storeID).Scan(&storeOwnerID)
+	if err != nil || storeOwnerID != userID {
+		http.Error(w, `{"error": "Unauthorized to view these orders"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Get all orders for products in this store
+	query := `
+		SELECT 
+			o.id, 
+			o.user_id, 
+			o.total_amount, 
+			o.status, 
+			o.shipping_info, 
+			o.payment_info, 
+			o.created_at, 
+			o.updated_at,
+			u.first_name,
+			COUNT(op.id) as product_count
+		FROM orders o
+		INNER JOIN order_products op ON o.id = op.order_id
+		INNER JOIN products p ON op.product_id = p.id
+		LEFT JOIN users u ON o.user_id = u.id
+		WHERE p.store_id = ?
+		GROUP BY o.id
+		ORDER BY o.created_at DESC
+	`
+
+	rows, err := db.Query(query, storeID)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to fetch orders"}`, http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type OrderData struct {
+		ID           int    `json:"id"`
+		CustomerName string `json:"customer_name"`
+		ProductCount int    `json:"product_count"`
+		TotalAmount  string `json:"total_amount"`
+		Status       string `json:"status"`
+		CreatedAt    string `json:"created_at"`
+	}
+
+	var orders []OrderData
+	for rows.Next() {
+		var order OrderData
+		var userID int
+		var firstName sql.NullString
+		var shippingInfo sql.NullString
+		var paymentInfo sql.NullString
+		var updatedAt sql.NullString
+
+		err := rows.Scan(
+			&order.ID,
+			&userID,
+			&order.TotalAmount,
+			&order.Status,
+			&shippingInfo,
+			&paymentInfo,
+			&order.CreatedAt,
+			&updatedAt,
+			&firstName,
+			&order.ProductCount,
+		)
+		if err != nil {
+			continue
+		}
+
+		if firstName.Valid {
+			order.CustomerName = firstName.String
+		} else {
+			order.CustomerName = "Guest"
+		}
+
+		orders = append(orders, order)
+	}
+
+	response := map[string]interface{}{
+		"orders": orders,
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+// UpdateOrderStatus updates the status of an order
+func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
+	user, err := GetCookie(r, "session_token")
+	if err != nil {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		OrderID int    `json:"order_id"`
+		Status  string `json:"status"`
+		StoreID int    `json:"store_id"`
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, `{"error": "Invalid request"}`, http.StatusBadRequest)
+		return
+	}
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Database Error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Get user ID from session
+	var userID int
+	err = db.QueryRow("SELECT user_id FROM sessions WHERE session_token = ?", user).Scan(&userID)
+	if err != nil {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Verify user owns this store
+	var storeOwnerID int
+	err = db.QueryRow("SELECT owner_id FROM stores WHERE id = ?", req.StoreID).Scan(&storeOwnerID)
+	if err != nil || storeOwnerID != userID {
+		http.Error(w, `{"error": "Unauthorized to update this order"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Verify the order has products from this store
+	var orderExists int
+	err = db.QueryRow(`
+		SELECT COUNT(*) FROM orders o
+		INNER JOIN order_products op ON o.id = op.order_id
+		INNER JOIN products p ON op.product_id = p.id
+		WHERE o.id = ? AND p.store_id = ?
+	`, req.OrderID, req.StoreID).Scan(&orderExists)
+	if err != nil || orderExists == 0 {
+		http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
+		return
+	}
+
+	// Update order status
+	_, err = db.Exec(
+		"UPDATE orders SET status = ?, updated_at = datetime('now') WHERE id = ?",
+		req.Status,
+		req.OrderID,
+	)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to update order"}`, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"message": "Order status updated successfully",
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+// GetOrderProducts retrieves all products in a specific order
+func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Database Error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Get user ID from session
+	var userID int
+	userID, valid := ValidateUser(w,r)
+	if !valid {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Get store ID and order ID from URL
+	storeIDStr := r.URL.Query().Get("store_id")
+	pathSegments := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/orders/"), "/")
+	if len(pathSegments) < 1 {
+		http.Error(w, `{"error": "Invalid request"}`, http.StatusBadRequest)
+		return
+	}
+
+	orderIDStr := pathSegments[0]
+	storeID := 0
+	orderID := 0
+	if _, err := fmt.Sscanf(storeIDStr, "%d", &storeID); err != nil {
+		http.Error(w, `{"error": "Invalid store ID"}`, http.StatusBadRequest)
+		return
+	}
+	if _, err := fmt.Sscanf(orderIDStr, "%d", &orderID); err != nil {
+		http.Error(w, `{"error": "Invalid order ID"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Verify user owns this store
+	var storeOwnerID int
+	err = db.QueryRow("SELECT owner_id FROM stores WHERE id = ?", storeID).Scan(&storeOwnerID)
+	if err != nil || storeOwnerID != userID {
+		http.Error(w, `{"error": "Unauthorized to view these products"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Verify the order has products from this store
+	var orderExists int
+	err = db.QueryRow(`
+		SELECT COUNT(*) FROM orders o
+		INNER JOIN order_products op ON o.id = op.order_id
+		INNER JOIN products p ON op.product_id = p.id
+		WHERE o.id = ? AND p.store_id = ?
+	`, orderID, storeID).Scan(&orderExists)
+	if err != nil || orderExists == 0 {
+		http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
+		return
+	}
+
+	// Get all products in this order
+	query := `
+		SELECT op.product_id, p.name, op.quantity, op.price
+		FROM order_products op
+		INNER JOIN products p ON op.product_id = p.id
+		INNER JOIN orders o ON op.order_id = o.id
+		INNER JOIN stores s ON p.store_id = s.id
+		WHERE o.id = ? AND s.id = ?
+		ORDER BY op.id
+	`
+
+	rows, err := db.Query(query, orderID, storeID)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to fetch products"}`, http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type OrderProduct struct {
+		ID       int     `json:"id"`
+		Name     string  `json:"name"`
+		Quantity int     `json:"quantity"`
+		Price    float64 `json:"price"`
+	}
+
+	var products []OrderProduct
+	for rows.Next() {
+		var product OrderProduct
+		err := rows.Scan(&product.ID, &product.Name, &product.Quantity, &product.Price)
+		if err != nil {
+			continue
+		}
+		products = append(products, product)
+	}
+
+	response := map[string]interface{}{
+		"products": products,
 	}
 
 	json.NewEncoder(w).Encode(response)
