@@ -774,11 +774,41 @@
             border-radius: 8px;
             padding: 1rem;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .order-product-card:hover {
             background: rgba(0, 0, 0, 0.4);
             border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .order-product-image {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .order-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-product-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 2rem;
         }
 
         .product-name {
@@ -1927,6 +1957,9 @@
                         const card = document.createElement('div');
                         card.className = 'order-product-card';
                         card.innerHTML = `
+                            <div class="order-product-image">
+                                <img src="/products/${product.image}" alt="${product.name}" />
+                            </div>
                             <div class="product-name">${product.name}</div>
                             <div class="product-quantity">Quantity: ${product.quantity}</div>
                             <div class="product-price">Price: ${parseFloat(product.price).toFixed(2)} BHD each</div>
@@ -1984,12 +2017,6 @@
                     switchView('add');
                 };
             }
-
-            // Update "Add Product" button in trades section
-            document.querySelector('.new-trade-btn').onclick = function(e) {
-                e.preventDefault();
-                switchView('add');
-            };
         });
         
         // WebSocket Connection for Real-time Updates

@@ -626,7 +626,7 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 
 	// Get user ID from session
 	var userID int
-	userID, valid := ValidateUser(w,r)
+	userID, valid := ValidateUser(w, r)
 	if !valid {
 		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 		return
@@ -675,7 +675,7 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 
 	// Get all products in this order
 	query := `
-		SELECT op.product_id, p.name, op.quantity, op.price
+		SELECT op.product_id, p.name,p.image , op.quantity, op.price
 		FROM order_products op
 		INNER JOIN products p ON op.product_id = p.id
 		INNER JOIN orders o ON op.order_id = o.id
@@ -694,6 +694,7 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 	type OrderProduct struct {
 		ID       int     `json:"id"`
 		Name     string  `json:"name"`
+		Image    string  `json:"image"`
 		Quantity int     `json:"quantity"`
 		Price    float64 `json:"price"`
 	}
@@ -701,7 +702,7 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 	var products []OrderProduct
 	for rows.Next() {
 		var product OrderProduct
-		err := rows.Scan(&product.ID, &product.Name, &product.Quantity, &product.Price)
+		err := rows.Scan(&product.ID, &product.Name, &product.Image, &product.Quantity, &product.Price)
 		if err != nil {
 			continue
 		}
