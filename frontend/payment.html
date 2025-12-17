@@ -333,7 +333,7 @@
                 } else {
                     showError('No pending order found. Please complete checkout first.');
                     setTimeout(() => {
-                        window.location.href = '/';
+                        history.back();
                     }, 3000);
                 }
             } catch (error) {
@@ -370,7 +370,7 @@
                     
                     // Redirect to home or order confirmation page
                     setTimeout(() => {
-                        window.location.href = '/';
+                        history.back();
                     }, 3000);
                 } else {
                     showError(data.error || 'Payment failed. Please try again.');

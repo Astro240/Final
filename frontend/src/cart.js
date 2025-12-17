@@ -152,6 +152,6 @@ function goToCheckout(){
     window.location.href = window.location.href+"/checkout";
 }
 
-function GoToPage(text) {
+function goToPage(text) {
     window.location.href = window.location.href+text;
 }

@@ -77,6 +77,7 @@ func main() {
 	http.HandleFunc("/api/orders/update-status", api.UpdateOrderStatus)
 	http.HandleFunc("/api/orders/", api.GetOrderProducts)
 	http.HandleFunc("/api/my-orders", api.GetOrders)
+	http.HandleFunc("/api/customer/orders", api.GetCustomerOrders)
 	// WebSocket routes
 	http.HandleFunc("/ws/dashboard", api.DashboardWebSocketHandler)
 

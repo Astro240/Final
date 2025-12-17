@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -118,7 +119,6 @@ func DashboardWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	// Send initial data
 	stats := getDashboardStats(db, storeID)
 
-
 	if err := conn.WriteJSON(stats); err != nil {
 		return
 	}
@@ -201,11 +201,87 @@ func getDashboardStats(db *sql.DB, storeID int) DashboardStats {
 		stats.AvgOrderValue = stats.TotalRevenue / float64(stats.ItemsSold)
 	}
 
-	// Calculate percentage changes (mock data for now)
-	stats.RevenueChange = 18.3
-	stats.SalesChange = 12.4
-	stats.ProductsChange = 5.9
-	stats.AvgChange = 8.7
+	// Calculate percentage changes based on last month vs current month
+	currentMonth := time.Now().Month()
+	currentYear := time.Now().Year()
+	lastMonth := currentMonth - 1
+	lastYear := currentYear
+	if lastMonth == 0 {
+		lastMonth = 12
+		lastYear = currentYear - 1
+	}
+
+	// Get last month's revenue
+	var lastMonthRevenue sql.NullFloat64
+	var lastMonthSales sql.NullInt64
+	lastMonthQuery := `
+		SELECT 
+			COALESCE(SUM(op.quantity * op.price), 0) as revenue,
+			COALESCE(SUM(op.quantity), 0) as items_sold
+		FROM orders o
+		JOIN order_products op ON o.id = op.order_id
+		JOIN products p ON op.product_id = p.id
+		WHERE p.store_id = ? 
+		AND strftime('%m', o.created_at) = ?
+		AND strftime('%Y', o.created_at) = ?
+		AND (o.status = 'paid' OR o.status = 'shipped' OR o.status = 'completed')
+	`
+	db.QueryRow(lastMonthQuery, storeID, fmt.Sprintf("%02d", lastMonth), fmt.Sprintf("%d", lastYear)).
+		Scan(&lastMonthRevenue, &lastMonthSales)
+
+	// Calculate revenue change percentage
+	if lastMonthRevenue.Valid && lastMonthRevenue.Float64 > 0 {
+		stats.RevenueChange = ((stats.TotalRevenue - lastMonthRevenue.Float64) / lastMonthRevenue.Float64) * 100
+	} else if stats.TotalRevenue > 0 {
+		// New business with no last month data but has revenue this month = 100% growth
+		stats.RevenueChange = 100
+	} else {
+		stats.RevenueChange = 0
+	}
+
+	// Calculate sales change percentage
+	if lastMonthSales.Valid && lastMonthSales.Int64 > 0 {
+		stats.SalesChange = ((float64(stats.ItemsSold) - float64(lastMonthSales.Int64)) / float64(lastMonthSales.Int64)) * 100
+	} else if stats.ItemsSold > 0 {
+		// New business with no last month data but has sales this month = 100% growth
+		stats.SalesChange = 100
+	} else {
+		stats.SalesChange = 0
+	}
+
+	// Get last month's average order value for comparison
+	var lastMonthAvgOrderValue float64
+	if lastMonthSales.Valid && lastMonthSales.Int64 > 0 && lastMonthRevenue.Valid {
+		lastMonthAvgOrderValue = lastMonthRevenue.Float64 / float64(lastMonthSales.Int64)
+	}
+
+	// Calculate average order value change percentage
+	if lastMonthAvgOrderValue > 0 {
+		stats.AvgChange = ((stats.AvgOrderValue - lastMonthAvgOrderValue) / lastMonthAvgOrderValue) * 100
+	} else if stats.AvgOrderValue > 0 {
+		// New business with no last month data but has avg order value = 100% growth
+		stats.AvgChange = 100
+	} else {
+		stats.AvgChange = 0
+	}
+
+	// Get last month's product count for comparison
+	var lastMonthProductCount int
+	db.QueryRow(`
+		SELECT COUNT(*) FROM products 
+		WHERE store_id = ? 
+		AND created_at < date('now', 'start of month')
+	`, storeID).Scan(&lastMonthProductCount)
+
+	// Calculate products change percentage
+	if lastMonthProductCount > 0 {
+		stats.ProductsChange = ((float64(stats.ActiveProducts) - float64(lastMonthProductCount)) / float64(lastMonthProductCount)) * 100
+	} else if stats.ActiveProducts > 0 {
+		// New business with no last month data but has products = 100% growth
+		stats.ProductsChange = 100
+	} else {
+		stats.ProductsChange = 0
+	}
 
 	// Get monthly sales data
 	monthlyQuery := `

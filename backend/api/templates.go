@@ -11,7 +11,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	isCheckout := false
 	isDashboard := false
 	isPayment := false
-
+	isOrders := false
 	// Check for dashboard/checkout/payment at the start of path
 	if strings.HasPrefix(storeName, "checkout/payment") {
 		isPayment = true
@@ -21,6 +21,16 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		storeName = ""
 	} else if strings.HasPrefix(storeName, "dashboard") {
 		isDashboard = true
+		storeName = ""
+	}
+
+	// Check for orders suffix anywhere in the path (e.g., /storename/orders)
+	if strings.HasSuffix(storeName, "/orders") && !isCheckout && !isDashboard && !isPayment {
+		isOrders = true
+		storeName = strings.TrimSuffix(storeName, "/orders")
+	} else if storeName == "orders" {
+		// For just /orders
+		isOrders = true
 		storeName = ""
 	}
 
@@ -38,6 +48,8 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			isCheckout = true
 		} else if strings.HasSuffix(remainingPath, "dashboard") {
 			isDashboard = true
+		} else if strings.HasPrefix(remainingPath, "orders") {
+			isOrders = true
 		}
 
 		// Extract store name from domain (e.g., "mystore.com" -> "mystore")
@@ -94,7 +106,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	if storeName != "" {
 		store, err := GetStoreByName(storeName)
-		if err == nil && store.ID != 0 && !isCheckout && !isDashboard && !isPayment {
+		if err == nil && store.ID != 0 && !isCheckout && !isDashboard && !isPayment && !isOrders {
 			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
@@ -111,6 +123,11 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if isCheckout && err == nil && store.ID != 0 {
 			//Redirect to the proper checkout handler
+			userID, validUser := ValidateCustomer(w, r)
+			if !validUser || uint(userID) != store.OwnerID {
+				HandleError(w, r, http.StatusForbidden, "Access denied")
+				return
+			}
 			CheckoutPageForStore(w, r, int(store.ID), store)
 			return
 		} else if isDashboard && err == nil && store.ID != 0 {
@@ -153,6 +170,28 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if err := tmpl.Execute(w, paymentData); err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
+				return
+			}
+			return
+		} else if isOrders && err == nil && store.ID != 0 {
+			// Show customer's orders for this store
+			if _, validUser := ValidateCustomer(w, r); !validUser {
+				HandleError(w, r, http.StatusUnauthorized, "Unauthorized, Please login!")
+				return
+			}
+
+			tmpl, err := template.ParseFiles("../frontend/orders.html")
+			if err != nil {
+				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
+				return
+			}
+
+			ordersData := map[string]interface{}{
+				"Store": store,
+			}
+
+			if err := tmpl.Execute(w, ordersData); err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 				return
 			}

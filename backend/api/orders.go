@@ -624,14 +624,6 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	// Get user ID from session
-	var userID int
-	userID, valid := ValidateUser(w, r)
-	if !valid {
-		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
-		return
-	}
-
 	// Get store ID and order ID from URL
 	storeIDStr := r.URL.Query().Get("store_id")
 	pathSegments := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/orders/"), "/")
@@ -652,30 +644,59 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify user owns this store
-	var storeOwnerID int
-	err = db.QueryRow("SELECT owner_id FROM stores WHERE id = ?", storeID).Scan(&storeOwnerID)
-	if err != nil || storeOwnerID != userID {
-		http.Error(w, `{"error": "Unauthorized to view these products"}`, http.StatusUnauthorized)
-		return
+	// Try to validate as store owner first
+	userID, isStoreOwner := ValidateUser(w, r)
+	isCustomer := false
+	customerID := 0
+
+	if !isStoreOwner {
+		// If not store owner, try to validate as customer
+		customerID, isCustomer = ValidateCustomer(w, r)
+		if !isCustomer {
+			http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
 	}
 
-	// Verify the order has products from this store
-	var orderExists int
-	err = db.QueryRow(`
-		SELECT COUNT(*) FROM orders o
-		INNER JOIN order_products op ON o.id = op.order_id
-		INNER JOIN products p ON op.product_id = p.id
-		WHERE o.id = ? AND p.store_id = ?
-	`, orderID, storeID).Scan(&orderExists)
-	if err != nil || orderExists == 0 {
-		http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
-		return
+	// If store owner, verify they own this store
+	if isStoreOwner {
+		var storeOwnerID int
+		err = db.QueryRow("SELECT owner_id FROM stores WHERE id = ?", storeID).Scan(&storeOwnerID)
+		if err != nil || storeOwnerID != userID {
+			http.Error(w, `{"error": "Unauthorized to view these products"}`, http.StatusUnauthorized)
+			return
+		}
+
+		// Verify the order has products from this store
+		var orderExists int
+		err = db.QueryRow(`
+			SELECT COUNT(*) FROM orders o
+			INNER JOIN order_products op ON o.id = op.order_id
+			INNER JOIN products p ON op.product_id = p.id
+			WHERE o.id = ? AND p.store_id = ?
+		`, orderID, storeID).Scan(&orderExists)
+		if err != nil || orderExists == 0 {
+			http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
+			return
+		}
+	} else if isCustomer {
+		// If customer, verify the order belongs to them and has products from this store
+		var orderUserID int
+		err = db.QueryRow(`
+			SELECT DISTINCT o.user_id FROM orders o
+			INNER JOIN order_products op ON o.id = op.order_id
+			INNER JOIN products p ON op.product_id = p.id
+			WHERE o.id = ? AND p.store_id = ?
+		`, orderID, storeID).Scan(&orderUserID)
+		if err != nil || orderUserID != customerID {
+			http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
+			return
+		}
 	}
 
 	// Get all products in this order
 	query := `
-		SELECT op.product_id, p.name,p.image , op.quantity, op.price
+		SELECT op.product_id, p.name, p.image, op.quantity, op.price
 		FROM order_products op
 		INNER JOIN products p ON op.product_id = p.id
 		INNER JOIN orders o ON op.order_id = o.id
@@ -711,6 +732,77 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 
 	response := map[string]interface{}{
 		"products": products,
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+// GetCustomerOrders fetches all orders for the logged-in customer for a specific store
+func GetCustomerOrders(w http.ResponseWriter, r *http.Request) {
+	userID, validUser := ValidateCustomer(w, r)
+	if !validUser {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	storeIDStr := r.URL.Query().Get("store_id")
+	if storeIDStr == "" {
+		http.Error(w, `{"error": "store_id is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Get orders for this customer on this store
+	query := `
+		SELECT 
+			o.id,
+			o.created_at,
+			o.status,
+			SUM(op.quantity * op.price) as total_amount,
+			COUNT(op.id) as product_count
+		FROM orders o
+		JOIN order_products op ON o.id = op.order_id
+		JOIN products p ON op.product_id = p.id
+		WHERE o.user_id = ? AND p.store_id = ?
+		GROUP BY o.id
+		ORDER BY o.created_at DESC
+	`
+
+	rows, err := db.Query(query, userID, storeIDStr)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to fetch orders"}`, http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type OrderInfo struct {
+		ID           int     `json:"id"`
+		CreatedAt    string  `json:"created_at"`
+		Status       string  `json:"status"`
+		TotalAmount  float64 `json:"total_amount"`
+		ProductCount int     `json:"product_count"`
+	}
+
+	var orders []OrderInfo
+	for rows.Next() {
+		var order OrderInfo
+		err := rows.Scan(&order.ID, &order.CreatedAt, &order.Status, &order.TotalAmount, &order.ProductCount)
+		if err != nil {
+			continue
+		}
+		orders = append(orders, order)
+	}
+
+	response := map[string]interface{}{
+		"orders": orders,
 	}
 
 	json.NewEncoder(w).Encode(response)

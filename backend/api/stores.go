@@ -215,11 +215,12 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 	logoImage := "default.png"
 	//check if logo is not empty, then validate and save
 	if logo != "" {
-		valid, logoImage := ValidateImage(avatarPath, logo)
+		valid, filename := ValidateImage(avatarPath, logo)
 		if !valid {
-			http.Error(w, `{"error": "`+logoImage+`"}`, http.StatusInternalServerError)
+			http.Error(w, `{"error": "`+filename+`"}`, http.StatusInternalServerError)
 			return
 		}
+		logoImage = filename
 	} else {
 		http.Error(w, `{"error": "Logo is required"}`, http.StatusInternalServerError)
 		return
@@ -229,11 +230,12 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 	bannerImage := "default.png"
 	//check if banner is not empty, then validate and save
 	if banner != "" {
-		valid, bannerImage := ValidateImage(bannerPath, banner)
+		valid, filename := ValidateImage(bannerPath, banner)
 		if !valid {
-			http.Error(w, `{"error": "`+bannerImage+`"}`, http.StatusInternalServerError)
+			http.Error(w, `{"error": "`+filename+`"}`, http.StatusInternalServerError)
 			return
 		}
+		bannerImage = filename
 	} else {
 		http.Error(w, `{"error": "Banner is required"}`, http.StatusInternalServerError)
 		return
