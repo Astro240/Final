@@ -358,7 +358,7 @@
                 <h1>Astropify Admin Dashboard</h1>
             </div>
             <div class="header-info">
-                <button class="logout-btn" onclick="logout()">Logout</button>
+                <button class="logout-btn" href="/logout">Logout</button>
             </div>
         </div>
 
@@ -654,11 +654,7 @@
         function viewOrder(id) { alert('View order: ' + id); }
         function viewProduct(id) { alert('View product: ' + id); }
 
-        function logout() {
-            fetch('/api/logout', { method: 'POST' })
-                .then(() => window.location.href = '/login')
-                .catch(e => console.error('Logout error:', e));
-        }
+    
 
         // Load initial data
         loadStats();

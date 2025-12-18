@@ -17,7 +17,18 @@ func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-
+	query := "SELECT COUNT(*) FROM users WHERE id = ? and user_type = 1;"
+	var count int
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		HandleError(w, r, http.StatusInternalServerError, "Database error")
+		return
+	}
+	db.QueryRow(query, userID).Scan(&count)
+	if count <= 0 {
+		HandleError(w, r, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
 	tmpl, err := template.ParseFiles(FrontendAdminDashboardHTML)
 	if err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load admin dashboard")
