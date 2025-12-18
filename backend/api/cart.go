@@ -289,7 +289,7 @@ func CheckoutPage(w http.ResponseWriter, r *http.Request) {
 		TotalPrice: totalPrice,
 	}
 
-	tmpl, err := template.ParseFiles("../frontend/checkout.html")
+	tmpl, err := template.ParseFiles(FrontendCheckoutHTML)
 	if err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return
@@ -363,7 +363,7 @@ func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int, s
 		Store:      store,
 	}
 
-	tmpl, err := template.ParseFiles("../frontend/checkout.html")
+	tmpl, err := template.ParseFiles(FrontendCheckoutHTML)
 	if err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return

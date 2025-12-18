@@ -6,7 +6,7 @@ import (
 )
 
 func HandleError(w http.ResponseWriter, r *http.Request, errNbr int, err string) {
-	tmpl, tmplErr := template.ParseFiles("../frontend/templates/Error.html")
+	tmpl, tmplErr := template.ParseFiles(FrontendErrorHTML)
 	if tmplErr != nil {
 		http.Error(w, "Failed to load template", http.StatusInternalServerError)
 		return

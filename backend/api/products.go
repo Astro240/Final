@@ -97,7 +97,7 @@ func CreateProductAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var imageName string
-	valid, imageName := ValidateImage("./store_images/products/", itemImage)
+	valid, imageName := ValidateImage(StoreProductsPath, itemImage)
 	if !valid {
 		http.Error(w, `{"error": "`+imageName+`"}`, http.StatusInternalServerError)
 		return

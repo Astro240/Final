@@ -30,7 +30,7 @@ func StorePage(w http.ResponseWriter, r *http.Request) {
 			User = placeHolder
 		}
 	}
-	tmpl, err := template.ParseFiles("../frontend/store.html")
+	tmpl, err := template.ParseFiles(FrontendStoreHTML)
 	if err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return
@@ -211,8 +211,8 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logo := r.FormValue("storeLogo")
-	avatarPath := "./store_images/logos/"
-	logoImage := "default.png"
+	avatarPath := StoreLogosPath
+	logoImage := DefaultLogoFilename
 	//check if logo is not empty, then validate and save
 	if logo != "" {
 		valid, filename := ValidateImage(avatarPath, logo)
@@ -226,8 +226,8 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	banner := r.FormValue("storeBanner")
-	bannerPath := "./store_images/banners/"
-	bannerImage := "default.png"
+	bannerPath := StoreBannersPath
+	bannerImage := DefaultBannerFilename
 	//check if banner is not empty, then validate and save
 	if banner != "" {
 		valid, filename := ValidateImage(bannerPath, banner)

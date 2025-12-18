@@ -128,7 +128,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	avatarPath := "./avatars/"
+	avatarPath := AvatarsPath
 	picture := "default.png"
 	//check if profilePicture is not empty, then validate and save
 	if profilePicture != "" {

@@ -43,7 +43,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Get cart items and calculate total
 	rows, err := db.Query(`
-		SELECT c.id, c.product_id, c.quantity, p.price
+		SELECT c.id, c.product_id, c.quantity, p.price, p.store_id
 		FROM cart c
 		JOIN products p ON c.product_id = p.id
 		WHERE c.user_id = ?
@@ -59,17 +59,22 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		ProductID int
 		Quantity  int
 		Price     float64
+		StoreID   int
 	}
 
 	var cartItems []CartData
+	var storeID int
 	totalAmount := 0.0
 
 	for rows.Next() {
 		var item CartData
-		if err := rows.Scan(&item.ID, &item.ProductID, &item.Quantity, &item.Price); err != nil {
+		if err := rows.Scan(&item.ID, &item.ProductID, &item.Quantity, &item.Price, &item.StoreID); err != nil {
 			rows.Close()
 			http.Error(w, `{"error": "Failed to process cart"}`, http.StatusInternalServerError)
 			return
+		}
+		if storeID == 0 {
+			storeID = item.StoreID
 		}
 		totalAmount += item.Price * float64(item.Quantity)
 		cartItems = append(cartItems, item)
@@ -90,9 +95,9 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Create order
 	result, err := tx.Exec(`
-		INSERT INTO orders (user_id, total_amount, status, shipping_info, created_at)
-		VALUES (?, ?, 'pending', ?, datetime('now'))
-	`, userID, totalAmount, shippingInfo)
+		INSERT INTO orders (user_id, store_id, total_amount, status, shipping_info, created_at)
+		VALUES (?, ?, ?, 'pending', ?, datetime('now'))
+	`, userID, storeID, totalAmount, shippingInfo)
 
 	if err != nil {
 		tx.Rollback()
@@ -161,7 +166,7 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	rows, err := db.Query(`
-		SELECT id, user_id, total_amount, status, shipping_info, created_at
+		SELECT id, user_id, store_id, total_amount, status, shipping_info, created_at
 		FROM orders
 		WHERE user_id = ?
 		ORDER BY created_at DESC
@@ -176,11 +181,11 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 	var orders []map[string]interface{}
 
 	for rows.Next() {
-		var id, userID int
+		var id, userID, storeID int
 		var totalAmount float64
 		var status, shippingInfo, createdAt string
 
-		err := rows.Scan(&id, &userID, &totalAmount, &status, &shippingInfo, &createdAt)
+		err := rows.Scan(&id, &userID, &storeID, &totalAmount, &status, &shippingInfo, &createdAt)
 		if err != nil {
 			continue
 		}
@@ -188,6 +193,7 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 		orders = append(orders, map[string]interface{}{
 			"id":            id,
 			"user_id":       userID,
+			"store_id":      storeID,
 			"total_amount":  totalAmount,
 			"status":        status,
 			"shipping_info": shippingInfo,
@@ -216,17 +222,17 @@ func GetPendingOrder(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Get the most recent pending order
-	var orderID int
+	var orderID, storeID int
 	var totalAmount float64
 	var shippingInfo, createdAt string
 
 	err = db.QueryRow(`
-		SELECT id, total_amount, shipping_info, created_at
+		SELECT id, store_id, total_amount, shipping_info, created_at
 		FROM orders
 		WHERE user_id = ? AND status = 'pending'
 		ORDER BY created_at DESC
 		LIMIT 1
-	`, userID).Scan(&orderID, &totalAmount, &shippingInfo, &createdAt)
+	`, userID).Scan(&orderID, &storeID, &totalAmount, &shippingInfo, &createdAt)
 
 	if err == sql.ErrNoRows {
 		http.Error(w, `{"error": "No pending order found"}`, http.StatusNotFound)
@@ -240,6 +246,7 @@ func GetPendingOrder(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"order": map[string]interface{}{
 			"order_id":      orderID,
+			"store_id":      storeID,
 			"total_amount":  totalAmount,
 			"shipping_info": shippingInfo,
 			"created_at":    createdAt,
@@ -457,7 +464,7 @@ func GetStoreOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get all orders for products in this store
+	// Get all orders for this store
 	query := `
 		SELECT 
 			o.id, 
@@ -471,10 +478,9 @@ func GetStoreOrders(w http.ResponseWriter, r *http.Request) {
 			u.first_name,
 			COUNT(op.id) as product_count
 		FROM orders o
-		INNER JOIN order_products op ON o.id = op.order_id
-		INNER JOIN products p ON op.product_id = p.id
+		LEFT JOIN order_products op ON o.id = op.order_id
 		LEFT JOIN users u ON o.user_id = u.id
-		WHERE p.store_id = ?
+		WHERE o.store_id = ?
 		GROUP BY o.id
 		ORDER BY o.created_at DESC
 	`
@@ -581,13 +587,11 @@ func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify the order has products from this store
+	// Verify the order belongs to this store
 	var orderExists int
 	err = db.QueryRow(`
-		SELECT COUNT(*) FROM orders o
-		INNER JOIN order_products op ON o.id = op.order_id
-		INNER JOIN products p ON op.product_id = p.id
-		WHERE o.id = ? AND p.store_id = ?
+		SELECT COUNT(*) FROM orders
+		WHERE id = ? AND store_id = ?
 	`, req.OrderID, req.StoreID).Scan(&orderExists)
 	if err != nil || orderExists == 0 {
 		http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
@@ -667,26 +671,22 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Verify the order has products from this store
+		// Verify the order belongs to this store
 		var orderExists int
 		err = db.QueryRow(`
-			SELECT COUNT(*) FROM orders o
-			INNER JOIN order_products op ON o.id = op.order_id
-			INNER JOIN products p ON op.product_id = p.id
-			WHERE o.id = ? AND p.store_id = ?
+			SELECT COUNT(*) FROM orders
+			WHERE id = ? AND store_id = ?
 		`, orderID, storeID).Scan(&orderExists)
 		if err != nil || orderExists == 0 {
 			http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
 			return
 		}
 	} else if isCustomer {
-		// If customer, verify the order belongs to them and has products from this store
+		// If customer, verify the order belongs to them and this store
 		var orderUserID int
 		err = db.QueryRow(`
-			SELECT DISTINCT o.user_id FROM orders o
-			INNER JOIN order_products op ON o.id = op.order_id
-			INNER JOIN products p ON op.product_id = p.id
-			WHERE o.id = ? AND p.store_id = ?
+			SELECT user_id FROM orders
+			WHERE id = ? AND store_id = ?
 		`, orderID, storeID).Scan(&orderUserID)
 		if err != nil || orderUserID != customerID {
 			http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)

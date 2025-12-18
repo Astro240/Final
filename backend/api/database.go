@@ -7,8 +7,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const DATABASEPATH = "./database/database.db"
-
 func CreateDatabase() {
 	// Implementation for creating the database if it doesn't exist
 	db, err := sql.Open("sqlite3", DATABASEPATH)
@@ -115,13 +113,15 @@ func CreateDatabase() {
 	CREATE TABLE IF NOT EXISTS orders (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
     	user_id INTEGER NOT NULL,
+    	store_id INTEGER NOT NULL,
     	total_amount REAL NOT NULL,
     	status TEXT NOT NULL DEFAULT 'pending',
     	shipping_info TEXT NOT NULL,
     	payment_info TEXT,
     	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    	FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE
 	);
 
 	-- Order product table

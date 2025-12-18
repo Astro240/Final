@@ -10,15 +10,15 @@ func main() {
 	api.CreateDatabase()
 	http.HandleFunc("/", api.HomePage)
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/login.html")
+		http.ServeFile(w, r, "./frontend/login.html")
 	})
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/register.html")
+		http.ServeFile(w, r, "./frontend/register.html")
 	})
 	http.HandleFunc("/logout", api.LogoutHandler)
 	http.HandleFunc("/store", api.StorePage)
 	http.HandleFunc("/templates", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/template.html")
+		http.ServeFile(w, r, "./frontend/template.html")
 	})
 	http.HandleFunc("/templates/preview/", api.SampleStoreView)
 	http.HandleFunc("/create-store", func(w http.ResponseWriter, r *http.Request) {
@@ -26,24 +26,25 @@ func main() {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
-		http.ServeFile(w, r, "../frontend/create_store.html")
+		http.ServeFile(w, r, "./frontend/create_store.html")
 	})
 	http.HandleFunc("/verify_2fa", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/verify_2fa.html")
+		http.ServeFile(w, r, "./frontend/verify_2fa.html")
 	})
+	http.HandleFunc("/dashboard", api.AdminDashboard)
 	//handle the src, img, and data directories
 	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	http.Handle("/logos/", http.StripPrefix("/logos/", http.FileServer(http.Dir("./store_images/logos"))))
 	http.Handle("/banners/", http.StripPrefix("/banners/", http.FileServer(http.Dir("./store_images/banners"))))
 	http.Handle("/products/", http.StripPrefix("/products/", http.FileServer(http.Dir("./store_images/products"))))
 
-	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("../frontend/src"))))
-	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("../frontend/img"))))
-	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("../frontend/data"))))
+	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./frontend/src"))))
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./frontend/img"))))
+	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("./frontend/data"))))
 
 	// Favicon handler
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/favicon.ico")
+		http.ServeFile(w, r, "./frontend/favicon.ico")
 	})
 
 	//======= APIs for the project =======//
@@ -80,6 +81,13 @@ func main() {
 	http.HandleFunc("/api/customer/orders", api.GetCustomerOrders)
 	// WebSocket routes
 	http.HandleFunc("/ws/dashboard", api.DashboardWebSocketHandler)
+
+	// Admin API routes
+	http.HandleFunc("/api/admin/stats", api.AdminStats)
+	http.HandleFunc("/api/admin/stores", api.AdminStores)
+	http.HandleFunc("/api/admin/users", api.AdminUsers)
+	http.HandleFunc("/api/admin/orders", api.AdminOrders)
+	http.HandleFunc("/api/admin/products", api.AdminProducts)
 
 	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		panic(err)

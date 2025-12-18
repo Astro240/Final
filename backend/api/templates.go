@@ -25,15 +25,14 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for orders suffix anywhere in the path (e.g., /storename/orders)
-	if strings.HasSuffix(storeName, "/orders") && !isCheckout && !isDashboard && !isPayment {
+	if strings.HasSuffix(storeName, "orders") && !isCheckout && !isDashboard && !isPayment {
 		isOrders = true
-		storeName = strings.TrimSuffix(storeName, "/orders")
+		storeName = strings.TrimSuffix(storeName, "orders")
 	} else if storeName == "orders" {
 		// For just /orders
 		isOrders = true
 		storeName = ""
 	}
-
 	// Check if path contains a custom domain like /(name).com
 	if storeName != "" && strings.Contains(storeName, ".com") {
 		// Extract store name from path like "mystore.com" or "mystore.com/checkout"
@@ -93,7 +92,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				User = placeHolder
 			}
 		}
-		tmpl, err := template.ParseFiles("../frontend/index.html")
+		tmpl, err := template.ParseFiles(FrontendIndexHTML)
 		if err != nil {
 			HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 			return
@@ -107,7 +106,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	if storeName != "" {
 		store, err := GetStoreByName(storeName)
 		if err == nil && store.ID != 0 && !isCheckout && !isDashboard && !isPayment && !isOrders {
-			tmpl, err := template.ParseFiles("../frontend/templates/" + store.Template + "_template.html")
+			tmpl, err := template.ParseFiles(FrontendTemplateDir + store.Template + FrontendTemplateExtension)
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 				return
@@ -123,8 +122,8 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if isCheckout && err == nil && store.ID != 0 {
 			//Redirect to the proper checkout handler
-			userID, validUser := ValidateCustomer(w, r)
-			if !validUser || uint(userID) != store.OwnerID {
+			_, validUser := ValidateCustomer(w, r)
+			if !validUser {
 				HandleError(w, r, http.StatusForbidden, "Access denied")
 				return
 			}
@@ -138,7 +137,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			tmpl, err := template.ParseFiles("../frontend/dashboard.html")
+			tmpl, err := template.ParseFiles(FrontendDashboardHTML)
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 				return
@@ -159,7 +158,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			tmpl, err := template.ParseFiles("../frontend/payment.html")
+			tmpl, err := template.ParseFiles(FrontendPaymentHTML)
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 				return
@@ -181,7 +180,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			tmpl, err := template.ParseFiles("../frontend/orders.html")
+			tmpl, err := template.ParseFiles(FrontendOrdersHTML)
 			if err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 				return
@@ -203,7 +202,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 
 func SampleStoreView(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/templates/preview/"):]
-	tmpl, err := template.ParseFiles("../frontend/templates/" + path + ".html")
+	tmpl, err := template.ParseFiles(FrontendTemplateDir + path + FrontendTemplateExtension)
 	if err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return
