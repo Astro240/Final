@@ -202,7 +202,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 
 func SampleStoreView(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/templates/preview/"):]
-	tmpl, err := template.ParseFiles(FrontendTemplateDir + path + FrontendTemplateExtension)
+	tmpl, err := template.ParseFiles(FrontendTemplateDir + path + ".html")
 	if err != nil {
 		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
 		return
