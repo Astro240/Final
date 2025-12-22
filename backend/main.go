@@ -28,9 +28,6 @@ func main() {
 		}
 		http.ServeFile(w, r, "./frontend/create_store.html")
 	})
-	http.HandleFunc("/verify_2fa", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./frontend/verify_2fa.html")
-	})
 	http.HandleFunc("/admin_dashboard", api.AdminDashboard)
 	//handle the src, img, and data directories
 	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))

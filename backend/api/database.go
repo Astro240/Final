@@ -59,6 +59,14 @@ func CreateDatabase() {
 		logo TEXT,
 		banner TEXT,
 		owner_id INTEGER,
+		phone TEXT,
+		address TEXT,
+		payment_methods TEXT,
+		iban_number TEXT,
+		shipping_info TEXT,
+		shipping_cost REAL DEFAULT 0,
+		estimated_shipping INTEGER DEFAULT 0,
+		free_shipping_threshold REAL DEFAULT 0,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 	);

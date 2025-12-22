@@ -415,9 +415,13 @@
                 const formData = new FormData(checkoutForm);
 
                 try {
+                    const fullPath = window.location.href;
                     const response = await fetch('/api/create-order', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        headers: {
+                            'X-Store-Name': fullPath
+                        }
                     });
 
                     const data = await response.json();

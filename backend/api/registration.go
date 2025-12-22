@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -226,7 +227,18 @@ func StoreLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Successful login
-	SetCookie(w, userID, "customer_token")
+	customerTokenName := "customer_token_" + storeID
+	SetCookie(w, userID, customerTokenName)
+	// Set store-specific cookie
+	storeIDInt, err := strconv.Atoi(storeID)
+	if err != nil {
+		http.Error(w, `{"error": "Can't find Store ID"}`, http.StatusInternalServerError)
+		return
+	}
+	store, err := GetStoreByID(storeIDInt)
+	if err == nil && store.ID != 0 {
+		SetStoreCookie(w, int(store.OwnerID), store.Name)
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -311,7 +323,18 @@ func StoreRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Successful registration
-	SetCookie(w, int(userID), "customer_token")
+	customerTokenName := "customer_token_" + storeID
+	SetCookie(w, int(userID), customerTokenName)
+	// Set store-specific cookie
+	storeIDInt, err := strconv.Atoi(storeID)
+	if err != nil {
+		http.Error(w, `{"error": "Can't find Store ID"}`, http.StatusInternalServerError)
+		return
+	}
+	store, err := GetStoreByID(storeIDInt)
+	if err == nil && store.ID != 0 {
+		SetStoreCookie(w, int(store.OwnerID), store.Name)
+	}
 
 	w.WriteHeader(http.StatusOK)
 }

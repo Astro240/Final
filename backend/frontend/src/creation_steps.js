@@ -1,7 +1,41 @@
 let currentStep = 1;
 const totalSteps = 7;
 
-function showError(message) {
+// Map error keywords to steps
+const errorStepMap = {
+    'store title': 1,
+    'store name': 1,
+    'storetitle': 1,
+    'description': 1,
+    'logo': 2,
+    'banner': 2,
+    'branding': 2,
+    'template': 2,
+    'color': 2,
+    'email': 3,
+    'phone': 3,
+    'contact': 3,
+    'address': 3,
+    'payment': 4,
+    'shipping': 4,
+    'shipping cost': 4,
+    'shipping threshold': 4,
+    'categor': 5,
+    'product': 5,
+    'social': 6,
+};
+
+function getErrorStep(message) {
+    const lowerMessage = message.toLowerCase();
+    for (const [keyword, step] of Object.entries(errorStepMap)) {
+        if (lowerMessage.includes(keyword)) {
+            return step;
+        }
+    }
+    return currentStep; // Stay on current step if no match
+}
+
+function showError(message, targetStep = null) {
     const errorBox = document.getElementById('errorBox');
     const errorMessage = document.getElementById('errorMessage');
     
@@ -10,10 +44,22 @@ function showError(message) {
         errorBox.style.display = 'block';
         errorBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
         
-        // Auto-hide after 5 seconds
+        // Determine which step the error is from
+        const errorStep = targetStep || getErrorStep(message);
+        
+        // Navigate to the step with the error
+        if (errorStep !== currentStep) {
+            setTimeout(() => {
+                currentStep = errorStep;
+                updateProgress();
+                showStep(currentStep);
+            }, 500);
+        }
+        
+        // Auto-hide after 7 seconds
         setTimeout(() => {
             errorBox.style.display = 'none';
-        }, 5000);
+        }, 7000);
     }
 }
 
@@ -96,8 +142,19 @@ function validateCurrentStep() {
     for (let field of requiredFields) {
         if (!field.value.trim()) {
             field.focus();
-            showError('Please fill in all required fields.');
+            field.style.borderColor = '#d9534f';
+            field.style.boxShadow = '0 0 0 3px rgba(217, 83, 79, 0.2)';
+            
+            // Get field label for better error message
+            const label = currentStepElement.querySelector(`label[for="${field.id}"]`);
+            const fieldName = label ? label.textContent : field.id;
+            
+            showError(`Please fill in the "${fieldName}" field.`);
             return false;
+        } else {
+            // Remove error styling
+            field.style.borderColor = '';
+            field.style.boxShadow = '';
         }
     }
 
@@ -107,6 +164,19 @@ function validateCurrentStep() {
         if (paymentMethods.length === 0) {
             showError('Please select at least one payment method.');
             return false;
+        }
+        
+        // Validate IBAN
+        const ibanField = document.getElementById('ibanNumber');
+        if (!ibanField.value.trim()) {
+            ibanField.focus();
+            ibanField.style.borderColor = '#d9534f';
+            ibanField.style.boxShadow = '0 0 0 3px rgba(217, 83, 79, 0.2)';
+            showError('Please fill in the IBAN Number.');
+            return false;
+        } else {
+            ibanField.style.borderColor = '';
+            ibanField.style.boxShadow = '';
         }
     }
 
@@ -196,13 +266,21 @@ function submitForm() {
             .then(response => {
                 if (response.ok) {
                     window.location.href = '/'+formData.get('storeTitle')+".com";
-                }else {
-                    showError(response.error || 'Failed to create store');
+                } else {
+                    return response.text().then(text => {
+                        try {
+                            const json = JSON.parse(text);
+                            const errorMessage = json.error || 'Failed to create store';
+                            showError(errorMessage);
+                        } catch (e) {
+                            showError(text || 'Failed to create store');
+                        }
+                    });
                 }
             })
             .catch(error => {
                 console.error('Fetch error:', error);
-                showError('An unexpected error occurred: ' + error);
+                showError('An unexpected error occurred: ' + error.message);
             });
         }
     }

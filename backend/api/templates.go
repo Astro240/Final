@@ -3,6 +3,7 @@ package api
 import (
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -105,6 +106,10 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	if storeName != "" {
 		store, err := GetStoreByName(storeName)
+		if err == nil && store.ID != 0 {
+			// Set store cookie when store is accessed
+			SetStoreCookie(w, int(store.OwnerID), store.Name)
+		}
 		if err == nil && store.ID != 0 && !isCheckout && !isDashboard && !isPayment && !isOrders {
 			tmpl, err := template.ParseFiles(FrontendTemplateDir + store.Template + FrontendTemplateExtension)
 			if err != nil {
@@ -122,7 +127,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if isCheckout && err == nil && store.ID != 0 {
 			//Redirect to the proper checkout handler
-			_, validUser := ValidateCustomer(w, r)
+			_, validUser := ValidateStoreCustomer(w, r, strconv.FormatUint(uint64(store.ID), 10))
 			if !validUser {
 				HandleError(w, r, http.StatusForbidden, "Access denied")
 				return
@@ -153,7 +158,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		} else if isPayment && err == nil && store.ID != 0 {
-			if _, validUser := ValidateCustomer(w, r); !validUser {
+			if _, validUser := ValidateStoreCustomer(w, r, strconv.FormatUint(uint64(store.ID), 10)); !validUser {
 				HandleError(w, r, http.StatusUnauthorized, "Unauthorized, Please login!")
 				return
 			}
@@ -175,7 +180,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if isOrders && err == nil && store.ID != 0 {
 			// Show customer's orders for this store
-			if _, validUser := ValidateCustomer(w, r); !validUser {
+			if _, validUser := ValidateStoreCustomer(w, r, strconv.FormatUint(uint64(store.ID), 10)); !validUser {
 				HandleError(w, r, http.StatusUnauthorized, "Unauthorized, Please login!")
 				return
 			}

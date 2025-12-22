@@ -227,84 +227,10 @@ func RemoveFromCart(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"success": true}`))
 }
 
-func CheckoutPage(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateUser(w, r)
-	if !validUser {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	db, err := sql.Open("sqlite3", DATABASEPATH)
-	if err != nil {
-		HandleError(w, r, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
-	defer db.Close()
-
-	// Get cart items
-	rows, err := db.Query(`
-		SELECT c.id, c.product_id, c.user_id, c.quantity,
-			   p.id, p.name, p.description, p.price, p.image, p.store_id
-		FROM cart c
-		JOIN products p ON c.product_id = p.id
-		WHERE c.user_id = ?
-	`, userID)
-
-	if err != nil {
-		HandleError(w, r, http.StatusInternalServerError, "Failed to fetch cart")
-		return
-	}
-	defer rows.Close()
-
-	var items []CartItem
-	totalPrice := 0.0
-	totalItems := 0
-
-	for rows.Next() {
-		var id, productID, userID, quantity, storeID int
-		var product Product
-
-		err := rows.Scan(&id, &productID, &userID, &quantity,
-			&product.ID, &product.Name, &product.Description, &product.Price, &product.Image, &storeID)
-		if err != nil {
-			continue
-		}
-
-		itemTotal := product.Price * float64(quantity)
-		totalPrice += itemTotal
-		totalItems += quantity
-
-		items = append(items, CartItem{
-			ID:        id,
-			ProductID: productID,
-			Quantity:  quantity,
-			Product:   product,
-			ItemTotal: itemTotal,
-		})
-	}
-
-	data := CartResponse{
-		Items:      items,
-		TotalItems: totalItems,
-		TotalPrice: totalPrice,
-	}
-
-	tmpl, err := template.ParseFiles(FrontendCheckoutHTML)
-	if err != nil {
-		HandleError(w, r, http.StatusInternalServerError, "Failed to load template")
-		return
-	}
-
-	if err := tmpl.Execute(w, data); err != nil {
-		HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
-		return
-	}
-}
-
 func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int, store Store) {
 	userID, validUser := ValidateCustomer(w, r)
 	if !validUser {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		HandleError(w, r, http.StatusUnauthorized, "Unauthorized to view, please login")
 		return
 	}
 

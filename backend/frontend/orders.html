@@ -474,9 +474,13 @@
                 document.getElementById('ordersTable').style.display = 'none';
                 document.getElementById('ordersEmpty').style.display = 'none';
 
+                const fullPath = window.location.href;
                 const response = await fetch(`/api/customer/orders?store_id=${storeId}`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
                 });
 
                 const data = await response.json();
@@ -574,9 +578,13 @@
         // Fetch order products
         async function fetchOrderProducts(orderId) {
             try {
+                const fullPath = window.location.href;
                 const response = await fetch(`/api/orders/${orderId}/products?store_id=${storeId}`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
                 });
 
                 const data = await response.json();

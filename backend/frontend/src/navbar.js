@@ -88,10 +88,14 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
     loginError.style.display = 'none';
     
     const formData = new FormData(document.getElementById('loginForm'));
+    const fullPath = window.location.href;
     fetch('/api/store_login', {
         method: 'POST',
         credentials: 'include',
         body: formData,
+        headers: {
+            'X-Store-Name': fullPath
+        }
     }).then(response => {
         if (response.ok) {
             closeModal();
@@ -114,10 +118,14 @@ document.getElementById('signupForm').addEventListener('submit', (e) => {
     signupError.style.display = 'none';
     
     const formData = new FormData(document.getElementById('signupForm'));
+    const fullPath = window.location.href;
     fetch('/api/store_register', {
         method: 'POST',
         credentials: 'include',
         body: formData,
+        headers: {
+            'X-Store-Name': fullPath
+        }
     }).then(response => {
         if (response.ok) {
             closeModal();

@@ -739,18 +739,16 @@ func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 
 // GetCustomerOrders fetches all orders for the logged-in customer for a specific store
 func GetCustomerOrders(w http.ResponseWriter, r *http.Request) {
-	userID, validUser := ValidateCustomer(w, r)
-	if !validUser {
-		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
-		return
-	}
-
 	storeIDStr := r.URL.Query().Get("store_id")
 	if storeIDStr == "" {
 		http.Error(w, `{"error": "store_id is required"}`, http.StatusBadRequest)
 		return
 	}
-
+	userID, validUser := ValidateStoreCustomer(w, r, storeIDStr)
+	if !validUser {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 
 	db, err := sql.Open("sqlite3", DATABASEPATH)

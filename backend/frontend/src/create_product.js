@@ -88,10 +88,15 @@ function toggleFavorite(productid, buttonElement) {
     const formData = new FormData();
     formData.append("product_id", productid);
     
+    const fullPath = window.location.href;
+    
     fetch(endpoint, {
         method: "POST",
         body: formData,
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+            'X-Store-Name': fullPath
+        }
     }).then(response => response.json())
         .then(data => {
             if (data.success) {

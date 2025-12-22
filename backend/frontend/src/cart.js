@@ -109,9 +109,13 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('quantity', '1');
             
             try {
+                const fullPath = window.location.href;
                 const response = await fetch('/api/add-to-cart', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
                 });
                 
                 const data = await response.json();

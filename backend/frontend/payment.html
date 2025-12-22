@@ -323,7 +323,12 @@
         // Load order information
         async function loadOrderInfo() {
             try {
-                const response = await fetch('/api/pending-order');
+                const fullPath = window.location.href;
+                const response = await fetch('/api/pending-order', {
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
+                });
                 const data = await response.json();
 
                 if (response.ok && data.order) {
@@ -356,9 +361,13 @@
             formData.append('order_id', orderData.order_id);
 
             try {
+                const fullPath = window.location.href;
                 const response = await fetch('/api/process-payment', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
                 });
 
                 const data = await response.json();

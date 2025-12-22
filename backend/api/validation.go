@@ -37,7 +37,112 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) (int, bool) {
 }
 
 func ValidateCustomer(w http.ResponseWriter, r *http.Request) (int, bool) {
-	cookie, err := r.Cookie("customer_token")
+	var storeName string
+
+	// Try extracting from custom header first (for API calls)
+	headerValue := r.Header.Get("X-Store-Name")
+	if headerValue != "" {
+		// Parse header value which could be a full URL or just path
+		// e.g., "http://astropify.com/LUXURY.com" or "/LUXURY.com"
+		if strings.Contains(headerValue, "://") {
+			// It's a full URL, extract the path
+			parts := strings.Split(headerValue, "://")
+			if len(parts) > 1 {
+				pathPart := parts[1]
+				// Remove domain part (everything before first /)
+				if idx := strings.Index(pathPart, "/"); idx != -1 {
+					pathPart = pathPart[idx:]
+				} else {
+					pathPart = ""
+				}
+				headerValue = pathPart
+			}
+		}
+
+		// Now extract store name from path
+		if headerValue != "" {
+			pathParts := strings.Split(strings.Trim(headerValue, "/"), "/")
+			if len(pathParts) > 0 {
+				candidate := pathParts[0]
+				// Remove .com or other extensions
+				if strings.Contains(candidate, ".") {
+					dotParts := strings.Split(candidate, ".")
+					if len(dotParts) > 0 {
+						storeName = dotParts[0]
+					}
+				} else {
+					storeName = candidate
+				}
+			}
+		}
+	}
+
+	// Try query/form parameters
+	if storeName == "" {
+		storeName = r.URL.Query().Get("store_name")
+	}
+	if storeName == "" {
+		storeName = r.FormValue("store_name")
+	}
+
+	// Try extracting from hostname (for direct domain access)
+	if storeName == "" {
+		host := r.Host
+		if idx := strings.Index(host, ":"); idx != -1 {
+			host = host[:idx]
+		}
+
+		if strings.Contains(host, ".") && !strings.HasPrefix(host, "127.0.0.1") && !strings.HasPrefix(host, "localhost") && !strings.HasPrefix(host, "astropify") {
+			parts := strings.Split(host, ".")
+			if len(parts) > 0 {
+				storeName = parts[0]
+			}
+		}
+	}
+
+	// If not found, extract from URL path (skip "api" and common route prefixes)
+	if storeName == "" {
+		path := r.URL.Path
+		pathParts := strings.Split(strings.Trim(path, "/"), "/")
+
+		if len(pathParts) > 0 {
+			firstPart := pathParts[0]
+			// Remove .com or other extensions if present
+			if strings.Contains(firstPart, ".") {
+				parts := strings.Split(firstPart, ".")
+				if len(parts) > 0 {
+					storeName = parts[0]
+				}
+			} else {
+				storeName = firstPart
+			}
+		}
+	}
+
+	if storeName == "" {
+		return 0, false
+	}
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		return 0, false
+	}
+	defer db.Close()
+
+	// Get store ID from store name
+	var storeID int
+	err = db.QueryRow("SELECT id FROM stores WHERE name = ?", storeName).Scan(&storeID)
+	if err != nil {
+		return 0, false
+	}
+	// Use store-specific customer token
+	storeIDStr := fmt.Sprintf("%d", storeID)
+	return ValidateStoreCustomer(w, r, storeIDStr)
+}
+
+func ValidateStoreCustomer(w http.ResponseWriter, r *http.Request, storeID string) (int, bool) {
+	customerTokenName := "customer_token_" + storeID
+	cookie, err := r.Cookie(customerTokenName)
 	if err != nil {
 		return 0, false
 	}

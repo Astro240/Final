@@ -119,6 +119,12 @@ func AdminStores(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
+		// Fetch store and set cookie
+		store, err := GetStoreByID(id)
+		if err == nil && store.ID != 0 {
+			SetStoreCookie(w, int(store.OwnerID), store.Name)
+		}
+
 		stores = append(stores, map[string]interface{}{
 			"id":            id,
 			"name":          name,

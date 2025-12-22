@@ -21,16 +21,24 @@ type UserProfile struct {
 }
 
 type Store struct {
-	ID          uint      `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Template    string    `json:"template"`
-	ColorScheme Color     `json:"color_scheme"`
-	Logo        string    `json:"logo"`
-	Banner      string    `json:"banner"`
-	OwnerID     uint      `json:"owner_id"`
-	Products    []Product `json:"products"`
-	IsOwner     bool      `json:"is_owner"`
+	ID                    uint      `json:"id"`
+	Name                  string    `json:"name"`
+	Description           string    `json:"description"`
+	Template              string    `json:"template"`
+	ColorScheme           Color     `json:"color_scheme"`
+	Logo                  string    `json:"logo"`
+	Banner                string    `json:"banner"`
+	OwnerID               uint      `json:"owner_id"`
+	Products              []Product `json:"products"`
+	IsOwner               bool      `json:"is_owner"`
+	Phone                 string    `json:"phone"`
+	Address               string    `json:"address"`
+	PaymentMethods        string    `json:"payment_methods"`
+	IBANNumber            string    `json:"iban_number"`
+	ShippingInfo          string    `json:"shipping_info"`
+	ShippingCost          float64   `json:"shipping_cost"`
+	EstimatedShipping     int       `json:"estimated_shipping"`
+	FreeShippingThreshold float64   `json:"free_shipping_threshold"`
 }
 
 type Product struct {

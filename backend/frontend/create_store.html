@@ -633,7 +633,7 @@
                     <div class="form-group">
                         <label>Choose Template Style</label>
                         <div class="template-selection">
-                            <div class="template-option active" data-template="modern" onclick="selectTemplate('modern')">
+                            <div class="template-option active" data-template="modern" onclick="">
                                 <div class="template-preview-card">
                                     <h4>Modern Store</h4>
                                     <p>Clean & Professional</p>
@@ -645,7 +645,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="template-option" data-template="vibrant" onclick="selectTemplate('vibrant')">
+                            <div class="template-option" data-template="vibrant" onclick="">
                                 <div class="template-preview-card">
                                     <h4>Vibrant Creative</h4>
                                     <p>Bold & Colorful</p>
@@ -659,7 +659,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="template-option" data-template="luxury" onclick="selectTemplate('luxury')">
+                            <div class="template-option" data-template="luxury" onclick="">
                                 <div class="template-preview-card">
                                     <h4>Luxury Premium</h4>
                                     <p>Elegant & Sophisticated</p>
@@ -809,13 +809,8 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="contactEmail">Contact Email *</label>
-                            <input type="email" id="contactEmail" name="contactEmail" placeholder="contact@yourstore.com" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="contactPhone">Phone Number</label>
-                            <input type="tel" id="contactPhone" name="contactPhone" placeholder="+1 (555) 123-4567">
+                            <label for="contactPhone">Phone Number *</label>
+                            <input type="tel" id="contactPhone" name="contactPhone" placeholder="+1 (555) 123-4567" required>
                         </div>
                     </div>
 
@@ -828,20 +823,21 @@
                 <!-- Step 4: Payment & Shipping -->
                 <div class="step-content" id="step4">
                     <h2 class="step-title">Payment & Shipping</h2>
-                    <p class="step-description">Configure your payment methods and shipping policies.</p>
+                    <p class="step-description">Configure your payment methods, banking details, and shipping policies.</p>
                     
                     <div class="form-group">
                         <label>Payment Methods *</label>
                         <div class="categories-grid">
                             <div class="category-item">
-                                <input type="checkbox" id="paypal" name="paymentMethods" value="paypal">
-                                <label for="paypal">💳 PayPal</label>
-                            </div>
-                            <div class="category-item">
-                                <input type="checkbox" id="creditCard" name="paymentMethods" value="credit_card">
-                                <label for="creditCard">💳 Credit Cards</label>
+                                <input type="checkbox" id="creditDebit" name="paymentMethods" value="credit_debit" checked>
+                                <label for="creditDebit">💳 Credit/Debit Card</label>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ibanNumber">IBAN Number *</label>
+                        <input type="text" id="ibanNumber" name="ibanNumber" placeholder="e.g., DE89370400440532013000" required>
                     </div>
 
                     <div class="form-group">
@@ -855,6 +851,13 @@
                             <input type="number" id="shippingCost" name="shippingCost" placeholder="9.99" step="0.01" min="0">
                         </div>
 
+                        <div class="form-group">
+                            <label for="estimatedShipping">Estimated Shipping Time (Days)</label>
+                            <input type="number" id="estimatedShipping" name="estimatedShipping" placeholder="5" step="1" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="freeShippingThreshold">Free Shipping Above (BHD)</label>
                             <input type="number" id="freeShippingThreshold" name="freeShippingThreshold" placeholder="50.00" step="0.01" min="0">

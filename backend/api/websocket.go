@@ -109,6 +109,12 @@ func DashboardWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Fetch store and set cookie
+	store, err := GetStoreByID(storeID)
+	if err == nil && store.ID != 0 {
+		SetStoreCookie(w, int(store.OwnerID), store.Name)
+	}
+
 	// Configure ping/pong for connection health check
 	conn.SetReadDeadline(time.Now().Add(60 * time.Second))
 	conn.SetPongHandler(func(string) error {
