@@ -92,6 +92,45 @@
             transform: translateY(-2px);
         }
 
+        /* Search Bar Styles */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            margin: 0 2rem;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            transition: all 0.3s ease;
+            color: #2d3748;
+        }
+
+        .search-input::placeholder {
+            color: #cbd5e0;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px #667eea26;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
         /* Mobile Menu */
         .mobile-menu-toggle {
             display: none;
@@ -904,6 +943,9 @@
                 <li><a onclick="goToPage('/about')">About</a></li>
                 <li><a onclick="goToPage('/contact')">Contact</a></li>
             </ul>
+            <div class="search-container" id="desktopSearchContainer" style="display: none;">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+            </div>
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <button id="loginBtn" class="cart-icon" style="background: var(--primary-color); color: white; border: none;">Login</button>
                 <a onclick="goToCheckout()" class="cart-icon">Cart (<span id="cart-total">0</span>)</a>
@@ -922,6 +964,7 @@
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
+            <li style="margin-bottom: 1.5rem;"><input type="text" class="search-input" id="mobileSearchInput" placeholder="Search products..." style="width: 100%; padding: 0.75rem; border-radius: 8px;"></li>
             <li><a onclick="goToPage('/home')">Home</a></li>
             <li><a onclick="goToPage('/orders')">orders</a></li>
             <li><a onclick="goToPage('/about')">About</a></li>
@@ -945,8 +988,9 @@
                 <h2>Featured Products</h2>
                 <p>Handpicked items that combine functionality with elegant design</p>
             </div>
+            <div id="noResults" class="no-results" style="display: none;">No products found matching your search.</div>
             
-            <div class="product-grid">
+            <div class="product-grid" id="productGrid">
                 {{range .Products}}
                 <div class="product-card">
                     <div class="product-image">
@@ -1090,6 +1134,48 @@
     <script src="/src/create_product.js" defer></script>
     <script src="/src/cart.js" defer></script>
     <script>
+        // Search functionality
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            const productGrid = document.getElementById('productGrid');
+            const noResults = document.getElementById('noResults');
+            const desktopSearchContainer = document.getElementById('desktopSearchContainer');
+            
+            // Show search bar if products exist
+            if (productGrid && productGrid.children.length > 0) {
+                if (desktopSearchContainer) desktopSearchContainer.style.display = 'flex';
+            }
+            
+            function filterProducts(query) {
+                const cards = productGrid.querySelectorAll('.product-card');
+                let visibleCount = 0;
+                
+                cards.forEach(card => {
+                    const title = card.querySelector('.product-title').textContent.toLowerCase();
+                    const description = card.querySelector('.product-description').textContent.toLowerCase();
+                    
+                    if (title.includes(query.toLowerCase()) || description.includes(query.toLowerCase())) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => filterProducts(e.target.value));
+            }
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('input', (e) => filterProducts(e.target.value));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', initializeSearch);
+    
         // Add Product Modal functionality
         const addProductTrigger = document.getElementById('addProductTrigger');
         const addProductModalOverlay = document.getElementById('addProductModalOverlay');

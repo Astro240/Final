@@ -66,8 +66,12 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		if idx := strings.Index(hostname, ":"); idx != -1 {
 			hostname = hostname[:idx]
 		}
-		// If hostname is not the main domain, treat it as a custom store domain
-		if hostname != "" && hostname != "astropify.com" && hostname != "localhost" {
+
+		// Check if hostname is an IP address
+		isIP := isIPAddress(hostname)
+
+		// If hostname is not the main domain and not an IP, treat it as a custom store domain
+		if hostname != "" && hostname != "astropify.com" && hostname != "localhost" && !isIP {
 			storeName = extractStoreNameFromDomain(hostname)
 		}
 	} else {
@@ -308,4 +312,36 @@ func extractStoreNameFromDomain(hostname string) string {
 	}
 
 	return hostname
+}
+
+func isIPAddress(hostname string) bool {
+	// Check if hostname looks like an IP address (contains only digits and dots)
+	if hostname == "" {
+		return false
+	}
+
+	parts := strings.Split(hostname, ".")
+
+	// IPv4 has 4 parts
+	if len(parts) == 4 {
+		for _, part := range parts {
+			if part == "" {
+				return false
+			}
+			// Check if each part is a number
+			for _, ch := range part {
+				if ch < '0' || ch > '9' {
+					return false
+				}
+			}
+		}
+		return true
+	}
+
+	// Could be IPv6 or other format, but for now we'll treat single parts with colons as IP
+	if strings.Contains(hostname, ":") && !strings.ContainsAny(hostname, "abcdefghijklmnopqrstuvwxyz") {
+		return true
+	}
+
+	return false
 }
