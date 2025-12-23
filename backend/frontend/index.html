@@ -19,6 +19,89 @@
     <!-- <script src="src/remove-spline-logo.js"></script> -->
     <title>Astropify</title>
     <link rel="icon" type="image/png" href="/img/logo.png" />
+    <style>
+        @media (max-width: 968px) {
+            .navbar {
+                padding: 15px 30px !important;
+            }
+            
+            .navbar a[href="/store"],
+            .navbar a[href="/products"],
+            .navbar a[href="/about"] {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 20px !important;
+                border-bottom-left-radius: 15px !important;
+                border-bottom-right-radius: 15px !important;
+            }
+
+            .navbar img {
+                height: 50px !important;
+                width: 50px !important;
+            }
+
+            .landingText {
+                top: 100px !important;
+                left: 20px !important;
+                right: 20px !important;
+                font-size: 2rem !important;
+                text-align: center !important;
+            }
+
+            .landingText span {
+                font-size: 0.9rem !important;
+            }
+
+            .landingText + div {
+                top: 100px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                text-align: center !important;
+            }
+
+            .glowDiv {
+                padding: 12px 24px !important;
+                font-size: 0.9rem !important;
+            }
+
+            .glass-card {
+                margin-top: 50px !important;
+                padding: 20px !important;
+                width: 90% !important;
+            }
+
+            #globeViz {
+                width: 100% !important;
+                height: 400px !important;
+                max-width: 400px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .landingText {
+                font-size: 1.5rem !important;
+                left: 15px !important;
+                right: 15px !important;
+            }
+
+            .landingText span {
+                font-size: 0.8rem !important;
+            }
+
+            .block {
+                margin-top: 50px !important;
+            }
+
+            #globeViz {
+                height: 300px !important;
+                max-width: 300px !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="navbar"

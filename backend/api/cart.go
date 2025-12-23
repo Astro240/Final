@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -31,20 +32,68 @@ func AddToCart(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	// Check if item already in cart
-	var existingID int
-	err = db.QueryRow("SELECT id FROM cart WHERE user_id = ? AND product_id = ?", userID, productID).Scan(&existingID)
+	// Parse quantity
+	var requestedQty int
+	_, err = fmt.Sscanf(quantity, "%d", &requestedQty)
+	if err != nil || requestedQty <= 0 {
+		http.Error(w, `{"error": "Invalid quantity"}`, http.StatusBadRequest)
+		return
+	}
 
+	// Check product's available quantity
+	var availableQty int
+	err = db.QueryRow("SELECT quantity FROM products WHERE id = ?", productID).Scan(&availableQty)
 	if err == sql.ErrNoRows {
+		http.Error(w, `{"error": "Product not found"}`, http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, `{"error": "Failed to check product availability"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if item already in cart and get current cart quantity
+	var existingID int
+	var currentCartQty int
+	err = db.QueryRow("SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?", userID, productID).Scan(&existingID, &currentCartQty)
+
+	var newTotalQty int
+	if err == sql.ErrNoRows {
+		// New item - check if requested quantity is available
+		newTotalQty = requestedQty
+		if newTotalQty > availableQty {
+			http.Error(w, fmt.Sprintf(`{"error": "Only %d items available"}`, availableQty), http.StatusBadRequest)
+			return
+		}
 		// Insert new cart item
-		_, err = db.Exec("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)", userID, productID, quantity)
+		_, err = db.Exec("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)", userID, productID, requestedQty)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to add to cart"}`, http.StatusInternalServerError)
+			return
+		}
+		// Decrease product quantity
+		_, err = db.Exec("UPDATE products SET quantity = quantity - ? WHERE id = ?", requestedQty, productID)
+	} else if err == nil {
+		// Update existing cart item - check if adding would exceed available quantity
+		newTotalQty = currentCartQty + requestedQty
+		if newTotalQty > availableQty {
+			http.Error(w, fmt.Sprintf(`{"error": "Only %d items available, you already have %d in cart"}`, availableQty, currentCartQty), http.StatusBadRequest)
+			return
+		}
+		_, err = db.Exec("UPDATE cart SET quantity = ? WHERE id = ?", newTotalQty, existingID)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to update cart"}`, http.StatusInternalServerError)
+			return
+		}
+		// Decrease product quantity by the additional amount
+		_, err = db.Exec("UPDATE products SET quantity = quantity - ? WHERE id = ?", requestedQty, productID)
 	} else {
-		// Update existing cart item
-		_, err = db.Exec("UPDATE cart SET quantity = quantity + ? WHERE id = ?", quantity, existingID)
+		http.Error(w, `{"error": "Failed to check cart"}`, http.StatusInternalServerError)
+		return
 	}
 
 	if err != nil {
-		http.Error(w, `{"error": "Failed to add to cart"}`, http.StatusInternalServerError)
+		http.Error(w, `{"error": "Failed to update product quantity"}`, http.StatusInternalServerError)
 		return
 	}
 
@@ -184,7 +233,61 @@ func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("UPDATE cart SET quantity = ? WHERE id = ? AND user_id = ?", quantity, cartItemID, userID)
+	// Parse new quantity
+	var newQty int
+	_, err = fmt.Sscanf(quantity, "%d", &newQty)
+	if err != nil || newQty <= 0 {
+		http.Error(w, `{"error": "Invalid quantity"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Get current cart item details
+	var currentQty, productID int
+	err = db.QueryRow("SELECT quantity, product_id FROM cart WHERE id = ? AND user_id = ?", cartItemID, userID).Scan(&currentQty, &productID)
+	if err == sql.ErrNoRows {
+		http.Error(w, `{"error": "Cart item not found"}`, http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, `{"error": "Failed to fetch cart item"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Calculate the difference
+	qtyDifference := newQty - currentQty
+
+	if qtyDifference > 0 {
+		// User wants to add more - check if available
+		var availableQty int
+		err = db.QueryRow("SELECT quantity FROM products WHERE id = ?", productID).Scan(&availableQty)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to check product availability"}`, http.StatusInternalServerError)
+			return
+		}
+
+		if qtyDifference > availableQty {
+			http.Error(w, fmt.Sprintf(`{"error": "Only %d more items available"}`, availableQty), http.StatusBadRequest)
+			return
+		}
+
+		// Decrease product quantity
+		_, err = db.Exec("UPDATE products SET quantity = quantity - ? WHERE id = ?", qtyDifference, productID)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to update product quantity"}`, http.StatusInternalServerError)
+			return
+		}
+	} else if qtyDifference < 0 {
+		// User wants to decrease - restore product quantity
+		restoreQty := -qtyDifference
+		_, err = db.Exec("UPDATE products SET quantity = quantity + ? WHERE id = ?", restoreQty, productID)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to restore product quantity"}`, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Update cart
+	_, err = db.Exec("UPDATE cart SET quantity = ? WHERE id = ? AND user_id = ?", newQty, cartItemID, userID)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to update cart"}`, http.StatusInternalServerError)
 		return
@@ -217,9 +320,30 @@ func RemoveFromCart(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
+	// Get the cart item details before deleting (to restore product quantity)
+	var productID int
+	var quantity int
+	err = db.QueryRow("SELECT product_id, quantity FROM cart WHERE id = ? AND user_id = ?", cartItemID, userID).Scan(&productID, &quantity)
+	if err == sql.ErrNoRows {
+		http.Error(w, `{"error": "Cart item not found"}`, http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, `{"error": "Failed to fetch cart item"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Delete from cart
 	_, err = db.Exec("DELETE FROM cart WHERE id = ? AND user_id = ?", cartItemID, userID)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to remove from cart"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Restore product quantity
+	_, err = db.Exec("UPDATE products SET quantity = quantity + ? WHERE id = ?", quantity, productID)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to restore product quantity"}`, http.StatusInternalServerError)
 		return
 	}
 

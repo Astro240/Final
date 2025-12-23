@@ -164,6 +164,55 @@
         .item-quantity {
             font-size: 0.9rem;
             color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f7fafc;
+            padding: 0.25rem;
+            border-radius: 6px;
+        }
+
+        .quantity-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: white;
+            color: var(--accent-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .quantity-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quantity-value {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+            color: #2d3748;
         }
 
         .item-total {
@@ -251,9 +300,19 @@
             display: block;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .checkout-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .checkout-section {
+                padding: 1.5rem;
             }
 
             .form-row {
@@ -261,7 +320,64 @@
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .item-image {
+                width: 100%;
+                height: 150px;
+            }
+
+            .item-total {
+                align-self: flex-end;
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .checkout-section {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .item-name {
+                font-size: 1rem;
+            }
+
+            .quantity-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1.3rem;
+            }
+
+            .submit-btn {
+                padding: 0.875rem;
+                font-size: 1rem;
             }
         }
     </style>
@@ -340,7 +456,14 @@
                         <div class="item-details">
                             <div class="item-name">{{ .Product.Name }}</div>
                             <div class="item-price">${{ printf "%.2f" .Product.Price }}</div>
-                            <div class="item-quantity">Quantity: {{ .Quantity }}</div>
+                            <div class="item-quantity">
+                                <span>Qty:</span>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="updateQuantity({{ .ID }}, {{ .Quantity }}, -1)">−</button>
+                                    <span class="quantity-value">{{ .Quantity }}</span>
+                                    <button class="quantity-btn" onclick="updateQuantity({{ .ID }}, {{ .Quantity }}, 1)">+</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="item-total">${{ printf "%.2f" .ItemTotal }}</div>
                     </div>
@@ -396,7 +519,9 @@
         function showAlert(message, type) {
             alertMessage.textContent = message;
             alertMessage.className = `alert ${type}`;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+         
+
+           window.scrollTo({ top: 0, behavior: 'smooth' });
             
             if (type === 'success') {
                 setTimeout(() => {
@@ -404,7 +529,68 @@
                 }, 1500);
             }
         }
+        async function updateQuantity(cartItemId, currentQty, change) {
+            const newQty = currentQty + change;
+            
+            if (newQty < 1) {
+                if (confirm('Remove this item from cart?')) {
+                    await removeFromCart(cartItemId);
+                }
+                return;
+            }
 
+            try {
+                const formData = new FormData();
+                formData.append('cart_item_id', cartItemId);
+                formData.append('quantity', newQty);
+
+                const fullPath = window.location.href;
+                const response = await fetch('/api/update-cart', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
+                });
+
+                if (response.ok) {
+                    // Refresh the page to show updated quantities and totals
+                    window.location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to update quantity');
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                alert('Failed to update quantity. Please try again.');
+            }
+        }
+
+        async function removeFromCart(cartItemId) {
+            try {
+                const formData = new FormData();
+                formData.append('cart_item_id', cartItemId);
+
+                const fullPath = window.location.href;
+                const response = await fetch('/api/remove-from-cart', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Store-Name': fullPath
+                    }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to remove item');
+                }
+            } catch (error) {
+                console.error('Error removing item:', error);
+                alert('Failed to remove item. Please try again.');
+            }
+        }
         if (checkoutForm) {
             checkoutForm.addEventListener('submit', async (e) => {
                 e.preventDefault();

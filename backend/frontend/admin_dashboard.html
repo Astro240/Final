@@ -310,35 +310,75 @@
         }
 
         /* Responsive */
+        @media (max-width: 968px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             .header {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
+                padding: 20px;
             }
 
             .header h1 {
                 font-size: 1.5rem;
             }
 
+            .header-info {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .logout-btn {
+                width: 100%;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 20px;
             }
 
             .stat-value {
                 font-size: 2rem;
             }
 
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                gap: 5px;
+            }
+
+            .tab-btn {
+                white-space: nowrap;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
             table {
                 font-size: 0.85rem;
+                min-width: 700px;
             }
 
             th, td {
                 padding: 12px 10px;
-            }
-
-            .tabs {
-                flex-wrap: wrap;
             }
 
             .action-btn {
@@ -346,6 +386,42 @@
                 width: 100%;
                 margin-bottom: 8px;
                 margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h3 {
+                font-size: 0.8rem;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .logout-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            table {
+                min-width: 600px;
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
             }
         }
     </style>

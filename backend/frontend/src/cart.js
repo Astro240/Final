@@ -159,3 +159,41 @@ function goToCheckout(){
 function goToPage(text) {
     window.location.href = window.location.href+text;
 }
+
+// Standalone addToCart function for programmatic calls
+async function addToCart(productId, quantity = 1) {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('quantity', quantity.toString());
+    
+    try {
+        const fullPath = window.location.href;
+        const response = await fetch('/api/add-to-cart', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Store-Name': fullPath
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showNotification(`${quantity} item${quantity > 1 ? 's' : ''} added to cart successfully!`, 'success');
+            return true;
+        } else {
+            if (response.status === 401) {
+                showNotification('Please login to add items to cart', 'warning');
+                if (typeof openModal === 'function') {
+                    openModal();
+                }
+            } else {
+                showNotification(data.error || 'Failed to add to cart', 'error');
+            }
+            return false;
+        }
+    } catch (error) {
+        showNotification('An error occurred. Please try again.', 'error');
+        return false;
+    }
+}
