@@ -124,6 +124,8 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			if validUser && uint(userID) == store.OwnerID {
 				store.IsOwner = true
 			}
+			_, validUser = ValidateStoreCustomer(w, r, strconv.FormatUint(uint64(store.ID), 10))
+			store.IsLoggedIn = validUser
 			if err := tmpl.Execute(w, store); err != nil {
 				HandleError(w, r, http.StatusInternalServerError, "Failed to render template")
 				return

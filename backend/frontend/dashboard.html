@@ -1251,6 +1251,12 @@
                             Help
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="/loggout" class="nav-link">
+                            <i class="fas fa-sign-out"></i>
+                            Logout
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </aside>
@@ -1664,7 +1670,7 @@
             if (product.image) {
                 imageHtml = `
                     <div class="product-image">
-                        <img src="/products/${product.image}" alt="${product.name}" onerror="this.parentElement.innerHTML = '<div class=\\"product-placeholder\\"><i class=\\"fas fa-image\\"></i></div>
+                        <img src="/products_image/${product.image}" alt="${product.name}" onerror="this.parentElement.innerHTML = '<div class=\\"product-placeholder\\"><i class=\\"fas fa-image\\"></i></div>
                     </div>
                 `;
             } else {
@@ -1958,7 +1964,7 @@
                         card.className = 'order-product-card';
                         card.innerHTML = `
                             <div class="order-product-image">
-                                <img src="/products/${product.image}" alt="${product.name}" />
+                                <img src="/products_image/${product.image}" alt="${product.name}" />
                             </div>
                             <div class="product-name">${product.name}</div>
                             <div class="product-quantity">Quantity: ${product.quantity}</div>
@@ -2222,9 +2228,13 @@
             });
         });
 
-        // Add hover effects to nav links
+        // Add hover effects to nav links (except logout)
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
+                // Don't prevent default for logout link
+                if (this.getAttribute('href') === '/loggout') {
+                    return;
+                }
                 e.preventDefault();
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 this.classList.add('active');

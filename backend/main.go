@@ -8,6 +8,7 @@ import (
 func main() {
 	api.LoadEnv()
 	api.CreateDatabase()
+	http.HandleFunc("/loggout", api.LogoutHandler)
 	http.HandleFunc("/", api.HomePage)
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./frontend/login.html")
@@ -15,7 +16,6 @@ func main() {
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./frontend/register.html")
 	})
-	http.HandleFunc("/logout", api.LogoutHandler)
 	http.HandleFunc("/store", api.StorePage)
 	http.HandleFunc("/templates", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./frontend/template.html")
@@ -33,7 +33,7 @@ func main() {
 	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	http.Handle("/logos/", http.StripPrefix("/logos/", http.FileServer(http.Dir("./store_images/logos"))))
 	http.Handle("/banners/", http.StripPrefix("/banners/", http.FileServer(http.Dir("./store_images/banners"))))
-	http.Handle("/products/", http.StripPrefix("/products/", http.FileServer(http.Dir("./store_images/products"))))
+	http.Handle("/products_image/", http.StripPrefix("/products_image/", http.FileServer(http.Dir("./store_images/products"))))
 
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./frontend/img"))))
@@ -61,6 +61,10 @@ func main() {
 	http.HandleFunc("/api/products", api.GetProductsAPI)
 	http.HandleFunc("/api/products/update", api.UpdateProductAPI)
 	http.HandleFunc("/api/products/delete", api.DeleteProductAPI)
+	// Review routes //
+	http.HandleFunc("/api/reviews/create", api.CreateReview)
+	http.HandleFunc("/api/reviews", api.GetProductReviews)
+	http.HandleFunc("/api/reviews/reviewable-orders", api.GetUserReviewableOrders)
 	// Cart and Checkout routes //
 	http.HandleFunc("/api/add-to-cart", api.AddToCart)
 	http.HandleFunc("/api/get-cart", api.GetCartTotal)

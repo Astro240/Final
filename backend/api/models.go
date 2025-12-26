@@ -39,15 +39,30 @@ type Store struct {
 	ShippingCost          float64   `json:"shipping_cost"`
 	EstimatedShipping     int       `json:"estimated_shipping"`
 	FreeShippingThreshold float64   `json:"free_shipping_threshold"`
+	IsLoggedIn            bool      `json:"is_logged_in"`
 }
 
 type Product struct {
-	ID          uint    `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	Image       string  `json:"image"`
-	Quantity    int     `json:"quantity"`
+	ID            uint     `json:"id"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
+	Price         float64  `json:"price"`
+	Image         string   `json:"image"`
+	Quantity      int      `json:"quantity"`
+	Reviews       []Review `json:"reviews,omitempty"`
+	AverageRating float64  `json:"average_rating,omitempty"`
+	ReviewCount   int      `json:"review_count,omitempty"`
+}
+
+type Review struct {
+	ID        uint   `json:"id"`
+	ProductID uint   `json:"product_id"`
+	UserID    uint   `json:"user_id"`
+	OrderID   uint   `json:"order_id"`
+	Rating    int    `json:"rating"`
+	Comment   string `json:"comment"`
+	CreatedAt string `json:"created_at"`
+	UserName  string `json:"user_name,omitempty"`
 }
 
 type Color struct {

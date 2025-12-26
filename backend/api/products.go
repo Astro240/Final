@@ -31,6 +31,10 @@ func GetProductsByStoreID(storeID uint) ([]Product, error) {
 }
 
 func CreateProductAPI(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, `{"error": "Method Not Allowed"}`, http.StatusMethodNotAllowed)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 
 	// Parse multipart form to access form fields and files

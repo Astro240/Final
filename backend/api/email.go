@@ -22,8 +22,22 @@ func SendEmail(to string, subject string, body string) error {
 	gmailKey := os.Getenv("GMAIL_KEY")
 	auth := smtp.PlainAuth("", "astropify@gmail.com", gmailKey, "smtp.gmail.com")
 
-	err := smtp.SendMail("smtp.gmail.com:587", auth, "astropify@gmail.com", []string{to}, []byte("Subject: "+subject+"\n\n"+body))
-	return err
+	// List of providers to try
+	providers := map[string]string{
+		"gmail":   "smtp.gmail.com:587",
+		"yahoo":   "smtp.mail.yahoo.com:587",
+		"outlook": "smtp.office365.com:587",
+		"hotmail": "smtp.live.com:587",
+	}
+
+	for _, server := range providers {
+		err := smtp.SendMail(server, auth, "astropify@gmail.com", []string{to}, []byte("Subject: "+subject+"\n\n"+body))
+		if err != nil {
+			continue
+		}
+		return nil // Exit after a successful send
+	}
+	return nil
 }
 
 func TwoFactorAuth(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +45,7 @@ func TwoFactorAuth(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	
+
 	userID := r.FormValue("user_id")
 	code := r.FormValue("code")
 
@@ -87,7 +101,7 @@ func Resend2FAHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Error(w, `{"error": "A valid code has already been sent. Please check your email."}`, http.StatusBadRequest)
 		return
-	}else {
+	} else {
 		token := GenerateEmailCode()
 
 		query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+5 minutes'))"

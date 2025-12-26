@@ -200,7 +200,7 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error": "` + err.Error() + `"}`))
 		return
 	}
-	query := "SELECT id FROM stores WHERE name = ?"
+	query := "SELECT id FROM stores WHERE LOWER(name) = LOWER(?)"
 	row := db.QueryRow(query, name)
 	var existingID int
 	err = row.Scan(&existingID)

@@ -11,8 +11,19 @@ import (
 )
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the session token from cookie
+	sessionToken, err := GetCookie(r, "session_token")
+	if err == nil && sessionToken != "" {
+		// Delete the session from database
+		db, err := sql.Open("sqlite3", DATABASEPATH)
+		if err == nil {
+			defer db.Close()
+			db.Exec("DELETE FROM sessions WHERE session_token = ?", sessionToken)
+		}
+	}
+
 	RemoveCookie(w, r, "session_token")
-	http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +48,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Bot detected"}`, http.StatusBadRequest)
 		return
 	}
-	query := "SELECT id,password FROM users WHERE email = ?"
+	query := "SELECT id,password FROM users WHERE email = ? AND store_id IS NULL"
 	row := db.QueryRow(query, email)
 
 	if row.Err() == sql.ErrNoRows {
@@ -91,19 +102,27 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	email := strings.ToLower(r.FormValue("email"))
 	password := r.FormValue("password")
-	firstName := r.FormValue("first_name")
-	lastName := r.FormValue("last_name")
+	firstName := strings.TrimSpace(r.FormValue("first_name"))
+	lastName := strings.TrimSpace(r.FormValue("last_name"))
 	age := r.FormValue("age")
 	honeypot := r.FormValue("honeypot")
 	if honeypot != "" {
 		http.Error(w, `{"error": "Bot detected"}`, http.StatusBadRequest)
 		return
 	}
+	if firstName == "" {
+		http.Error(w, `{"error": "First Name Required"}`, http.StatusBadRequest)
+		return
+	}
+	if lastName == "" {
+		http.Error(w, `{"error": "Last Name Required"}`, http.StatusBadRequest)
+		return
+	}
 	//picture can be empty
 	profilePicture := r.FormValue("profile_picture")
 	//check if email already exists
 	var exists int
-	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", email).Scan(&exists)
+	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? and store_id IS NULL", email).Scan(&exists)
 	if err != nil {
 		http.Error(w, `{"error": "Database query error"}`, http.StatusInternalServerError)
 		return

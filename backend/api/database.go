@@ -149,6 +149,21 @@ func CreateDatabase() {
     	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 	);
+
+	-- Reviews table
+	CREATE TABLE IF NOT EXISTS reviews (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	product_id INTEGER NOT NULL,
+    	user_id INTEGER NOT NULL,
+    	order_id INTEGER NOT NULL,
+    	rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+    	comment TEXT,
+    	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    	UNIQUE(product_id, user_id, order_id)
+	);
 	insert or ignore into users (id, email, password, first_name, user_type) values
 	(0, 'astropify@gmail.com', '$2a$10$MleK0bpPilssP8IyMai7A.5azKNbMcz8bJrLxWmbLnhcKtRHY87V2', 'admin', 1);
 	`
