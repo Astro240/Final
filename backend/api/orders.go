@@ -19,7 +19,6 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Get shipping info from form
 	fullName := strings.TrimSpace(r.FormValue("full_name"))
-	email := strings.TrimSpace(r.FormValue("email"))
 	phone := strings.TrimSpace(r.FormValue("phone"))
 	address := strings.TrimSpace(r.FormValue("address"))
 	city := strings.TrimSpace(r.FormValue("city"))
@@ -27,12 +26,12 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	zipCode := strings.TrimSpace(r.FormValue("zip_code"))
 	country := strings.TrimSpace(r.FormValue("country"))
 
-	if fullName == "" || email == "" || address == "" || city == "" || country == "" {
+	if fullName == "" || address == "" || city == "" || country == "" {
 		http.Error(w, `{"error": "All shipping fields are required"}`, http.StatusBadRequest)
 		return
 	}
 
-	shippingInfo := strings.Join([]string{fullName, email, phone, address, city, state, zipCode, country}, "|")
+	shippingInfo := strings.Join([]string{fullName, phone, address, city, state, zipCode, country}, "|")
 
 	db, err := sql.Open("sqlite3", DATABASEPATH)
 	if err != nil {
@@ -86,6 +85,12 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete any older pending orders (unpaid orders)
+	_, err = db.Exec("DELETE FROM orders WHERE user_id = ? AND status = 'pending'", userID)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to clean up old orders"}`, http.StatusInternalServerError)
+		return
+	}
 	// Start transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -124,14 +129,6 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, `{"error": "Failed to create order items"}`, http.StatusInternalServerError)
 			return
 		}
-	}
-
-	// Clear cart
-	_, err = tx.Exec("DELETE FROM cart WHERE user_id = ?", userID)
-	if err != nil {
-		tx.Rollback()
-		http.Error(w, `{"error": "Failed to clear cart"}`, http.StatusInternalServerError)
-		return
 	}
 
 	// Commit transaction
@@ -411,6 +408,13 @@ func ProcessPayment(w http.ResponseWriter, r *http.Request) {
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
 		http.Error(w, `{"error": "Failed to complete payment"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Clear cart after successful payment
+	_, err = db.Exec("DELETE FROM cart WHERE user_id = ?", userID)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to clear cart"}`, http.StatusInternalServerError)
 		return
 	}
 
