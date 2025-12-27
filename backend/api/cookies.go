@@ -38,7 +38,7 @@ func SetCookie(w http.ResponseWriter, id int, name string) {
 		Value:    sessionID.String(),
 		Path:     "/", // ensure cookie is available site-wide
 		HttpOnly: true,
-		Secure:   false,                // true if HTTPS
+		Secure:   true,                 // true for HTTPS
 		SameSite: http.SameSiteLaxMode, // or NoneMode with Secure for cross-site
 		MaxAge:   86400,
 	})
@@ -73,7 +73,7 @@ func SetStoreCookie(w http.ResponseWriter, storeID int, storeName string) {
 		Value:    sessionID.String(),
 		Path:     storePath,
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   86400,
 	})
@@ -103,7 +103,7 @@ func RemoveCookie(w http.ResponseWriter, r *http.Request, name string) {
 		Value:    "",
 		Path:     "/", // ensure cookie is available site-wide
 		HttpOnly: true,
-		Secure:   false,                // true if HTTPS
+		Secure:   true,                 // true for HTTPS
 		SameSite: http.SameSiteLaxMode, // or NoneMode with Secure for cross-site
 		MaxAge:   -1,
 	})
@@ -118,7 +118,7 @@ func RemoveStoreCookie(w http.ResponseWriter, storeName string) {
 		Value:    "",
 		Path:     storePath,
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   -1,
 	})

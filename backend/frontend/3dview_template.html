@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        a-scene {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="instructions">Tap the screen to place the model</div>
+
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <a-scene embedded
+        arjs="sourceType: webcam; debugUIEnabled: true; trackingMethod: best; videoConstraints: {facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720}};">
+        <a-assets>
+            <a-asset-item id="sofaModel" src="/3d_images/{{.ModelName}}"></a-asset-item>
+        </a-assets>
+
+        <a-entity light="type: ambient; intensity: 1"></a-entity>
+        <a-entity light="type: directional; intensity: 1" position="0 10 0"></a-entity>
+
+        <a-entity id="anchor"></a-entity>
+
+        <a-camera></a-camera>
+    </a-scene>
+
+    <script>
+        let modelPlaced = false;
+        const modelName = "{{.ModelName}}";
+        
+        console.log('Loading 3D model:', `/3d_images/${modelName}`);
+
+        // Wait for scene to load
+        document.querySelector('a-scene').addEventListener('loaded', function () {
+            const scene = document.querySelector('a-scene');
+            const anchor = document.querySelector('#anchor');
+            const camera = document.querySelector('a-camera');
+            const instructions = document.querySelector('#instructions');
+
+            const placeModel = (event) => {
+                if (!modelPlaced) {
+                    event.preventDefault();
+
+                    // Get camera position and rotation
+                    const cameraPos = camera.object3D.position.clone();
+                    const cameraRot = camera.object3D.rotation.clone();
+
+                    // Calculate forward direction
+                    const direction = new THREE.Vector3(0, 0, -1);
+                    direction.applyEuler(cameraRot);
+
+                    // Place anchor 2 meters in front of camera
+                    const distance = 1;
+                    const anchorPos = new THREE.Vector3(
+                        cameraPos.x + direction.x * distance,
+                        cameraPos.y - 0.5, // Lower to ground level
+                        cameraPos.z + direction.z * distance
+                    );
+
+                    // Set anchor position
+                    anchor.object3D.position.copy(anchorPos);
+
+                    // Calculate rotation to face camera (Y-axis rotation only)
+                    const cameraYRotation = cameraRot.y * (180 / Math.PI); // Convert to degrees
+
+                    // Create model as child of anchor
+                    const model = document.createElement('a-entity');
+                    model.setAttribute('gltf-model', '#sofaModel');
+                    model.setAttribute('scale', '0.5 0.5 0.5');
+                    model.setAttribute('position', '0 0 0');
+                    model.setAttribute('rotation', `0 ${cameraYRotation} 0`);
+
+                    anchor.appendChild(model);
+
+                    modelPlaced = true;
+                    instructions.style.display = 'none';
+                }
+            };
+
+            // Handle both click and touch events
+            scene.addEventListener('click', placeModel);
+            scene.addEventListener('touchstart', placeModel);
+        });
+    </script>
+
+</body>
+
+</html>

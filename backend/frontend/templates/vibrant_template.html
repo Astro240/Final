@@ -1654,10 +1654,23 @@
                 margin: 2rem 10px;
             }
 
+            .product-detail-modal {
+                width: 95%;
+                max-height: 95vh;
+            }
+
             .product-detail-content {
                 grid-template-columns: 1fr;
                 gap: 2rem;
                 padding: 2rem;
+            }
+
+            .product-detail-image-section {
+                width: 100%;
+            }
+
+            .product-detail-info-section {
+                width: 100%;
             }
 
             .product-detail-main-image {
@@ -1670,6 +1683,24 @@
 
             .product-detail-price {
                 font-size: 2rem;
+            }
+
+            .product-detail-close {
+                top: 1rem;
+                right: 1rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+
+            .product-reviews-section {
+                padding: 1.5rem 0 0 0;
+            }
+
+            .reviews-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
             }
 
             .search-container {
@@ -1707,6 +1738,46 @@
 
             .product-info {
                 padding: 1.5rem;
+            }
+
+            .product-detail-modal {
+                width: 98%;
+                max-height: 98vh;
+            }
+
+            .product-detail-content {
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+
+            .product-detail-main-image {
+                height: 250px;
+            }
+
+            .product-detail-title {
+                font-size: 1.5rem;
+            }
+
+            .product-detail-price {
+                font-size: 1.5rem;
+            }
+
+            .product-detail-description {
+                font-size: 0.95rem;
+            }
+
+            .product-detail-specs {
+                margin-top: 1.5rem;
+            }
+
+            .product-detail-add-to-cart {
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+
+            .reviews-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -1896,6 +1967,7 @@
                     <div class="product-detail-main-image" id="productDetailImage">
                         📦
                     </div>
+                    <button id="arButton" class="ar-button" onclick="toggleAR()" style="width: 100%; padding: 1.5rem; background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 4px; font-weight: 400; letter-spacing: 0.05em; cursor: pointer; transition: all 0.3s; display: none; margin-top: 1rem; position: relative; overflow: hidden; z-index: 1;" onmouseover="this.style.color='#ffffff'; if(!this._hovered) { this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--primary-color'); this._hovered=true; }" onmouseout="this.style.background='transparent'; this.style.color='var(--primary-color)'; this._hovered=false;">VIEW IN AR</button>
                 </div>
                 <div class="product-detail-info-section">
                     <h1 class="product-detail-title" id="productDetailTitle">Product Name</h1>
@@ -2138,11 +2210,56 @@
                 imageContainer.innerHTML = '📦';
             }
             
+            // Check if 3D/AR model exists
+            if (image) {
+                check3DModelForDetail(image);
+            } else {
+                document.getElementById('arButton').style.display = 'none';
+            }
+            
             // Load reviews for this product
             loadProductReviews(id);
             
             document.getElementById('productDetailOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
+        }
+        
+        async function check3DModelForDetail(imageName) {
+            if (!imageName) {
+                document.getElementById('arButton').style.display = 'none';
+                return;
+            }
+            
+            // Extract just the filename from the path (e.g., "/products_image/product.jpg" -> "product.jpg")
+            const filename = imageName.split('/').pop();
+            console.log('Checking 3D model for:', filename);
+            
+            try {
+                const response = await fetch(`/api/check-3d-model?image=${encodeURIComponent(filename)}`);
+                const data = await response.json();
+                
+                console.log('3D Model check response:', data);
+                
+                if (data.has_3d_model) {
+                    console.log('3D model found:', data.model_path);
+                    document.getElementById('arButton').style.display = 'block';
+                    window.currentProductModel = data.model_path;
+                } else {
+                    console.log('No 3D model found');
+                    document.getElementById('arButton').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking 3D model:', error);
+                document.getElementById('arButton').style.display = 'none';
+            }
+        }
+        
+        async function toggleAR() {
+            if (window.currentProductModel) {
+                window.location.href = `/3dview.html?model=${encodeURIComponent(window.currentProductModel)}`;
+            } else {
+                alert('No 3D model available for this product');
+            }
         }
 
         function closeProductDetail() {

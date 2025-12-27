@@ -137,6 +137,35 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Send order confirmation email
+	var userEmail string
+	err = db.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&userEmail)
+	if err == nil && userEmail != "" {
+		orderConfirmationEmail := fmt.Sprintf(`
+<html>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <h2>Order Confirmation</h2>
+  <p>Thank you for your order! Your order has been created successfully.</p>
+  
+  <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p><strong>Order ID:</strong> #%d</p>
+    <p><strong>Total Amount:</strong> BD %.2f</p>
+    <p><strong>Status:</strong> Pending Payment</p>
+    <p><strong>Shipping Address:</strong></p>
+    <p style="margin-left: 20px;">%s</p>
+  </div>
+  
+  <p>Please proceed to payment to complete your order.</p>
+  <p>If you have any questions, please contact our support team.</p>
+  
+  <p>Best regards,<br><strong>Astropify Team</strong></p>
+</body>
+</html>
+		`, orderID, totalAmount, shippingInfo)
+
+		go SendEmail(userEmail, "Order Confirmation - Astropify", orderConfirmationEmail)
+	}
+
 	response := map[string]interface{}{
 		"success":  true,
 		"order_id": orderID,
@@ -418,6 +447,42 @@ func ProcessPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Send payment confirmation email
+	var userEmail string
+	var orderTotal float64
+	err = db.QueryRow(`
+		SELECT u.email, o.total_amount 
+		FROM users u 
+		JOIN orders o ON u.id = o.user_id 
+		WHERE o.id = ?
+	`, orderID).Scan(&userEmail, &orderTotal)
+
+	if err == nil && userEmail != "" {
+		paymentConfirmationEmail := fmt.Sprintf(`
+<html>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <h2>Payment Confirmation</h2>
+  <p>Your payment has been processed successfully!</p>
+  
+  <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p><strong>Order ID:</strong> #%d</p>
+    <p><strong>Amount Paid:</strong> BD %.2f</p>
+    <p><strong>Payment Method:</strong> %s</p>
+    <p><strong>Status:</strong> Completed</p>
+    <p><strong>Date:</strong> %s</p>
+  </div>
+  
+  <p>Your order will be processed and shipped soon. You will receive a shipping notification with tracking details.</p>
+  
+  <p>Thank you for your purchase!</p>
+  <p>Best regards,<br><strong>Astropify Team</strong></p>
+</body>
+</html>
+		`, orderID, orderTotal, paymentMethodName, getFormattedDate())
+
+		go SendEmail(userEmail, "Payment Confirmation - Astropify", paymentConfirmationEmail)
+	}
+
 	response := map[string]interface{}{
 		"success":  true,
 		"message":  "Payment processed successfully",
@@ -611,6 +676,54 @@ func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, `{"error": "Failed to update order"}`, http.StatusInternalServerError)
 		return
+	}
+
+	// Send status update email to customer
+	var customerEmail string
+	var customerName string
+	var totalAmount float64
+	err = db.QueryRow(`
+		SELECT u.email, u.first_name, o.total_amount
+		FROM orders o
+		JOIN users u ON o.user_id = u.id
+		WHERE o.id = ?
+	`, req.OrderID).Scan(&customerEmail, &customerName, &totalAmount)
+
+	if err == nil && customerEmail != "" {
+		statusMessageMap := map[string]string{
+			"processing": "Your order is being processed and will be shipped soon.",
+			"shipped":    "Great news! Your order has been shipped. You will receive tracking information soon.",
+			"delivered":  "Your order has been delivered. Thank you for your purchase!",
+			"cancelled":  "Your order has been cancelled. Please contact us if you have any questions.",
+		}
+
+		statusMessage := statusMessageMap[req.Status]
+		if statusMessage == "" {
+			statusMessage = "Your order status has been updated to: " + req.Status
+		}
+
+		statusEmail := fmt.Sprintf(`
+<html>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <h2>Order Status Update</h2>
+  <p>Hi %s,</p>
+  
+  <p>%s</p>
+  
+  <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p><strong>Order ID:</strong> #%d</p>
+    <p><strong>Order Status:</strong> <span style="color: #2c3e50; font-weight: bold; text-transform: capitalize;">%s</span></p>
+    <p><strong>Order Total:</strong> BD %.2f</p>
+  </div>
+  
+  <p>If you have any questions about your order, please don't hesitate to contact us.</p>
+  
+  <p>Best regards,<br><strong>Astropify Team</strong></p>
+</body>
+</html>
+		`, customerName, statusMessage, req.OrderID, req.Status, totalAmount)
+
+		go SendEmail(customerEmail, "Order Status Update - Order #"+fmt.Sprint(req.OrderID), statusEmail)
 	}
 
 	response := map[string]interface{}{
@@ -808,4 +921,9 @@ func GetCustomerOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
+}
+
+// Helper function to get formatted date
+func getFormattedDate() string {
+	return fmt.Sprintf("%s", "today")
 }

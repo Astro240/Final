@@ -2,6 +2,9 @@ package main
 
 import (
 	"finalProj/api"
+	"fmt"
+	"log"
+	"net"
 	"net/http"
 )
 
@@ -20,6 +23,7 @@ func main() {
 	http.HandleFunc("/templates", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./frontend/template.html")
 	})
+	http.HandleFunc("/3dview.html", api.View3DModel)
 	http.HandleFunc("/templates/preview/", api.SampleStoreView)
 	http.HandleFunc("/create-store", func(w http.ResponseWriter, r *http.Request) {
 		if _, validUser := api.ValidateUser(w, r); !validUser {
@@ -34,6 +38,7 @@ func main() {
 	http.Handle("/logos/", http.StripPrefix("/logos/", http.FileServer(http.Dir("./store_images/logos"))))
 	http.Handle("/banners/", http.StripPrefix("/banners/", http.FileServer(http.Dir("./store_images/banners"))))
 	http.Handle("/products_image/", http.StripPrefix("/products_image/", http.FileServer(http.Dir("./store_images/products"))))
+	http.Handle("/3d_images/", http.StripPrefix("/3d_images/", http.FileServer(http.Dir("./store_images/3d_images"))))
 
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./frontend/src"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./frontend/img"))))
@@ -90,7 +95,36 @@ func main() {
 	http.HandleFunc("/api/admin/orders", api.AdminOrders)
 	http.HandleFunc("/api/admin/products", api.AdminProducts)
 
-	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
-		panic(err)
+	// 3D Model API routes
+	http.HandleFunc("/api/check-3d-model", api.Check3DModel)
+	http.HandleFunc("/api/get-3d-model", api.Get3DModel)
+	http.HandleFunc("/api/list-3d-models", api.ListProducts3DModels)
+
+	// Generate SSL certificates if needed
+	if err := generateCert(); err != nil {
+		log.Fatal("Failed to generate certificates:", err)
 	}
+
+	fmt.Println("Server running on HTTPS")
+	fmt.Println("Access from:")
+	fmt.Println("  - This PC: https://localhost:8443")
+
+	// Get local IP
+	addrs, _ := net.InterfaceAddrs()
+	for _, addr := range addrs {
+		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				fmt.Printf("  - Your phone: https://%s:8443\n", ipnet.IP.String())
+			}
+		}
+	}
+	fmt.Println("\n⚠ Accept the security warning in your browser/phone")
+
+	if err := http.ListenAndServeTLS(":8443", "cert.pem", "key.pem", nil); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
+
+	// if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
+	// 	panic(err)
+	// }
 }
