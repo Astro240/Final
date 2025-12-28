@@ -321,13 +321,8 @@ func CreateStoreHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error": "Failed to get server IP address"}`))
 		return
 	}
-	err = AddHostEntry(strings.ToLower(name)+".com", ip)
-	if err != nil {
-		log.Println("Error adding host entry:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "Failed to configure store domain"}`))
-		return
-	}
+	AddHostEntry(strings.ToLower(name)+".com", ip)
+	
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"success": true}`))
 }
