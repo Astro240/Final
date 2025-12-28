@@ -4,7 +4,6 @@ import (
 	"finalProj/api"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 )
 
@@ -110,21 +109,12 @@ func main() {
 		log.Fatal("Failed to generate certificates:", err)
 	}
 
-	fmt.Println("Server running on HTTPS")
-	fmt.Println("Access from:")
-	fmt.Println("  - This PC: https://localhost:8443")
-
-	// Get local IP
-	addrs, _ := net.InterfaceAddrs()
-	for _, addr := range addrs {
-		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				fmt.Printf("  - Your phone: https://%s:8443\n", ipnet.IP.String())
-			}
-		}
+	ip, err := api.GetIPv4()
+	if err != nil {
+		log.Fatal("Failed to start server:", err)
 	}
-	fmt.Println("\n⚠ Accept the security warning in your browser/phone")
 
+	fmt.Println("https://" + ip + ":8443")
 	if err := http.ListenAndServeTLS(":8443", "cert.pem", "key.pem", nil); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}

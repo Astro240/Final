@@ -105,6 +105,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	firstName := strings.TrimSpace(r.FormValue("first_name"))
 	lastName := strings.TrimSpace(r.FormValue("last_name"))
 	age := r.FormValue("age")
+	ageInt, err := strconv.Atoi(age)
+	if err != nil {
+		http.Error(w, `{"error": "Age must be a valid number"}`, http.StatusBadRequest)
+		return
+	}
+	if ageInt < 13 {
+		http.Error(w, `{"error": "Users must be 13 and above"}`, http.StatusBadRequest)
+		return
+	}
+	if ageInt > 120 {
+		http.Error(w, `{"error": "Users must be less than 120"}`, http.StatusBadRequest)
+		return
+	}
 	honeypot := r.FormValue("honeypot")
 	if honeypot != "" {
 		http.Error(w, `{"error": "Bot detected"}`, http.StatusBadRequest)

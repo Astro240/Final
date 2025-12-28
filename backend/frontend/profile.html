@@ -441,9 +441,399 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
+
+        /* Contact Modal */
+        .contact-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .contact-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            margin: 10% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideDownModal 0.3s ease;
+        }
+
+        @keyframes slideDownModal {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .contact-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .contact-close:hover {
+            color: #333;
+        }
+
+        .contact-modal h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .contact-modal p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .email-display {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .email-text {
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        /* About Modal */
+        .about-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .about-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideDownModal 0.3s ease;
+        }
+
+        .about-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .about-close:hover {
+            color: #333;
+        }
+
+        .about-modal h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .about-modal p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .about-section {
+            margin-bottom: 25px;
+        }
+
+        .about-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        /* TOS and Privacy Modals */
+        .tos-modal, .privacy-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .tos-modal-content, .privacy-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            margin: 3% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideDownModal 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .tos-modal h2, .privacy-modal h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .tos-modal h3, .privacy-modal h3 {
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .tos-modal p, .privacy-modal p {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .tos-modal ul, .privacy-modal ul {
+            color: #666;
+            line-height: 1.7;
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
+    <!-- Terms of Service Modal -->
+    <div id="tosModal" class="tos-modal">
+        <div class="tos-modal-content">
+            <span class="modal-close" onclick="closeTosModal()">&times;</span>
+            <h2>Terms of Service</h2>
+            <p style="font-size: 0.9rem; color: #999;">Last updated: December 28, 2025</p>
+            
+            <h3>1. Acceptance of Terms</h3>
+            <p>By accessing and using Astropify's services, you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+            <h3>2. Use License</h3>
+            <p>Permission is granted to temporarily use Astropify's platform for personal, non-transferable use only. This includes:</p>
+            <ul>
+                <li>Creating and managing online stores</li>
+                <li>Uploading and managing products</li>
+                <li>Processing customer orders</li>
+                <li>Accessing analytics and reports</li>
+            </ul>
+
+            <h3>3. User Obligations</h3>
+            <p>You are responsible for:</p>
+            <ul>
+                <li>Maintaining the security of your account</li>
+                <li>All activities that occur under your account</li>
+                <li>Ensuring your content complies with applicable laws</li>
+                <li>The accuracy of information you provide</li>
+            </ul>
+
+            <h3>4. Prohibited Activities</h3>
+            <p>You may not:</p>
+            <ul>
+                <li>Use the service for any illegal purpose</li>
+                <li>Upload malicious code or harmful content</li>
+                <li>Attempt to gain unauthorized access to the service</li>
+                <li>Interfere with or disrupt the service</li>
+            </ul>
+
+            <h3>5. Payment Terms</h3>
+            <p>All fees are non-refundable unless otherwise specified. We reserve the right to change our pricing with 30 days notice.</p>
+
+            <h3>6. Limitation of Liability</h3>
+            <p>Astropify shall not be liable for any indirect, incidental, special, consequential or punitive damages resulting from your use of or inability to use the service.</p>
+
+            <h3>7. Modifications</h3>
+            <p>We reserve the right to modify these terms at any time. Continued use of the service after changes constitutes acceptance of the modified terms.</p>
+
+            <p style="font-size: 0.9rem; color: #999; margin-top: 30px;">For questions about these terms, please contact us at astropify@gmail.com</p>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="privacy-modal">
+        <div class="privacy-modal-content">
+            <span class="modal-close" onclick="closePrivacyModal()">&times;</span>
+            <h2>Privacy Policy</h2>
+            <p style="font-size: 0.9rem; color: #999;">Last updated: December 28, 2025</p>
+            
+            <h3>1. Information We Collect</h3>
+            <p>We collect information that you provide directly to us, including:</p>
+            <ul>
+                <li>Account information (name, email, password)</li>
+                <li>Store information (store name, description, branding)</li>
+                <li>Product information and images</li>
+                <li>Transaction and payment information</li>
+                <li>Communications with us</li>
+            </ul>
+
+            <h3>2. How We Use Your Information</h3>
+            <p>We use the information we collect to:</p>
+            <ul>
+                <li>Provide, maintain, and improve our services</li>
+                <li>Process transactions and send related information</li>
+                <li>Send technical notices and support messages</li>
+                <li>Respond to your comments and questions</li>
+                <li>Monitor and analyze trends and usage</li>
+            </ul>
+
+            <h3>3. Information Sharing</h3>
+            <p>We do not sell your personal information. We may share your information only in the following circumstances:</p>
+            <ul>
+                <li>With your consent</li>
+                <li>To comply with legal obligations</li>
+                <li>To protect our rights and prevent fraud</li>
+                <li>With service providers who assist our operations</li>
+            </ul>
+
+            <h3>4. Data Security</h3>
+            <p>We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure.</p>
+
+            <h3>5. Cookies and Tracking</h3>
+            <p>We use cookies and similar tracking technologies to track activity on our service and hold certain information to improve and analyze our service.</p>
+
+            <h3>6. Your Rights</h3>
+            <p>You have the right to:</p>
+            <ul>
+                <li>Access your personal information</li>
+                <li>Correct inaccurate information</li>
+                <li>Request deletion of your information</li>
+                <li>Object to processing of your information</li>
+                <li>Export your data</li>
+            </ul>
+
+            <h3>7. Children's Privacy</h3>
+            <p>Our service is not intended for children under 13. We do not knowingly collect information from children under 13.</p>
+
+            <h3>8. Changes to This Policy</h3>
+            <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page.</p>
+
+            <p style="font-size: 0.9rem; color: #999; margin-top: 30px;">For privacy-related questions, please contact us at astropify@gmail.com</p>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="about-modal">
+        <div class="about-modal-content">
+            <span class="about-close" onclick="closeAboutModal()">&times;</span>
+            <h2>About Astropify</h2>
+            <p style="font-size: 1.1rem; color: #555; margin-bottom: 25px;">Create your store on the fly</p>
+            
+            <div class="about-section">
+                <h3>Our Mission</h3>
+                <p>Astropify empowers entrepreneurs and businesses to create stunning online stores effortlessly. We believe in making e-commerce accessible to everyone, regardless of technical expertise.</p>
+            </div>
+
+            <div class="about-section">
+                <h3>What We Offer</h3>
+                <p>Beautiful, customizable store templates<br>
+                Easy product management<br>
+                Seamless shopping cart experience<br>
+                Secure payment processing<br>
+                Real-time dashboard analytics<br>
+                3D product visualization & AR support</p>
+            </div>
+
+            <div class="about-section">
+                <h3>Why Choose Us?</h3>
+                <p>We combine cutting-edge technology with user-friendly design to help you launch your online business quickly. From small boutiques to large enterprises, Astropify scales with your needs.</p>
+            </div>
+
+            <p style="font-size: 0.9rem; color: #999; margin-top: 30px; margin-bottom: 0;">&copy; 2025 Astropify. Building the future of e-commerce.</p>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="contact-modal">
+        <div class="contact-modal-content">
+            <span class="contact-close" onclick="closeContactModal()">&times;</span>
+            <h2>📧 Contact Us</h2>
+            <p>Get in touch with our team!</p>
+            <div class="email-display">
+                <span class="email-text" id="emailText">astropify@gmail.com</span>
+                <button class="copy-btn" onclick="copyEmail()" id="copyBtn">Copy</button>
+            </div>
+            <p style="font-size: 0.9rem; color: #999; margin-bottom: 0;">Feel free to reach out for any inquiries or support.</p>
+        </div>
+    </div>
     <!-- Background Image -->
     <img src="/img/planeBackground.gif" alt="" class="backgroundImage" draggable="false">
 
@@ -479,7 +869,7 @@
                 <span>Stores</span>
             </button>
         </a>
-        <a href="/about" style="color: black; text-decoration: none;">
+        <a href="javascript:void(0)" onclick="openAboutModal()" style="color: black; text-decoration: none;">
             <button style="float:left; margin-left: 17.5px;" class="navbarElements">
                 <span>About us</span>
             </button>
@@ -701,6 +1091,77 @@
                     dropdownContent.classList.remove('show');
                 }, 100);
             });
+        }
+
+        // Contact modal functions
+        function openContactModal() {
+            document.getElementById('contactModal').style.display = 'block';
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+
+        function copyEmail() {
+            const email = document.getElementById('emailText').textContent;
+            const btn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(email).then(() => {
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const contactModal = document.getElementById('contactModal');
+            const aboutModal = document.getElementById('aboutModal');
+            const tosModal = document.getElementById('tosModal');
+            const privacyModal = document.getElementById('privacyModal');
+            if (event.target == contactModal) {
+                closeContactModal();
+            }
+            if (event.target == aboutModal) {
+                closeAboutModal();
+            }
+            if (event.target == tosModal) {
+                closeTosModal();
+            }
+            if (event.target == privacyModal) {
+                closePrivacyModal();
+            }
+        }
+
+        // About modal functions
+        function openAboutModal() {
+            document.getElementById('aboutModal').style.display = 'block';
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+
+        // TOS modal functions
+        function openTosModal() {
+            document.getElementById('tosModal').style.display = 'block';
+        }
+
+        function closeTosModal() {
+            document.getElementById('tosModal').style.display = 'none';
+        }
+
+        // Privacy modal functions
+        function openPrivacyModal() {
+            document.getElementById('privacyModal').style.display = 'block';
+        }
+
+        function closePrivacyModal() {
+            document.getElementById('privacyModal').style.display = 'none';
         }
     </script>
 </body>
