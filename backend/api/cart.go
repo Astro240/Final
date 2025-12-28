@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 )
 
 func AddToCart(w http.ResponseWriter, r *http.Request) {
@@ -352,7 +353,7 @@ func RemoveFromCart(w http.ResponseWriter, r *http.Request) {
 }
 
 func CheckoutPageForStore(w http.ResponseWriter, r *http.Request, storeID int, store Store) {
-	userID, validUser := ValidateCustomer(w, r)
+	userID, validUser := ValidateStoreCustomer(w, r, strconv.Itoa(storeID))
 	if !validUser {
 		HandleError(w, r, http.StatusUnauthorized, "Unauthorized to view, please login")
 		return

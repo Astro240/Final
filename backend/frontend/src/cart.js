@@ -90,8 +90,34 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
+// Function to update cart total display
+async function updateCartTotal() {
+    try {
+        const fullPath = window.location.href;
+        const response = await fetch('/api/get-cart', {
+            method: 'GET',
+            headers: {
+                'X-Store-Name': fullPath
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const cartTotalElements = document.querySelectorAll('#cart-total');
+            cartTotalElements.forEach(element => {
+                element.textContent = data.total_items || 0;
+            });
+        }
+    } catch (error) {
+        console.error('Failed to update cart total:', error);
+    }
+}
+
 // Handle Add to Cart functionality
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize cart total on page load
+    updateCartTotal();
+    
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
     
     addToCartButtons.forEach(button => {
@@ -124,6 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.textContent = '✓ Added!';
                     button.style.background = '#48bb78';
                     showNotification('Item added to cart successfully!', 'success');
+                    
+                    // Update cart total
+                    updateCartTotal();
                     
                     setTimeout(() => {
                         button.textContent = originalText;
@@ -180,6 +209,10 @@ async function addToCart(productId, quantity = 1) {
         
         if (response.ok) {
             showNotification(`${quantity} item${quantity > 1 ? 's' : ''} added to cart successfully!`, 'success');
+            
+            // Update cart total
+            updateCartTotal();
+            
             return true;
         } else {
             if (response.status === 401) {

@@ -1564,6 +1564,17 @@
             text-decoration: underline;
         }
 
+        #verifyCode {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links,
@@ -1787,7 +1798,13 @@
 
     <header>
         <nav class="container">
-            <div class="logo">{{ .Name }}</div>
+            <div class="logo">
+                {{ if .Logo }}
+                <img src="/logos/{{ .Logo }}" alt="{{ .Name }}" style="height: 55px; width: auto; max-width: 220px; object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));">
+                {{ else }}
+                {{ .Name }}
+                {{ end }}
+            </div>
             <ul class="nav-links">
                 <li><a onclick="location.reload();">Home</a></li>
                 <li><a onclick="goToPage('/orders')">Orders</a></li>
@@ -1804,6 +1821,7 @@
                     onclick="goToPage('/dashboard')">
                     Dashboard
                     </button>
+                    <a href="/loggout" class="cart-icon" style="background: #dc2626; color: white; border: none; text-decoration: none;" title="Logout">Logout</a>
                     <button id="loginBtn" class="cart-icon" style="background: linear-gradient(45deg, var(--accent-color), var(--highlight-color)); color: white; border: none;" hidden>
                     Login
                     </button>
@@ -1813,6 +1831,7 @@
                     Login
                     </button>
                     <a onclick="goToCheckout()" class="cart-icon">Cart (<span id="cart-total">0</span>)</a>
+                    <button onclick="logoutCustomer()" class="cart-icon" style="background: #dc2626; color: white; border: none;" title="Logout">Logout</button>
                     {{ else }}
                     <button id="loginBtn" class="cart-icon" style="background: linear-gradient(45deg, var(--accent-color), var(--highlight-color)); color: white; border: none;">
                     Login
@@ -1830,7 +1849,13 @@
 
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <div class="mobile-nav-logo">{{ .Name }}</div>
+            <div class="mobile-nav-logo">
+                {{ if .Logo }}
+                <img src="/logos/{{ .Logo }}" alt="{{ .Name }}" style="height: 45px; width: auto; max-width: 200px; object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));">
+                {{ else }}
+                {{ .Name }}
+                {{ end }}
+            </div>
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
@@ -1841,10 +1866,12 @@
             <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             {{ if .IsOwner }}
             <li><a onclick="goToPage('/dashboard')" style="color: var(--accent-color); font-weight: 700;">Dashboard</a></li>
+            <li><a href="/loggout" style="color: #dc2626; font-weight: 700; text-decoration: none;">Logout</a></li>
             <li><button id="mobileLoginBtn" style="background: none; border: none; color: #2d3436; font-size: 1.2rem; cursor: pointer; font-weight: 600;" hidden>Login</button></li>
             {{ else }}
                 {{ if .IsLoggedIn }}
                 <li><a onclick="goToCheckout()">Cart (<span id="cart-total">0</span>)</a></li>
+                <li><button onclick="logoutCustomer()" style="background: none; border: none; color: #dc2626; font-size: 1.2rem; cursor: pointer; font-weight: 600;">Logout</button></li>
                 <li><button id="mobileLoginBtn" style="background: none; border: none; color: #2d3436; font-size: 1.2rem; cursor: pointer; font-weight: 600;" hidden>Login</button></li>
                 {{ else }}
                 <li><button id="mobileLoginBtn" style="background: none; border: none; color: #2d3436; font-size: 1.2rem; cursor: pointer; font-weight: 600;">Login</button></li>
@@ -2115,6 +2142,24 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="verifyModalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="verifyModalClose">&times;</button>
+            <h2 style="text-align: center; margin-bottom: 2rem; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 900;">Verify Your Email</h2>
+            <div id="verifyError" style="display: none; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+            <p style="text-align: center; margin-bottom: 2rem; color: #4b5563; font-weight: 600;">We've sent a verification code to your email. Please enter it below.</p>
+            <form id="verifyForm">
+                <input type="hidden" id="verifyUserId" name="user_id">
+                <input type="hidden" id="verifyStoreId" name="store_id">
+                <div class="form-group-modal">
+                    <label for="verifyCode">Verification Code</label>
+                    <input type="text" id="verifyCode" name="code" required placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button type="submit" class="modal-submit">Verify & Login</button>
+            </form>
         </div>
     </div>
 
@@ -2681,6 +2726,19 @@
                 }
             `;
             document.head.appendChild(styles);
+        }
+
+        // Logout function for store customers
+        function logoutCustomer() {
+            // Get store ID from the page
+            const storeId = '{{ .ID }}';
+            const cookieName = 'customer_token_' + storeId;
+            
+            // Delete the cookie
+            document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            
+            // Redirect to home or reload
+            window.location.href = window.location.pathname;
         }
     </script>
 </body>

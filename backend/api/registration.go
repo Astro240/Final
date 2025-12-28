@@ -257,20 +257,25 @@ func StoreLoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
 		return
 	}
-	// Successful login
-	customerTokenName := "customer_token_" + storeID
-	SetCookie(w, userID, customerTokenName)
-	// Set store-specific cookie
-	storeIDInt, err := strconv.Atoi(storeID)
+
+	// Generate and send 2FA code
+	token := GenerateEmailCode()
+	query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+5 minutes'))"
+	_, err = db.Exec(query, userID, token)
 	if err != nil {
-		http.Error(w, `{"error": "Can't find Store ID"}`, http.StatusInternalServerError)
+		http.Error(w, `{"error": "Failed to store verification code"}`, http.StatusInternalServerError)
 		return
 	}
-	store, err := GetStoreByID(storeIDInt)
-	if err == nil && store.ID != 0 {
-		SetStoreCookie(w, int(store.OwnerID), store.Name)
+
+	err = SendEmail(email, "Verification Code: "+token, "Your store login verification code is: "+token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to send verification email"}`, http.StatusInternalServerError)
+		return
 	}
+
+	// Return success with user_id for 2FA verification
 	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "Verification code sent", "user_id": "` + fmt.Sprint(userID) + `", "email": "` + email + `", "store_id": "` + storeID + `"}`))
 }
 
 func StoreRegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -353,9 +358,95 @@ func StoreRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Error retrieving user ID"}`, http.StatusInternalServerError)
 		return
 	}
-	// Successful registration
+
+	// Generate and send 2FA code
+	token := GenerateEmailCode()
+	query = "INSERT INTO verification_codes (user_id, code, expires_at) VALUES (?, ?, datetime('now', '+5 minutes'))"
+	_, err = db.Exec(query, userID, token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to store verification code"}`, http.StatusInternalServerError)
+		return
+	}
+
+	err = SendEmail(email, "Verification Code: "+token, "Welcome! Your verification code is: "+token)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to send verification email"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Return success with user_id for 2FA verification
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "Verification code sent", "user_id": "` + fmt.Sprint(userID) + `", "email": "` + email + `", "store_id": "` + storeID + `"}`))
+}
+
+func StoreVerifyCodeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Database connection error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	userID := r.FormValue("user_id")
+	code := r.FormValue("code")
+	storeID := r.FormValue("store_id")
+
+	if userID == "" || code == "" || storeID == "" {
+		http.Error(w, `{"error": "Missing required fields"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Verify the code
+	var storedCode string
+	var expiresAt string
+	query := "SELECT code, expires_at FROM verification_codes WHERE user_id = ? ORDER BY created_at DESC LIMIT 1"
+	err = db.QueryRow(query, userID).Scan(&storedCode, &expiresAt)
+
+	if err == sql.ErrNoRows {
+		http.Error(w, `{"error": "Invalid or expired verification code"}`, http.StatusUnauthorized)
+		return
+	}
+	if err != nil {
+		http.Error(w, `{"error": "Database error"}`, http.StatusInternalServerError)
+		return
+	}
+
+	if storedCode != code {
+		http.Error(w, `{"error": "Invalid verification code"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Check if code is expired
+	expiry, err := sql.Open("sqlite3", DATABASEPATH)
+	if err == nil {
+		defer expiry.Close()
+		var isExpired bool
+		expiry.QueryRow("SELECT datetime('now') > ?", expiresAt).Scan(&isExpired)
+		if isExpired {
+			http.Error(w, `{"error": "Verification code has expired"}`, http.StatusUnauthorized)
+			return
+		}
+	}
+
+	// Delete used code
+	db.Exec("DELETE FROM verification_codes WHERE user_id = ? AND code = ?", userID, code)
+
+	// Set cookies for successful verification
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		http.Error(w, `{"error": "Invalid user ID"}`, http.StatusInternalServerError)
+		return
+	}
+
 	customerTokenName := "customer_token_" + storeID
-	SetCookie(w, int(userID), customerTokenName)
+	SetCookie(w, userIDInt, customerTokenName)
+
 	// Set store-specific cookie
 	storeIDInt, err := strconv.Atoi(storeID)
 	if err != nil {
@@ -368,4 +459,5 @@ func StoreRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "Verification successful"}`))
 }

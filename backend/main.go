@@ -56,6 +56,7 @@ func main() {
 	http.HandleFunc("/api/store_login", api.StoreLoginHandler)
 	http.HandleFunc("/api/register", api.RegisterHandler)
 	http.HandleFunc("/api/store_register", api.StoreRegisterHandler)
+	http.HandleFunc("/api/store_verify", api.StoreVerifyCodeHandler)
 	http.HandleFunc("/api/verify_2fa", api.TwoFactorAuth)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)
 	// Profile Handlers //

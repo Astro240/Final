@@ -83,12 +83,12 @@
             font-weight: 600;
             transition: all 0.3s;
             text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            box-shadow: 0 4px 12px rgba(59, 130, 244, 0.3);
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 30%, transparent);
         }
 
         .cart-icon:hover {
-            background: linear-gradient(135deg, var(--accent-color), #1e40af);
-            box-shadow: 0 6px 20px rgba(59, 130, 244, 0.4);
+            background: var(--accent-color);
+            box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 40%, transparent);
             transform: translateY(-2px);
         }
 
@@ -121,7 +121,7 @@
         .search-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px #667eea26;
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 15%, transparent);
         }
 
         .no-results {
@@ -465,12 +465,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            box-shadow: 0 4px 12px rgba(59, 130, 244, 0.3);
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 30%, transparent);
         }
 
         .view-details-btn:hover {
-            background: linear-gradient(135deg, var(--accent-color), #1e40af);
-            box-shadow: 0 6px 16px rgba(59, 130, 244, 0.4);
+            background: var(--accent-color);
+            box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color) 40%, transparent);
             transform: translateY(-2px);
         }
 
@@ -491,7 +491,7 @@
             border: none;
             font-size: 2rem;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(59, 130, 244, 0.4);
+            box-shadow: 0 10px 30px color-mix(in srgb, var(--accent-color) 40%, transparent);
             transition: all 0.3s ease;
             z-index: 100;
             display: flex;
@@ -502,8 +502,8 @@
 
         .add-product-trigger:hover {
             transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 15px 40px rgba(59, 130, 244, 0.5);
-            background: linear-gradient(135deg, var(--accent-color), #1e40af);
+            box-shadow: 0 15px 40px color-mix(in srgb, var(--accent-color) 50%, transparent);
+            background: var(--accent-color);
         }
 
         .add-product-modal-overlay {
@@ -594,7 +594,7 @@
         .form-group textarea:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px #667eea26;
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 15%, transparent);
         }
 
         .form-group textarea {
@@ -631,7 +631,7 @@
 
         /* Footer */
         footer {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #2a3f5f 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 3.5rem 0 2rem;
             margin-top: 4rem;
@@ -701,7 +701,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;\n            height: 100%;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
             display: none;
@@ -888,7 +889,7 @@
             font-size: 1.3rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 8px 20px rgba(59, 130, 244, 0.3);
+            box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-color) 30%, transparent);
             text-shadow: 0 1px 3px rgba(0,0,0,0.2);
             width: 100%;
             margin-top: 1rem;
@@ -900,9 +901,9 @@
         }
 
         .product-detail-add-to-cart:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--accent-color), #1e40af);
+            background: var(--accent-color);
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(59, 130, 244, 0.4);
+            box-shadow: 0 12px 30px color-mix(in srgb, var(--accent-color) 40%, transparent);
         }
 
         .product-detail-specs {
@@ -961,7 +962,7 @@
         }
 
         .write-review-btn {
-            background: linear-gradient(135deg, var(--accent-color), #1e40af);
+            background: var(--accent-color);
             color: white;
             border: none;
             padding: 0.6rem 1.2rem;
@@ -973,7 +974,7 @@
 
         .write-review-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 244, 0.4);
+            box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 40%, transparent);
         }
 
         .reviews-summary {
@@ -1038,7 +1039,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-color), #1e40af);
+            background: var(--accent-color);
             color: white;
             display: flex;
             align-items: center;
@@ -1179,7 +1180,7 @@
         .form-group-modal input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px #667eea26;
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 15%, transparent);
         }
 
         .modal-submit {
@@ -1218,6 +1219,13 @@
 
         .modal-switch a:hover {
             text-decoration: underline;
+        }
+
+        #verifyCode {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            font-weight: 600;
         }
 
         /* Responsive Design */
@@ -1415,7 +1423,13 @@
 
     <header>
         <nav class="container">
-            <div class="logo">{{ .Name }}</div>
+            <div class="logo">
+                {{ if .Logo }}
+                <img src="/logos/{{ .Logo }}" alt="{{ .Name }}" style="height: 50px; width: auto; max-width: 200px; object-fit: contain;">
+                {{ else }}
+                {{ .Name }}
+                {{ end }}
+            </div>
             <ul class="nav-links">
                 <li><a onclick="location.reload();">Home</a></li>
                 <li><a onclick="goToPage('/orders')">orders</a></li>
@@ -1432,6 +1446,7 @@
                     onclick="goToPage('/dashboard')">
                     Dashboard
                     </button>
+                    <a href="/loggout" class="cart-icon" style="background: transparent; color: #dc2626; border: 1px solid #dc2626; text-decoration: none;" title="Logout">Logout</a>
                     <button id="loginBtn" class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);" hidden>
                     Login
@@ -1443,6 +1458,7 @@
                     Login
                     </button>
                     <a onclick="goToCheckout()" class="cart-icon">Cart (<span id="cart-total">0</span>)</a>
+                    <button onclick="logoutCustomer()" class="cart-icon" style="background: transparent; color: #dc2626; border: 1px solid #dc2626;" title="Logout">Logout</button>
                     {{ else }}
                     <button id="loginBtn" class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);">
@@ -1461,7 +1477,13 @@
 
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <div class="logo">{{ .Name }}</div>
+            <div class="logo">
+                {{ if .Logo }}
+                <img src="/logos/{{ .Logo }}" alt="{{ .Name }}" style="height: 40px; width: auto; max-width: 180px; object-fit: contain;">
+                {{ else }}
+                {{ .Name }}
+                {{ end }}
+            </div>
             <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
         </div>
         <ul class="mobile-nav-links">
@@ -1472,10 +1494,12 @@
             <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             {{ if .IsOwner }}
             <li><a onclick="goToPage('/dashboard')" style="color: var(--accent-color); font-weight: 600;">Dashboard</a></li>
+            <li><a href="/loggout" style="color: #dc2626; font-weight: 600; text-decoration: none;">Logout</a></li>
             <li><button id="mobileLoginBtn" style="background: none; border: none; color: var(--secondary-color); font-size: 1.1rem; cursor: pointer; font-weight: 600;" hidden>Login</button></li>
             {{ else }}
                 {{ if .IsLoggedIn }}
                 <li><a onclick="goToCheckout()">Cart (<span id="cart-total">0</span>)</a></li>
+                <li><button onclick="logoutCustomer()" style="background: none; border: none; color: #dc2626; font-size: 1.1rem; cursor: pointer; font-weight: 600;">Logout</button></li>
                 <li><button id="mobileLoginBtn" style="background: none; border: none; color: var(--secondary-color); font-size: 1.1rem; cursor: pointer; font-weight: 600;" hidden>Login</button></li>
                 {{ else }}
                 <li><button id="mobileLoginBtn" style="background: none; border: none; color: var(--secondary-color); font-size: 1.1rem; cursor: pointer; font-weight: 600;">Login</button></li>
@@ -1700,6 +1724,24 @@
                     Already have an account? <a href="#" id="switchToLogin">Login</a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="verifyModalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="verifyModalClose">&times;</button>
+            <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">Verify Your Email</h2>
+            <div id="verifyError" style="display: none; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+            <p style="text-align: center; margin-bottom: 2rem; color: #718096;">We've sent a verification code to your email. Please enter it below.</p>
+            <form id="verifyForm">
+                <input type="hidden" id="verifyUserId" name="user_id">
+                <input type="hidden" id="verifyStoreId" name="store_id">
+                <div class="form-group-modal">
+                    <label for="verifyCode">Verification Code</label>
+                    <input type="text" id="verifyCode" name="code" required placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button type="submit" class="modal-submit">Verify</button>
+            </form>
         </div>
     </div>
 
@@ -2250,12 +2292,12 @@
                     background: #e5e7eb;
                 }
                 .btn-submit {
-                    background: linear-gradient(135deg, var(--accent-color), #1e40af);
+                    background: var(--accent-color);
                     color: white;
                 }
                 .btn-submit:hover:not(:disabled) {
                     transform: translateY(-2px);
-                    box-shadow: 0 10px 30px rgba(59, 130, 244, 0.3);
+                    box-shadow: 0 10px 30px color-mix(in srgb, var(--accent-color) 30%, transparent);
                 }
                 .btn-submit:disabled {
                     opacity: 0.6;
@@ -2263,6 +2305,19 @@
                 }
             `;
             document.head.appendChild(styles);
+        }
+
+        // Logout function for store customers
+        function logoutCustomer() {
+            // Get store ID from the page
+            const storeId = '{{ .ID }}';
+            const cookieName = 'customer_token_' + storeId;
+            
+            // Delete the cookie
+            document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            
+            // Redirect to home or reload
+            window.location.href = window.location.pathname;
         }
     </script>
 </body>
