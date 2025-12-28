@@ -1733,7 +1733,7 @@
                 {{ if .IsOwner }}
                 <button class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);"
-                    onclick="window.location.href='/admin_dashboard'">
+                    onclick="goToPage('/dashboard')">
                     Dashboard
                     </button>
                     <button id="loginBtn" class="cart-icon"
@@ -1775,7 +1775,7 @@
             <li><a onclick="showPagePopup('/heritage', '{{ .OwnerEmail }}')">Heritage</a></li>
             <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             {{ if .IsOwner }}
-            <li><a onclick="window.location.href='/admin_dashboard'" style="color: var(--primary-color); font-weight: 600;">Dashboard</a></li>
+            <li><a onclick="goToPage('/dashboard')" style="color: var(--primary-color); font-weight: 600;">Dashboard</a></li>
             <li><button id="mobileLoginBtn"
                         style="background: none; border: none; color: #4b5563; font-size: 1.2rem; cursor: pointer; font-weight: 600;" hidden>Login</button>
                 </li>

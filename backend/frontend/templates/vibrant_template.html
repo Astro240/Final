@@ -1801,7 +1801,7 @@
                 {{ if .IsOwner }}
                 <button class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);"
-                    onclick="window.location.href='/admin_dashboard'">
+                    onclick="goToPage('/dashboard')">
                     Dashboard
                     </button>
                     <button id="loginBtn" class="cart-icon" style="background: linear-gradient(45deg, var(--accent-color), var(--highlight-color)); color: white; border: none;" hidden>
@@ -1840,7 +1840,7 @@
             <li><a onclick="showPagePopup('/about', '{{ .OwnerEmail }}')">About</a></li>
             <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             {{ if .IsOwner }}
-            <li><a onclick="window.location.href='/admin_dashboard'" style="color: var(--accent-color); font-weight: 700;">Dashboard</a></li>
+            <li><a onclick="goToPage('/dashboard')" style="color: var(--accent-color); font-weight: 700;">Dashboard</a></li>
             <li><button id="mobileLoginBtn" style="background: none; border: none; color: #2d3436; font-size: 1.2rem; cursor: pointer; font-weight: 600;" hidden>Login</button></li>
             {{ else }}
                 {{ if .IsLoggedIn }}

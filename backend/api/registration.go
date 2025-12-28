@@ -212,32 +212,31 @@ func StoreLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	query := `SELECT id, password FROM users WHERE email = ? AND store_id = ?`
 	row := db.QueryRow(query, email, storeID)
-	if row.Err() == sql.ErrNoRows {
+
+	var userID int
+	var storedPassword string
+	err = row.Scan(&userID, &storedPassword)
+
+	// If no user found for this store, try to find store owner
+	if err == sql.ErrNoRows {
 		queryStoreOwner := `SELECT id, password FROM users WHERE email = ? AND store_id IS NULL`
 		new_row := db.QueryRow(queryStoreOwner, email)
-		if new_row.Err() == sql.ErrNoRows {
+
+		if err := new_row.Scan(&userID, &storedPassword); err != nil {
 			http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
 			return
 		}
-		var userID int
-		var storedPassword string
-		if err := row.Scan(&userID, &storedPassword); err != nil {
-			http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
-			return
-		}
+
 		if bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(password)) != nil {
 			http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
 			return
 		}
-		// Successful login
+
+		// Successful login for store owner
 		SetCookie(w, userID, "session_token")
 		w.WriteHeader(http.StatusOK)
 		return
-	}
-
-	var userID int
-	var storedPassword string
-	if err := row.Scan(&userID, &storedPassword); err != nil {
+	} else if err != nil {
 		http.Error(w, `{"error": "Invalid email, password, or store ID"}`, http.StatusUnauthorized)
 		return
 	}
