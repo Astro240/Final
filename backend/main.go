@@ -116,11 +116,10 @@ func main() {
 	}
 
 	fmt.Println("Server running on:")
-	fmt.Println("  Local:   https://localhost:8443")
-	fmt.Println("  Network: https://" + ip + ":8443")
-	fmt.Println("\nUse the Network URL to access from VR goggles or other devices")
+	fmt.Println("  Local:   https://localhost:443")
+	fmt.Println("  Network: https://" + ip + ":443")
 
-	if err := http.ListenAndServeTLS(":8443", "cert.pem", "key.pem", nil); err != nil {
+	if err := http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
 
