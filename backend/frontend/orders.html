@@ -146,6 +146,12 @@
             border: 1px solid rgba(239, 68, 68, 0.4);
         }
 
+        .status-completed {
+            background: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
         .expand-btn {
             background: none;
             border: none;
@@ -291,6 +297,34 @@
         .empty-state a:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .mark-received-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .mark-received-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+        }
+
+        .mark-received-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .order-meta {
@@ -512,6 +546,15 @@
                         const detailsRow = document.createElement('tr');
                         detailsRow.className = 'order-details-row';
                         detailsRow.id = `details-${order.id}`;
+                        
+                        const showReceiveButton = (order.status === 'delivered' || order.status === 'shipped');
+                        const receiveButtonHTML = showReceiveButton ? `
+                            <button class="mark-received-btn" onclick="markAsReceived(${order.id})" id="receive-btn-${order.id}">
+                                <i class="fas fa-check-circle"></i>
+                                Mark as Received
+                            </button>
+                        ` : '';
+                        
                         detailsRow.innerHTML = `
                             <td colspan="6" class="order-details-cell">
                                 <div class="order-details-content">
@@ -526,13 +569,14 @@
                                         </div>
                                         <div class="meta-item">
                                             <span class="meta-label">Status</span>
-                                            <span class="meta-value" style="color: var(--accent-color);">${order.status}</span>
+                                            <span class="meta-value" style="color: var(--accent-color);" id="status-${order.id}">${order.status}</span>
                                         </div>
                                         <div class="meta-item">
                                             <span class="meta-label">Items</span>
                                             <span class="meta-value">${order.product_count}</span>
                                         </div>
                                     </div>
+                                    ${receiveButtonHTML}
                                     <div class="order-products" id="products-${order.id}">
                                         <div class="loading">
                                             <div class="spinner"></div>
@@ -613,6 +657,73 @@
                 console.error('Error fetching products:', error);
                 const productsContainer = document.getElementById(`products-${orderId}`);
                 productsContainer.innerHTML = '<p style="color: #f87171; grid-column: 1 / -1; text-align: center;"><i class="fas fa-exclamation-circle"></i> Error loading products</p>';
+            }
+        }
+
+        // Mark order as received/completed
+        async function markAsReceived(orderId) {
+            const button = document.getElementById(`receive-btn-${orderId}`);
+            if (!button) return;
+
+            // Confirm action
+            if (!confirm('Have you received this order? This will mark it as completed.')) {
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+            try {
+                const fullPath = window.location.href;
+                const response = await fetch(`/api/customer/orders/complete?store_id=${storeId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Store-Name': fullPath
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId
+                    })
+                });
+
+                if (response.ok) {
+                    // Update UI
+                    const statusElement = document.getElementById(`status-${orderId}`);
+                    if (statusElement) {
+                        statusElement.textContent = 'completed';
+                    }
+
+                    // Update status badge in main table
+                    const rows = document.querySelectorAll('#ordersBody tr');
+                    rows.forEach(row => {
+                        const orderIdCell = row.querySelector('.order-id');
+                        if (orderIdCell && orderIdCell.textContent === `#${orderId}`) {
+                            const statusBadge = row.querySelector('.order-status');
+                            if (statusBadge) {
+                                statusBadge.className = 'order-status status-completed';
+                                statusBadge.textContent = 'completed';
+                            }
+                        }
+                    });
+
+                    button.innerHTML = '<i class="fas fa-check"></i> Received!';
+                    button.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        button.remove();
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || 'Failed to update order status');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-check-circle"></i> Mark as Received';
+                }
+            } catch (error) {
+                console.error('Error marking order as received:', error);
+                alert('An error occurred. Please try again.');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-check-circle"></i> Mark as Received';
             }
         }
 

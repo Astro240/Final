@@ -1,13 +1,13 @@
 package api
 
 import (
+	"database/sql"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"net/smtp"
 	"os"
 	"strconv"
-
-	"database/sql"
 )
 
 func GenerateEmailCode() string {
@@ -37,7 +37,7 @@ func SendEmail(to string, subject string, body string) error {
 		}
 		return nil // Exit after a successful send
 	}
-	return nil
+	return fmt.Errorf("failed to send email to %s: all SMTP providers failed", to)
 }
 
 func TwoFactorAuth(w http.ResponseWriter, r *http.Request) {

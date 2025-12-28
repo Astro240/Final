@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Astropify</title>
+    <link rel="icon" type="image/png" href="/img/logo.png" />
+    <link rel="stylesheet" href="src/style.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: black;
+            min-height: 100vh;
+            position: relative;
+            color:black;
+        }
+
+        .navbar {
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 70px;
+            position: fixed;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar img.logo {
+            height: 75px;
+            width: 75px;
+            margin-top: -10px;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            object-fit: cover;
+            border: 2px solid white;
+            transition: transform 0.2s;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        .dropdown-bridge {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 100%;
+            height: 10px;
+            background: transparent;
+        }
+
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .profile-dropdown-content.show {
+            display: block;
+        }
+
+        .profile-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+        }
+
+        .profile-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .backgroundImage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 120px auto 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-header {
+            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-picture-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            object-fit: cover;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-picture-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .profile-picture-container:hover .profile-picture-overlay {
+            opacity: 1;
+        }
+
+        .profile-picture-overlay i {
+            color: white;
+            font-size: 2rem;
+        }
+
+        .profile-header h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .profile-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .edit-mode {
+            display: none;
+        }
+
+        .edit-mode.active {
+            display: block;
+        }
+
+        .view-mode.hidden {
+            display: none;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 968px) {
+            .navbar {
+                padding: 15px 30px !important;
+            }
+            
+            .navbar a[href="/store"],
+            .navbar a[href="/products"],
+            .navbar a[href="/about"] {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 20px !important;
+                border-bottom-left-radius: 15px !important;
+                border-bottom-right-radius: 15px !important;
+            }
+
+            .navbar img {
+                height: 50px !important;
+                width: 50px !important;
+            }
+
+            .profile-container {
+                margin-top: 100px;
+            }
+
+            .profile-content {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-container {
+                margin-top: 80px;
+            }
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .glowDiv {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .glowDiv:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Image -->
+    <img src="/img/planeBackground.gif" alt="" class="backgroundImage" draggable="false">
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="/" style="color: white; text-decoration: none; float: left;">
+            <img src="/img/logo.png" class="logo" draggable="false" />
+        </a>
+        {{ if .User.ProfilePicture }}
+        <div class="profile-dropdown" style="float: right;" id="profileDropdown">
+            <img src="/avatars/{{ .User.ProfilePicture }}" alt="Profile" class="profile-pic" id="profilePic" />
+            <div class="dropdown-bridge"></div>
+            <div class="profile-dropdown-content" id="dropdownContent">
+                <a href="/profile" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                    <strong>{{ .User.Fullname }}</strong>
+                </a>
+                <a href="/profile">👤 My Profile</a>
+                <a href="/dashboard">📊 Dashboard</a>
+                <a href="/store">🏪 My Stores</a>
+                <a href="/settings">⚙️ Settings</a>
+                <a href="/loggout" style="color: #d32f2f; border-top: 1px solid rgba(0, 0, 0, 0.1);">🚪 Logout</a>
+            </div>
+        </div>
+        {{ else }}
+        <a href="/login" style="color: white; text-decoration: none;">
+            <button style="float:right" class="glowDiv">
+                <span>Login</span>
+            </button>
+        </a>
+        {{ end }}
+        <a href="/store" style="color: black; text-decoration: none;">
+            <button style="float:left;margin-left: 100px;" class="navbarElements">
+                <span>Stores</span>
+            </button>
+        </a>
+        <a href="/about" style="color: black; text-decoration: none;">
+            <button style="float:left; margin-left: 17.5px;" class="navbarElements">
+                <span>About us</span>
+            </button>
+        </a>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Success/Error Messages -->
+        <div id="successMessage" class="success-message">
+            Profile updated successfully!
+        </div>
+        <div id="errorMessage" class="error-message">
+            Failed to update profile. Please try again.
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-picture-container">
+                <img src="/avatars/{{ if .User.ProfilePicture }}{{ .User.ProfilePicture }}{{ else }}default.png{{ end }}" 
+                     alt="Profile Picture" 
+                     class="profile-picture" 
+                     id="profileImage">
+                <label for="profilePictureInput" class="profile-picture-overlay">
+                    <i>📷</i>
+                </label>
+                <input type="file" id="profilePictureInput" accept="image/*">
+            </div>
+            <h1 id="displayName" style="color: black;">{{ .User.Fullname }}</h1>
+            <p id="displayEmail" style="color: black;">{{ .User.Email }}</p>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- View Mode -->
+            <div class="view-mode" id="viewMode">
+                <div class="section">
+                    <h2 class="section-title">Account Information</h2>
+                    <div class="info-card">
+                        <div class="info-row">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value" id="viewName">{{ .User.Fullname }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">{{ .User.Email }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member Since</span>
+                            <span class="info-value">{{ if .MemberSince }}{{ .MemberSince }}{{ else }}2024{{ end }}</span>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="toggleEditMode()">Edit Profile</button>
+                        <a href="/" class="btn btn-secondary">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div class="edit-mode" id="editMode">
+                <div class="section">
+                    <h2 class="section-title">Edit Profile</h2>
+                    <form id="profileForm" onsubmit="saveProfile(event)">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required 
+                                   value="{{ .FirstName }}" placeholder="Enter your first name">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required 
+                                   value="{{ .LastName }}" placeholder="Enter your last name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" disabled 
+                                   value="{{ .User.Email }}">
+                            <small style="color: #666; font-size: 0.85rem;">Email cannot be changed</small>
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">❌ Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProfilePicture = "{{ .User.ProfilePicture }}";
+
+        function toggleEditMode() {
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            
+            viewMode.classList.toggle('hidden');
+            editMode.classList.toggle('active');
+        }
+
+        // Handle profile picture upload
+        document.getElementById('profilePictureInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showError('Please select an image file');
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showError('Image size must be less than 5MB');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+
+            try {
+                const response = await fetch('/api/profile/picture', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentProfilePicture = data.filename;
+                    document.getElementById('profileImage').src = '/avatars/' + data.filename;
+                    showSuccess('Profile picture updated successfully!');
+                } else {
+                    showError('Failed to upload profile picture');
+                }
+            } catch (error) {
+                console.error('Error uploading profile picture:', error);
+                showError('An error occurred while uploading');
+            }
+        });
+
+        // Handle profile form submission
+        async function saveProfile(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            try {
+                const response = await fetch('/api/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName
+                    })
+                });
+
+                if (response.ok) {
+                    const fullName = firstName + ' ' + lastName;
+                    document.getElementById('displayName').textContent = fullName;
+                    document.getElementById('viewName').textContent = fullName;
+                    showSuccess('Profile updated successfully!');
+                    toggleEditMode();
+                } else {
+                    showError('Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showError('An error occurred while updating');
+            }
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Profile dropdown functionality
+        const profileDropdown = document.getElementById('profileDropdown');
+        const dropdownContent = document.getElementById('dropdownContent');
+        
+        if (profileDropdown && dropdownContent) {
+            let timeout;
+            
+            profileDropdown.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                dropdownContent.classList.add('show');
+            });
+            
+            profileDropdown.addEventListener('mouseleave', function() {
+                timeout = setTimeout(function() {
+                    dropdownContent.classList.remove('show');
+                }, 100);
+            });
+            
+            dropdownContent.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                dropdownContent.classList.add('show');
+            });
+            
+            dropdownContent.addEventListener('mouseleave', function() {
+                timeout = setTimeout(function() {
+                    dropdownContent.classList.remove('show');
+                }, 100);
+            });
+        }
+    </script>
+</body>
+</html>

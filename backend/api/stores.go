@@ -349,6 +349,11 @@ func GetStoreByName(storeName string) (Store, error) {
 	if err := row.Scan(&store.ID, &store.Name, &store.Description, &store.Template, &colorScheme, &store.Logo, &store.Banner, &store.OwnerID, &store.Phone, &store.Address, &store.PaymentMethods, &store.IBANNumber, &store.ShippingInfo, &store.ShippingCost, &store.EstimatedShipping, &store.FreeShippingThreshold); err != nil {
 		return Store{}, err
 	}
+	
+	// Get owner email
+	ownerEmail, _ := getOwnerEmail(int(store.OwnerID))
+	store.OwnerEmail = ownerEmail
+	
 	colors := strings.Split(colorScheme, ",")
 	for i := 0; i < len(colors); i++ {
 		if i == 0 {
@@ -465,4 +470,19 @@ func parseInt(s string) (int, error) {
 	}
 
 	return result, nil
+}
+// getOwnerEmail retrieves the email of the store owner from the users table
+func getOwnerEmail(ownerID int) (string, error) {
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		return "", err
+	}
+	defer db.Close()
+
+	var email string
+	err = db.QueryRow("SELECT email FROM users WHERE id = ?", ownerID).Scan(&email)
+	if err != nil {
+		return "", nil // Return empty string if owner email not found
+	}
+	return email, nil
 }

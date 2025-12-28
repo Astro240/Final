@@ -33,6 +33,7 @@ func main() {
 		http.ServeFile(w, r, "./frontend/create_store.html")
 	})
 	http.HandleFunc("/admin_dashboard", api.AdminDashboard)
+	http.HandleFunc("/profile", api.ProfilePageHandler)
 	//handle the src, img, and data directories
 	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	http.Handle("/logos/", http.StripPrefix("/logos/", http.FileServer(http.Dir("./store_images/logos"))))
@@ -58,6 +59,9 @@ func main() {
 	http.HandleFunc("/api/store_register", api.StoreRegisterHandler)
 	http.HandleFunc("/api/verify_2fa", api.TwoFactorAuth)
 	http.HandleFunc("/api/resend_2fa", api.Resend2FAHandler)
+	// Profile Handlers //
+	http.HandleFunc("/api/profile/update", api.UpdateProfileHandler)
+	http.HandleFunc("/api/profile/picture", api.UpdateProfilePictureHandler)
 	// Store-Product Handlers //
 	http.HandleFunc("/api/create_store", api.CreateStoreHandler)
 	http.HandleFunc("/api/create_product", api.CreateProductAPI)
@@ -85,6 +89,7 @@ func main() {
 	http.HandleFunc("/api/orders/", api.GetOrderProducts)
 	http.HandleFunc("/api/my-orders", api.GetOrders)
 	http.HandleFunc("/api/customer/orders", api.GetCustomerOrders)
+	http.HandleFunc("/api/customer/orders/complete", api.MarkOrderAsCompleted)
 	// WebSocket routes
 	http.HandleFunc("/ws/dashboard", api.DashboardWebSocketHandler)
 

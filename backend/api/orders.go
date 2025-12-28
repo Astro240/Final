@@ -923,6 +923,82 @@ func GetCustomerOrders(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// MarkOrderAsCompleted allows customers to mark their delivered order as completed/received
+func MarkOrderAsCompleted(w http.ResponseWriter, r *http.Request) {
+	storeIDStr := r.URL.Query().Get("store_id")
+	if storeIDStr == "" {
+		http.Error(w, `{"error": "store_id is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	userID, validUser := ValidateStoreCustomer(w, r, storeIDStr)
+	if !validUser {
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var req struct {
+		OrderID int `json:"order_id"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, `{"error": "Invalid request"}`, http.StatusBadRequest)
+		return
+	}
+
+	db, err := sql.Open("sqlite3", DATABASEPATH)
+	if err != nil {
+		http.Error(w, `{"error": "Database Error"}`, http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Verify the order belongs to this customer
+	var orderUserID int
+	var currentStatus string
+	err = db.QueryRow(`
+		SELECT o.user_id, o.status
+		FROM orders o
+		WHERE o.id = ?
+	`, req.OrderID).Scan(&orderUserID, &currentStatus)
+
+	if err != nil {
+		http.Error(w, `{"error": "Order not found"}`, http.StatusNotFound)
+		return
+	}
+
+	if orderUserID != userID {
+		http.Error(w, `{"error": "Unauthorized to update this order"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Only allow marking as completed if status is "delivered" or "shipped"
+	if currentStatus != "delivered" && currentStatus != "shipped" {
+		http.Error(w, `{"error": "Order must be delivered or shipped to mark as completed"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Update order status to completed
+	_, err = db.Exec(
+		"UPDATE orders SET status = 'completed', updated_at = datetime('now') WHERE id = ?",
+		req.OrderID,
+	)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to update order"}`, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"message": "Order marked as completed",
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
 // Helper function to get formatted date
 func getFormattedDate() string {
 	return fmt.Sprintf("%s", "today")

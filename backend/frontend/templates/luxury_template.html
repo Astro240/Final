@@ -1721,10 +1721,10 @@
         <nav class="container">
             <div class="logo">{{ .Name }}</div>
             <ul class="nav-links">
-                <li><a onclick="goToPage('/home')">Home</a></li>
+                <li><a onclick="location.reload();">Home</a></li>
                 <li><a onclick="goToPage('/orders')">Orders</a></li>
-                <li><a onclick="goToPage('/heritage')">Heritage</a></li>
-                <li><a onclick="goToPage('/contact')">Contact</a></li>
+                <li><a onclick="showPagePopup('/heritage', '{{ .OwnerEmail }}')">Heritage</a></li>
+                <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             </ul>
             <div class="search-container" id="desktopSearchContainer" style="display: none;">
                 <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
@@ -1733,7 +1733,7 @@
                 {{ if .IsOwner }}
                 <button class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);"
-                    onclick="goToPage('/dashboard')">
+                    onclick="window.location.href='/admin_dashboard'">
                     Dashboard
                     </button>
                     <button id="loginBtn" class="cart-icon"
@@ -1770,12 +1770,12 @@
         </div>
         <ul class="mobile-nav-links">
             <li style="margin-bottom: 2rem;"><input type="text" class="search-input" id="mobileSearchInput" placeholder="Search products..." style="width: 100%; padding: 0.75rem; border-radius: 8px;"></li>
-            <li><a onclick="goToPage('/home')">Home</a></li>
+            <li><a onclick="location.reload();">Home</a></li>
             <li><a onclick="goToPage('/orders')">Orders</a></li>
-            <li><a onclick="goToPage('/heritage')">Heritage</a></li>
-            <li><a onclick="goToPage('/contact')">Contact</a></li>
+            <li><a onclick="showPagePopup('/heritage', '{{ .OwnerEmail }}')">Heritage</a></li>
+            <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             {{ if .IsOwner }}
-            <li><a onclick="goToPage('/dashboard')" style="color: var(--primary-color); font-weight: 600;">Dashboard</a></li>
+            <li><a onclick="window.location.href='/admin_dashboard'" style="color: var(--primary-color); font-weight: 600;">Dashboard</a></li>
             <li><button id="mobileLoginBtn"
                         style="background: none; border: none; color: #4b5563; font-size: 1.2rem; cursor: pointer; font-weight: 600;" hidden>Login</button>
                 </li>
@@ -1799,7 +1799,7 @@
             <div class="container">
                 <h1>{{ .Name }}</h1>
                 <p>{{ .Description }}</p>
-                <a onclick="goToPage('/products')" class="cta-button">EXPLORE COLLECTION</a>
+                <a onclick="window.location.href='/#products'" class="cta-button">EXPLORE COLLECTION</a>
             </div>
         </div>
     </section>
@@ -1874,27 +1874,27 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>LUXURIA</h3>
+                    <h3>{{ .Name }}</h3>
                     <p>For over a century, we have been the epitome of luxury, crafting exceptional experiences for the
                         most discerning clientele.</p>
                 </div>
                 <div class="footer-section">
                     <h3>SERVICES</h3>
-                    <a onclick="goToPage('/concierge')">Personal Concierge</a>
-                    <a onclick="goToPage('/authentication')">Authentication</a>
-                    <a onclick="goToPage('/restoration')">Restoration</a>
-                    <a onclick="goToPage('/appraisal')">Appraisal Services</a>
+                    <a onclick="showPagePopup('/concierge')">Personal Concierge</a>
+                    <a onclick="showPagePopup('/authentication')">Authentication</a>
+                    <a onclick="showPagePopup('/restoration')">Restoration</a>
+                    <a onclick="showPagePopup('/appraisal')">Appraisal Services</a>
                 </div>
                 <div class="footer-section">
                     <h3>EXCLUSIVES</h3>
-                    <a onclick="goToPage('/private')">Private Collections</a>
-                    <a onclick="goToPage('/bespoke')">Bespoke Services</a>
-                    <a onclick="goToPage('/vip')">VIP Membership</a>
-                    <a onclick="goToPage('/events')">Exclusive Events</a>
+                    <a onclick="showPagePopup('/private')">Private Collections</a>
+                    <a onclick="showPagePopup('/bespoke')">Bespoke Services</a>
+                    <a onclick="showPagePopup('/vip')">VIP Membership</a>
+                    <a onclick="showPagePopup('/events')">Exclusive Events</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 LUXURIA. Crafted with excellence since 1895.</p>
+                <p>&copy; 2025 {{ .Name }}. Crafted with excellence since 1895.</p>
             </div>
         </div>
     </footer>
@@ -2016,6 +2016,7 @@
     <script src="/src/navbar.js" defer></script>
     <script src="/src/create_product.js" defer></script>
     <script src="/src/cart.js" defer></script>
+    <script src="/src/pages-popup.js" defer></script>
     <script>
         // Search functionality
         function initializeSearch() {

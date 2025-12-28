@@ -1789,10 +1789,10 @@
         <nav class="container">
             <div class="logo">{{ .Name }}</div>
             <ul class="nav-links">
-                <li><a onclick="goToPage('/home')">Home</a></li>
+                <li><a onclick="location.reload();">Home</a></li>
                 <li><a onclick="goToPage('/orders')">Orders</a></li>
-                <li><a onclick="goToPage('/about')">About</a></li>
-                <li><a onclick="goToPage('/contact')">Contact</a></li>
+                <li><a onclick="showPagePopup('/about', '{{ .OwnerEmail }}')">About</a></li>
+                <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             </ul>
             <div class="search-container" id="desktopSearchContainer" style="display: none;">
                 <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
@@ -1801,7 +1801,7 @@
                 {{ if .IsOwner }}
                 <button class="cart-icon"
                     style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);"
-                    onclick="goToPage('/dashboard')">
+                    onclick="window.location.href='/admin_dashboard'">
                     Dashboard
                     </button>
                     <button id="loginBtn" class="cart-icon" style="background: linear-gradient(45deg, var(--accent-color), var(--highlight-color)); color: white; border: none;" hidden>
@@ -1835,12 +1835,12 @@
         </div>
         <ul class="mobile-nav-links">
             <li style="margin-bottom: 1.5rem;"><input type="text" class="search-input" id="mobileSearchInput" placeholder="Search products..." style="width: 100%; padding: 0.75rem; border-radius: 8px;"></li>
-            <li><a onclick="goToPage('/home')">Home</a></li>
+            <li><a onclick="location.reload();">Home</a></li>
             <li><a onclick="goToPage('/orders')">Orders</a></li>
-            <li><a onclick="goToPage('/about')">About</a></li>
-            <li><a onclick="goToPage('/contact')">Contact</a></li>
+            <li><a onclick="showPagePopup('/about', '{{ .OwnerEmail }}')">About</a></li>
+            <li><a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a></li>
             {{ if .IsOwner }}
-            <li><a onclick="goToPage('/dashboard')" style="color: var(--accent-color); font-weight: 700;">Dashboard</a></li>
+            <li><a onclick="window.location.href='/admin_dashboard'" style="color: var(--accent-color); font-weight: 700;">Dashboard</a></li>
             <li><button id="mobileLoginBtn" style="background: none; border: none; color: #2d3436; font-size: 1.2rem; cursor: pointer; font-weight: 600;" hidden>Login</button></li>
             {{ else }}
                 {{ if .IsLoggedIn }}
@@ -1858,7 +1858,7 @@
             <div class="container">
                 <h1>{{ .Name }}</h1>
                 <p>{{ .Description }}</p>
-                <a onclick="goToPage('/products')" class="cta-button">Explore Magic</a>
+                <a onclick="window.location.href='/#products'" class="cta-button">Explore Magic</a>
             </div>
         </div>
     </section>
@@ -1940,17 +1940,17 @@
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
-                    <a onclick="goToPage('/products')">Products</a>
-                    <a onclick="goToPage('/about')">About Us</a>
-                    <a onclick="goToPage('/contact')">Contact</a>
-                    <a onclick="goToPage('/shipping')">Shipping</a>
+                    <a onclick="window.location.href='/#products'">Products</a>
+                    <a onclick="showPagePopup('/about', '{{ .OwnerEmail }}')">About Us</a>
+                    <a onclick="showPagePopup('/contact', '{{ .OwnerEmail }}')">Contact</a>
+                    <a onclick="showPagePopup('/shipping')">Shipping</a>
                 </div>
                 <div class="footer-section">
                     <h3>Customer Love</h3>
-                    <a onclick="goToPage('/support')">Support</a>
-                    <a onclick="goToPage('/returns')">Returns</a>
-                    <a onclick="goToPage('/warranty')">Warranty</a>
-                    <a onclick="goToPage('/reviews')">Reviews</a>
+                    <a onclick="showPagePopup('/support')">Support</a>
+                    <a onclick="showPagePopup('/returns')">Returns</a>
+                    <a onclick="showPagePopup('/warranty')">Warranty</a>
+                    <a onclick="showPagePopup('/reviews')">Reviews</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -2121,6 +2121,7 @@
     <script src="/src/navbar.js" defer></script>
     <script src="/src/create_product.js" defer></script>
     <script src="/src/cart.js" defer></script>
+    <script src="/src/pages-popup.js" defer></script>
     <script>
         // Search functionality
         function initializeSearch() {
