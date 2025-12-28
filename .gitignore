@@ -3,3 +3,6 @@ backend/avatars/*
 !backend/avatars/README.md
 
 .env
+
+backend/key.pem
+backend/cert.pem
